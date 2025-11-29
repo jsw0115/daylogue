@@ -1,0 +1,42 @@
+/* src/main/frontend/src/styles/screens/home.css */
+
+.home-dashboard-screen .home-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .home-dashboard-screen .home-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.home-list {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 13px;
+}
+
+.home-oneline {
+  width: 100%;
+  min-height: 60px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+  padding: 8px;
+  font-size: 13px;
+}
+
+.noti-list .noti-item {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.noti-item--new {
+  border-color: var(--color-primary-soft);
+}
+

@@ -1,0 +1,60 @@
+/* src/main/frontend/src/styles/screens/stat.css */
+
+.stat-dashboard-screen .stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.stat-chart-card {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  padding: 10px 12px;
+}
+
+.stat-chart-card h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.stat-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 11px;
+}
+
+.stat-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-primary);
+}
+
+.stat-plan-actual-screen .plan-actual-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (min-width: 900px) {
+  .stat-plan-actual-screen .plan-actual-layout {
+    flex-direction: row;
+  }
+
+  .stat-plan-actual-screen .plan-actual-layout__left {
+    flex: 2;
+  }
+
+  .stat-plan-actual-screen .plan-actual-layout__right {
+    flex: 1;
+  }
+}
+

@@ -1,0 +1,40 @@
+/* src/main/frontend/src/styles/screens/auth.css */
+
+.auth-screen {
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.auth-header h2 {
+  margin: 0 0 4px;
+}
+
+.auth-form {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.auth-form__extras {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.link-button {
+  border: none;
+  background: none;
+  color: var(--color-muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.auth-divider {
+  text-align: center;
+  font-size: 11px;
+  color: var(--color-muted);
+  margin: 10px 0;
+}
+

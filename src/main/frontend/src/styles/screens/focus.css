@@ -1,0 +1,36 @@
+/* src/main/frontend/src/styles/screens/focus.css */
+
+.focus-session-screen .focus-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (min-width: 900px) {
+  .focus-session-screen .focus-layout {
+    flex-direction: row;
+  }
+
+  .focus-session-screen .focus-layout__left {
+    flex: 2;
+  }
+
+  .focus-session-screen .focus-layout__right {
+    flex: 1;
+  }
+}
+
+.focus-session-screen .session-controls {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.focus-session-screen .session-stats {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  padding: 10px 12px;
+  font-size: 13px;
+}
+

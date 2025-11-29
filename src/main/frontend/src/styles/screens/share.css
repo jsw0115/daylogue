@@ -1,0 +1,51 @@
+/* src/main/frontend/src/styles/screens/share.css */
+
+.friend-list-screen .friend-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.friend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.friend-item {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  padding: 8px 10px;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.friend-item__status {
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+.calendar-group-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.calendar-group-card {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+.share-visibility-options {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+
