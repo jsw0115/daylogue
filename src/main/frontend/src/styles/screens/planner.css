@@ -32,3 +32,240 @@
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 16px;
 }
+
+/* 플래너 상단 탭 여백 */
+.planner-tabs {
+  margin-bottom: 12px;
+}
+
+/* planner.css 맨 아래에 추가 */
+
+.planner-day-list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding-left: 0;
+  font-size: var(--font-body);
+}
+
+.planner-day-list li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+}
+
+/* 세로 타임바 – DailyPlannerScreen에서 사용 */
+.timebar-timeline {
+  display: grid;
+  grid-template-columns: 1fr 60px;
+  gap: 8px;
+}
+
+.timebar-timeline__track {
+  position: relative;
+  border-radius: 999px;
+  background: #e5e7eb;
+  height: 360px;
+  overflow: hidden;
+}
+
+.timebar-timeline__block {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.timebar-timeline__block--work {
+  background: rgba(99, 102, 241, 0.7);
+}
+.timebar-timeline__block--study {
+  background: rgba(34, 197, 94, 0.7);
+}
+.timebar-timeline__block--rest {
+  background: rgba(148, 163, 184, 0.7);
+}
+.timebar-timeline__block--etc {
+  background: rgba(244, 114, 182, 0.7);
+}
+
+.timebar-timeline__label {
+  position: absolute;
+  right: 6px;
+  top: 4px;
+  font-size: 11px;
+  color: #f9fafb;
+}
+
+.timebar-timeline__scale {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+/* === Timebar vertical layout === */
+
+.timebar-wrapper {
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 8px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  padding: 8px 10px;
+  max-height: 1080px;
+  overflow: auto;
+}
+
+/* 시간축 */
+.timebar-axis {
+  position: relative;
+}
+
+.timebar-axis__label {
+  position: absolute;
+  left: 0;
+  transform: translateY(-50%);
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+/* 오른쪽 Day column */
+.timebar-grid {
+  position: relative;
+  min-height: 540px;
+}
+
+.timebar-grid__background {
+  position: absolute;
+  inset: 0;
+}
+
+.timebar-grid__hour-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(148, 163, 184, 0.35);
+}
+
+/* Plan / Actual blocks */
+.timebar-grid__blocks {
+  position: relative;
+  width: 100%;
+}
+
+.timebar-block {
+  position: absolute;
+  width: 68%;
+  transform: translateX(-50%);
+  border-radius: 10px;
+  border-width: 1px;
+  border-style: solid;
+  padding: 4px 6px;
+  font-size: 11px;
+  color: #0f172a;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.timebar-block--plan {
+  border-style: dashed;
+}
+
+.timebar-block--actual {
+  color: #ffffff;
+}
+
+.timebar-block__label {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  margin-bottom: 2px;
+  font-weight: 500;
+}
+
+.timebar-block__category {
+  font-size: 11px;
+}
+
+.timebar-block__time {
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.timebar-block__title {
+  font-size: 11px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.weekly-timebricks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.weekly-timebricks__row {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.weekly-timebricks__row--hovered {
+  border-color: rgba(148, 163, 184, 0.6);
+  background: #f9fafb;
+}
+
+.weekly-timebricks__label {
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.weekly-timebricks__bar {
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  display: flex;
+  background: #e5e7eb;
+}
+
+.weekly-timebricks__segment {
+  flex-shrink: 0;
+}
+
+/* 선택/호버 상태 */
+.timebar-block--selected {
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.6);
+}
+
+.timebar-block--hovered {
+  filter: brightness(1.03);
+}
+
+.timebar-block--draft {
+  opacity: 0.6;
+  border-style: dashed;
+}
+
+/* 하단 리사이즈 핸들 */
+.timebar-block__resize-handle {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 2px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.3);
+  cursor: ns-resize;
+}

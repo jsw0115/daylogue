@@ -1,23 +1,12 @@
-// src/main/frontend/src/shared/constants/routes.js
+// 화면ID ↔ 라우트 경로 매핑 (필요시 확장)
 export const ROUTES = {
-  HOME: "/",
-  LOGIN: "/auth/login",
-  REGISTER: "/auth/register",
-
-  DAILY_PLAN: "/plan/daily",
-  WEEKLY_PLAN: "/plan/weekly",
-  MONTHLY_PLAN: "/plan/monthly",
-
-  TASK_LIST: "/tasks",
-  ROUTINE_LIST: "/routines",
-
+  HOME: "/home",
+  PLAN_DAILY: "/plan/daily",
+  PLAN_WEEKLY: "/plan/weekly",
+  PLAN_MONTHLY: "/plan/monthly",
+  PLAN_YEARLY: "/plan/yearly",
   TASKS: "/tasks",
-  DIARY: "/diary/daily",
-
+  DIARY_DAILY: "/diary/daily",
+  STAT_DASHBOARD: "/stat",
   SETTINGS_PROFILE: "/settings/profile",
-  ADMIN_USERS: "/admin/users",
-  ADMIN_LOGS: "/admin/logs",
-  ADMIN_NOTICE: "/admin/notices",
-
 };
-

@@ -1,20 +1,12 @@
-// src/main/frontend/src/components/common/Checkbox.jsx
 import React from "react";
-import "../../styles/components.css";
 
-function Checkbox({ label, checked, onChange, className = "", ...rest }) {
+function Checkbox({ label, ...props }) {
   return (
-    <label className={`checkbox ${className}`}>
-      <input type="checkbox"
-        checked={checked}
-        onChange={(e) => onChange && onChange(e.target.checked)}
-        {...rest}
-      />
-      <span className="checkbox__box" />
-      {label && <span className="checkbox__label">{label}</span>}
+    <label style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+      <input type="checkbox" {...props} />
+      <span>{label}</span>
     </label>
   );
 }
 
 export default Checkbox;
-

@@ -1,29 +1,12 @@
-// src/main/frontend/src/components/common/TextInput.jsx
 import React from "react";
-import "../../styles/components.css";
 
-function TextInput({
-  label,
-  value,
-  onChange,
-  type = "text",
-  placeholder,
-  className = "",
-  ...rest
-}) {
+function TextInput({ label, fullWidth, ...props }) {
   return (
-    <div className={`field ${className}`}>
+    <div className="field" style={fullWidth ? { width: "100%" } : {}}>
       {label && <label className="field__label">{label}</label>}
-      <input type={type}
-        className="field__control"
-        value={value}
-        onChange={(e) => onChange && onChange(e.target.value)}
-        placeholder={placeholder}
-        {...rest}
-      />
+      <input className="field__control" {...props} />
     </div>
   );
 }
 
 export default TextInput;
-

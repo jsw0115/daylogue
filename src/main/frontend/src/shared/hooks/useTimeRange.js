@@ -1,24 +1,19 @@
-// src/main/frontend/src/shared/hooks/useTimeRange.js
-import { useMemo } from "react";
-import { parseTimeToMinutes } from "../utils/timeUtils";
+// 타임바 등에서 24시간 분 단위 계산용 간단 훅
+export function useTimeRange() {
+  const minutesInDay = 24 * 60;
 
-export function useTimeRange(blocks) {
-  // 블록들의 전체 시간(min, max)을 계산 → 통계/타임라인 등에서 활용
-  return useMemo(() => {
-    if (!blocks || blocks.length === 0) {
-      return { minMinutes: 6 * 60, maxMinutes: 24 * 60 };
-    }
+  const toMinute = (timeStr) => {
+    // "HH:MM" -> minute
+    if (!timeStr) return 0;
+    const [h, m] = timeStr.split(":").map(Number);
+    return h * 60 + m;
+  };
 
-    let min = Infinity;
-    let max = -Infinity;
-    blocks.forEach((b) => {
-      const start = parseTimeToMinutes(b.start);
-      const end = parseTimeToMinutes(b.end);
-      min = Math.min(min, start);
-      max = Math.max(max, end);
-    });
+  const toTimeString = (minute) => {
+    const h = String(Math.floor(minute / 60)).padStart(2, "0");
+    const m = String(minute % 60).padStart(2, "0");
+    return `${h}:${m}`;
+  };
 
-    return { minMinutes: min, maxMinutes: max };
-  }, [blocks]);
+  return { minutesInDay, toMinute, toTimeString };
 }
-

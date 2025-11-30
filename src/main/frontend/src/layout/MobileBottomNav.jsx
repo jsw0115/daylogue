@@ -1,22 +1,20 @@
-// src/layout/MobileBottomNav.jsx
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { ROUTES } from "../shared/constants/routes";
+
+const items = [
+  { path: "/plan/daily", label: "일간" },
+  { path: "/tasks", label: "할 일" },
+  { path: "/diary/daily", label: "일기" },
+  { path: "/stat", label: "통계" },
+];
 
 function MobileBottomNav() {
-  const items = [
-    { key: "home", label: "홈", to: ROUTES.HOME },
-    { key: "daily", label: "일간", to: ROUTES.DAILY },
-    { key: "tasks", label: "할 일", to: ROUTES.TASKS },
-    { key: "diary", label: "다이어리", to: ROUTES.DIARY },
-  ];
-
   return (
     <nav className="mobile-bottom-nav">
       {items.map((item) => (
         <NavLink
-          key={item.key}
-          to={item.to}
+          key={item.path}
+          to={item.path}
           className={({ isActive }) =>
             "mobile-bottom-nav__item" +
             (isActive ? " mobile-bottom-nav__item--active" : "")

@@ -1,51 +1,33 @@
-// src/layout/AppShell.jsx
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { useResponsiveLayout } from "../shared/hooks/useResponsiveLayout";
-import { useAuth } from "../shared/hooks/useAuth";
-import { ROUTES } from "../shared/constants/routes";
 import MobileBottomNav from "./MobileBottomNav";
+import PageContainer from "./PageContainer";
+
+const MAIN_MENU = [
+  { path: "/home", label: "홈" },
+  { path: "/plan/daily", label: "일간" },
+  { path: "/plan/weekly", label: "주간" },
+  { path: "/plan/monthly", label: "월간" },
+  { path: "/plan/yearly", label: "연간" },
+  { path: "/tasks", label: "할 일" },
+  { path: "/diary/daily", label: "다이어리" },
+];
 
 function AppShell({ children }) {
-  const { layout } = useResponsiveLayout();
-  const { user, isAdmin } = useAuth();
+  const { isMobile, isTablet, isDesktop } = useResponsiveLayout();
 
-  // 🔹 사이드바에는 메인 메뉴만
-  const mainMenu = [
-    { key: "home", label: "홈", to: ROUTES.HOME },
-    { key: "daily", label: "일간", to: ROUTES.DAILY },
-    { key: "weekly", label: "주간", to: ROUTES.WEEKLY },
-    { key: "tasks", label: "할 일", to: ROUTES.TASKS },
-    { key: "diary", label: "다이어리", to: ROUTES.DIARY },
-  ];
-
-  const renderSidebarSection = (title, items) => {
-    if (!items.length) return null;
-    return (
-      <section className="app-shell__sidebar-section">
-        <div className="app-shell__sidebar-title">{title}</div>
-        <ul className="app-shell__sidebar-list">
-          {items.map((item) => (
-            <li key={item.key} className="app-shell__sidebar-item">
-              <NavLink
-                to={item.to}
-                className={({ isActive }) =>
-                  "app-shell__sidebar-link" +
-                  (isActive ? " app-shell__sidebar-link--active" : "")
-                }
-                end
-              >
-                {item.label}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </section>
-    );
-  };
+  const shellClassName = [
+    "app-shell",
+    isMobile ? "app-shell--mobile" : "",
+    isTablet ? "app-shell--tablet" : "",
+    isDesktop ? "app-shell--desktop" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
-    <div className={`app-shell app-shell--${layout}`}>
+    <div className={shellClassName}>
       {/* 상단 헤더 */}
       <header className="app-shell__header">
         <div className="app-shell__brand">
@@ -59,56 +41,86 @@ function AppShell({ children }) {
         </div>
 
         <div className="app-shell__header-right">
-          <nav className="app-shell__header-actions">
-            {/* 🔹 여기서만 개인 설정 / 관리자 화면 이동 */}
-            <NavLink
-              to={ROUTES.SETTINGS_PROFILE}
-              className={({ isActive }) =>
-                "header-link" + (isActive ? " header-link--active" : "")
-              }
-            >
-              개인 설정
-            </NavLink>
-            {isAdmin && (
-              <NavLink
-                to={ROUTES.ADMIN_USERS}
-                className={({ isActive }) =>
-                  "header-link header-link--accent" +
-                  (isActive ? " header-link--active" : "")
-                }
-              >
-                관리자 화면
-              </NavLink>
-            )}
-          </nav>
+          {/* J / P / Balance 모드 토글 (임시 로컬 상태) */}
+          <div className="app-shell__header-actions">
+            <button className="header-link header-link--accent">J 모드</button>
+            <button className="header-link">P 모드</button>
+            <button className="header-link">Balance</button>
+          </div>
 
+          {/* 오른쪽 사용자 미니 카드 */}
           <div className="app-shell__user">
-            <div className="app-shell__user-avatar">
-              {user?.name?.[0] || "U"}
-            </div>
+            <div className="app-shell__user-avatar">D</div>
             <div className="app-shell__user-meta">
-              <div className="app-shell__user-name">{user?.name}</div>
-              <div className="app-shell__user-role">
-                {isAdmin ? "관리자" : "일반 사용자"}
-              </div>
+              <div className="app-shell__user-name">DATA</div>
+              <div className="app-shell__user-role">관리자</div>
             </div>
           </div>
         </div>
       </header>
 
-      {/* 본문 레이아웃 */}
+      {/* 본문 */}
       <div className="app-shell__body">
-        {/* 🔹 사이드바: 메인 메뉴만 */}
-        <aside className="app-shell__sidebar">
-          {renderSidebarSection("메인 메뉴", mainMenu)}
-        </aside>
+        {/* 좌측 사이드바 */}
+        {!isMobile && (
+          <aside className="app-shell__sidebar">
+            <div className="app-shell__sidebar-section">
+              <div className="app-shell__sidebar-title">메인 메뉴</div>
+              <ul className="app-shell__sidebar-list">
+                {MAIN_MENU.map((item) => (
+                  <li key={item.path} className="app-shell__sidebar-item">
+                    <NavLink
+                      to={item.path}
+                      className={({ isActive }) =>
+                        "app-shell__sidebar-link" +
+                        (isActive ? " app-shell__sidebar-link--active" : "")
+                      }
+                    >
+                      {item.label}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
+            <div className="app-shell__sidebar-section">
+              <div className="app-shell__sidebar-title">설정</div>
+              <ul className="app-shell__sidebar-list">
+                <li>
+                  <NavLink
+                    to="/settings/profile"
+                    className={({ isActive }) =>
+                      "app-shell__sidebar-link" +
+                      (isActive ? " app-shell__sidebar-link--active" : "")
+                    }
+                  >
+                    개인 설정
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/admin/users"
+                    className={({ isActive }) =>
+                      "app-shell__sidebar-link" +
+                      (isActive ? " app-shell__sidebar-link--active" : "")
+                    }
+                  >
+                    관리자 화면
+                  </NavLink>
+                </li>
+              </ul>
+            </div>
+          </aside>
+        )}
+
+        {/* 메인 컨텐츠 */}
         <main className="app-shell__content">
-          <div className="page-container">{children}</div>
+          <PageContainer>{children}</PageContainer>
         </main>
       </div>
 
-      {layout === "mobile" && <MobileBottomNav />}
+      {/* 모바일 하단 네비 */}
+      {isMobile && <MobileBottomNav />}
     </div>
   );
 }

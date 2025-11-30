@@ -79,3 +79,9 @@
   gap: 8px;
   align-items: center;
 }
+
+.timebar-mini-container .timebar-mini {
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}

@@ -44,3 +44,64 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.routine-tracker {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: #ffffff;
+  overflow: hidden;
+  font-size: 11px;
+}
+
+.routine-tracker__header {
+  display: grid;
+  grid-template-columns: 120px repeat(auto-fit, minmax(24px, 1fr));
+  align-items: center;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.routine-tracker__corner {
+  padding: 6px 8px;
+}
+
+.routine-tracker__day-header {
+  padding: 6px 4px;
+  text-align: center;
+  color: var(--color-muted);
+}
+
+.routine-tracker__body {
+  display: flex;
+  flex-direction: column;
+}
+
+.routine-tracker__row {
+  display: grid;
+  grid-template-columns: 120px repeat(auto-fit, minmax(24px, 1fr));
+  align-items: center;
+}
+
+.routine-tracker__row-label {
+  padding: 6px 8px;
+  border-right: 1px solid #e5e7eb;
+  font-size: 12px;
+}
+
+.routine-tracker__cell {
+  padding: 4px 0;
+  border: 1px solid #f3f4f6;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.routine-tracker__cell--done {
+  background: #ecfdf5;
+}
+
+.routine-tracker__cell--hovered {
+  background: #eef2ff;
+}

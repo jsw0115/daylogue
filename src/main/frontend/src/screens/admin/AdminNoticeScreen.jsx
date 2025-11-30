@@ -1,61 +1,80 @@
-// src/main/frontend/src/screens/admin/AdminLogScreen.jsx
-import React from "react";
+// src/main/frontend/src/screens/admin/AdminNoticeScreen.jsx
+import React, { useState } from "react";
 import AppShell from "../../layout/AppShell";
 import "../../styles/screens/admin.css";
 
-function AdminLogScreen() {
-  const mockLogs = [
-    {
-      id: 1,
-      level: "ERROR",
-      message: "TimeLog save failed",
-      createdAt: "2025-03-16 10:21:00",
-    },
-    {
-      id: 2,
-      level: "INFO",
-      message: "User login success",
-      createdAt: "2025-03-16 09:05:32",
-    },
+function AdminNoticeScreen() {
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+
+  const mockNotices = [
+    { id: 1, title: "3월 업데이트 안내", type: "공지", active: true },
+    { id: 2, title: "점검 예정 안내", type: "팝업", active: false },
   ];
 
   return (
-    <AppShell title="관리자 - 로그 모니터링">
-      <div className="screen admin-logs-screen">
+    <AppShell title="관리자 - 공지/팝업 관리">
+      <div className="screen admin-notice-screen">
         <header className="screen-header">
-          <h2>로그 / 에러 모니터링</h2>
+          <h2>공지 / 팝업 관리</h2>
         </header>
 
-        <section className="admin-log-filters">
-          <select defaultValue="">
-            <option value="">전체 레벨</option>
-            <option value="ERROR">ERROR</option>
-            <option value="WARN">WARN</option>
-            <option value="INFO">INFO</option>
-          </select>
-          <input type="date" />
-          <input className="admin-search-input"
-            placeholder="메시지 키워드 검색"
+        <section className="admin-notice-form">
+          <h3>새 공지 등록</h3>
+          <div className="field-row">
+            <input className="field__control"
+              placeholder="제목"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <select>
+              <option value="NOTICE">공지</option>
+              <option value="POPUP">팝업</option>
+              <option value="BANNER">배너</option>
+            </select>
+          </div>
+          <textarea className="field__control"
+            rows={4}
+            placeholder="내용"
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
           />
+          <div className="admin-notice-actions">
+            <button className="primary-button">등록</button>
+          </div>
         </section>
 
-        <section className="admin-log-list">
-          <ul>
-            {mockLogs && mockLogs.map((log) => (
-              <li key={log.id} className={`admin-log admin-log--${log.level}`}>
-                <div className="admin-log__meta">
-                  <span className="admin-log__level">{log.level}</span>
-                  <span className="admin-log__time">{log.createdAt}</span>
-                </div>
-                <div className="admin-log__message">{log.message}</div>
-              </li>
-            ))}
-          </ul>
+        <section className="admin-table-wrapper">
+          <h3>등록된 공지 목록</h3>
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>유형</th>
+                <th>제목</th>
+                <th>상태</th>
+                <th>수정</th>
+              </tr>
+            </thead>
+            <tbody>
+              {mockNotices && mockNotices.map((n) => (
+                <tr key={n.id}>
+                  <td>{n.id}</td>
+                  <td>{n.type}</td>
+                  <td>{n.title}</td>
+                  <td>{n.active ? "사용" : "중지"}</td>
+                  <td>
+                    <button className="ghost-button">편집</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </section>
       </div>
     </AppShell>
   );
 }
 
-export default AdminLogScreen;
+export default AdminNoticeScreen;
 

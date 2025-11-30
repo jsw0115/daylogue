@@ -1,32 +1,37 @@
-// src/screens/stat/StatDashboardScreen.jsx
 import React from "react";
-import DashboardCard from "../../components/dashboard/DashboardCard";
-import StatValue from "../../components/dashboard/StatValue";
-import "../../styles/screens/stat.css";
 
 function StatDashboardScreen() {
   return (
     <div className="screen stat-screen">
-      <header className="screen-header">
+      <div className="screen-header">
         <div className="screen-header__left">
-          <h2 className="screen-header__title">통합 통계</h2>
+          <h1 className="screen-header__title">통합 통계</h1>
           <p className="screen-header__subtitle">
-            일정, 할 일, 루틴, 다이어리 기록을 한 번에 요약해서 보여줘요.
+            완료 Task, 루틴 달성률, 일기 작성일 수를 한 눈에 봅니다.
           </p>
         </div>
-      </header>
+      </div>
 
       <div className="stat-grid">
-        <DashboardCard title="지난 7일 요약" subtitle="완료한 할 일 / 루틴 / 일기">
-          <StatValue label="완료한 할 일" value={42} unit="개" />
-          <StatValue label="루틴 달성률" value={76} unit="%" />
-          <StatValue label="일기 작성일" value={5} unit="/ 7일" />
-        </DashboardCard>
+        <section className="dashboard-card">
+          <div className="dashboard-card__header">
+            <h2 className="dashboard-card__title">오늘·이번 주 요약</h2>
+          </div>
+          <ul className="simple-list">
+            <li>• 완료 Task: 5개</li>
+            <li>• 루틴 달성률: 72%</li>
+            <li>• 일기 작성일 수: 18일</li>
+          </ul>
+        </section>
 
-        <DashboardCard title="오늘의 집중 시간" subtitle="포커스 타이머 기준">
-          <StatValue label="공부" value={120} unit="분" />
-          <StatValue label="업무" value={180} unit="분" />
-        </DashboardCard>
+        <section className="dashboard-card">
+          <div className="dashboard-card__header">
+            <h2 className="dashboard-card__title">Plan vs Actual</h2>
+          </div>
+          <p className="stat-legend">
+            나중에 Recharts 같은 라이브러리로 그래프를 붙이면 돼요.
+          </p>
+        </section>
       </div>
     </div>
   );

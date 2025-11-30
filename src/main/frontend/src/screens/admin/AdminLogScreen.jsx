@@ -1,61 +1,61 @@
-// src/main/frontend/src/screens/admin/AdminUserScreen.jsx
+// src/main/frontend/src/screens/admin/AdminLogScreen.jsx
 import React from "react";
 import AppShell from "../../layout/AppShell";
 import "../../styles/screens/admin.css";
 
-function AdminUserScreen() {
-  const mockUsers = [
-    { id: 1, email: "user1@example.com", nickname: "푸딩곰", status: "ACTIVE" },
-    { id: 2, email: "user2@example.com", nickname: "공부햄", status: "INACTIVE" },
+function AdminLogScreen() {
+  const mockLogs = [
+    {
+      id: 1,
+      level: "ERROR",
+      message: "TimeLog save failed",
+      createdAt: "2025-03-16 10:21:00",
+    },
+    {
+      id: 2,
+      level: "INFO",
+      message: "User login success",
+      createdAt: "2025-03-16 09:05:32",
+    },
   ];
 
   return (
-    <AppShell title="관리자 - 사용자 관리">
-      <div className="screen admin-users-screen">
+    <AppShell title="관리자 - 로그 모니터링">
+      <div className="screen admin-logs-screen">
         <header className="screen-header">
-          <div className="screen-header__left">
-            <h2>사용자 관리</h2>
-          </div>
-          <div className="screen-header__right">
-            <input className="admin-search-input"
-              placeholder="이메일 / 닉네임 검색"
-            />
-          </div>
+          <h2>로그 / 에러 모니터링</h2>
         </header>
 
-        <section className="admin-table-wrapper">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>이메일</th>
-                <th>닉네임</th>
-                <th>상태</th>
-                <th>가입일</th>
-                <th>액션</th>
-              </tr>
-            </thead>
-            <tbody>
-              {mockUsers && mockUsers.map((u) => (
-                <tr key={u.id}>
-                  <td>{u.id}</td>
-                  <td>{u.email}</td>
-                  <td>{u.nickname}</td>
-                  <td>{u.status}</td>
-                  <td>2025-03-01</td>
-                  <td>
-                    <button className="ghost-button">상세</button>
-                    <button className="ghost-button">비활성화</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <section className="admin-log-filters">
+          <select defaultValue="">
+            <option value="">전체 레벨</option>
+            <option value="ERROR">ERROR</option>
+            <option value="WARN">WARN</option>
+            <option value="INFO">INFO</option>
+          </select>
+          <input type="date" />
+          <input className="admin-search-input"
+            placeholder="메시지 키워드 검색"
+          />
+        </section>
+
+        <section className="admin-log-list">
+          <ul>
+            {mockLogs && mockLogs.map((log) => (
+              <li key={log.id} className={`admin-log admin-log--${log.level}`}>
+                <div className="admin-log__meta">
+                  <span className="admin-log__level">{log.level}</span>
+                  <span className="admin-log__time">{log.createdAt}</span>
+                </div>
+                <div className="admin-log__message">{log.message}</div>
+              </li>
+            ))}
+          </ul>
         </section>
       </div>
     </AppShell>
   );
 }
 
-export default AdminUserScreen;
+export default AdminLogScreen;
 

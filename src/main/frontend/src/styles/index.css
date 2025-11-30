@@ -1,38 +1,59 @@
 /* src/main/frontend/src/styles/index.css */
 
 :root {
-  /* 컬러 팔레트 – 조금 더 무난하게 */
-  --color-bg: #f3f4f6;              /* 전체 배경 */
-  --color-surface: #ffffff;         /* 카드/컨텐츠 배경 */
+  --color-bg: #f3f4f6;
+  --color-surface: #ffffff;
   --color-surface-soft: #f9fafb;
   --color-border: #e5e7eb;
 
   --color-text: #111827;
   --color-muted: #6b7280;
 
-  --color-primary: #4f46e5;         /* 인디고 (조금 더 딥한 느낌) */
+  --color-primary: #4f46e5;
   --color-primary-soft: rgba(79, 70, 229, 0.06);
 
   --color-accent-pink: #f973af;
   --color-accent-green: #22c55e;
 
-  /* 둥근 정도 ↓ */
-  --radius-xl: 12px;  /* 카드(대) */
-  --radius-lg: 10px;  /* 인풋, 모달 */
-  --radius-md: 8px;   /* 작은 카드/텍스트 영역 */
-  --radius-sm: 4px;   /* 태그, 칩 등 */
-  
+  --radius-xl: 12px;
+  --radius-lg: 10px;
+  --radius-md: 8px;
+  --radius-sm: 4px;
+
   --shadow-soft: 0 8px 24px rgba(15, 23, 42, 0.05);
   --shadow-card: 0 6px 18px rgba(15, 23, 42, 0.04);
 
-
-  /* 타이포 */
   --font-h1: 24px;
   --font-h2: 19px;
   --font-h3: 16px;
   --font-body: 14px;
   --font-small: 12px;
 }
+
+/* reset + body, a, textarea 등도 그대로 두고, 맨 아래에 import 추가 */
+
+@import "./layout.css";
+@import "./components.css";
+
+/* 각 화면별 */
+@import "./screens/home.css";
+@import "./screens/planner.css";
+@import "./screens/task.css";
+@import "./screens/diary.css";
+@import "./screens/memo.css";
+@import "./screens/stat.css";
+@import "./screens/settings.css";
+@import "./screens/admin.css";
+@import "./screens/share.css";
+@import "./screens/focus.css";
+@import "./screens/routine.css";
+@import "./screens/auth.css";
+@import "./screens/dev.css";
+
+/* 테마 (원하면 body data-theme로 토글해서 사용) */
+@import "./theme/light.css";
+@import "./theme/dark.css";
+@import "./theme/pastel.css";
 
 *,
 *::before,

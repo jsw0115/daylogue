@@ -1,35 +1,32 @@
-// src/screens/focus/FocusSessionScreen.jsx
 import React from "react";
-import DashboardCard from "../../components/dashboard/DashboardCard";
-import Button from "../../components/common/Button";
-import "../../styles/screens/focus.css";
 
 function FocusSessionScreen() {
   return (
     <div className="screen focus-session-screen">
-      <header className="screen-header">
+      <div className="screen-header">
         <div className="screen-header__left">
-          <h2 className="screen-header__title">포커스 모드</h2>
+          <h1 className="screen-header__title">집중 모드</h1>
           <p className="screen-header__subtitle">
-            방해 요소를 줄이고, 한 번에 한 가지 일에만 집중해 보세요.
+            뽀모도로/딥워크 세션을 기록하고 통계로 연결합니다.
           </p>
         </div>
-      </header>
+      </div>
 
       <div className="focus-grid">
-        <DashboardCard title="집중 타이머" subtitle="예: 25분 집중 + 5분 휴식">
-          <div className="focus-timer-main">
-            <div className="focus-timer-circle">25:00</div>
-            <Button className="btn--primary">시작</Button>
+        <section className="dashboard-card focus-timer-main">
+          <div className="focus-timer-circle">25:00</div>
+          <div>
+            <button className="btn btn--primary">시작</button>
           </div>
-        </DashboardCard>
+        </section>
 
-        <DashboardCard title="최근 세션" subtitle="오늘의 집중 기록">
-          <ul className="home-list">
-            <li>📚 공부 · 25분</li>
-            <li>🧠 딥워크 · 40분</li>
+        <section className="dashboard-card">
+          <h2 className="dashboard-card__title">오늘 기록</h2>
+          <ul className="simple-list">
+            <li>• 공부 25분 x 2세트</li>
+            <li>• 프로젝트 작업 25분 x 1세트</li>
           </ul>
-        </DashboardCard>
+        </section>
       </div>
     </div>
   );

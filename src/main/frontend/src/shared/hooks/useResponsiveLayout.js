@@ -1,22 +1,23 @@
-// src/main/frontend/src/shared/hooks/useResponsiveLayout.js
 import { useEffect, useState } from "react";
 import { BREAKPOINTS } from "../constants/breakpoints";
 
 export function useResponsiveLayout() {
-  const [width, setWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 1280
-  );
+  const getWidth = () =>
+    typeof window === "undefined" ? 1200 : window.innerWidth;
+
+  const [width, setWidth] = useState(getWidth);
 
   useEffect(() => {
     function handleResize() {
-      setWidth(window.innerWidth);
+      setWidth(getWidth());
     }
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  if (width < BREAKPOINTS.mobile) return "mobile";
-  if (width < BREAKPOINTS.tablet) return "tablet";
-  return "desktop";
-}
+  const isMobile = width < BREAKPOINTS.tablet;
+  const isTablet = width >= BREAKPOINTS.tablet && width < BREAKPOINTS.desktop;
+  const isDesktop = width >= BREAKPOINTS.desktop;
 
+  return { width, isMobile, isTablet, isDesktop };
+}

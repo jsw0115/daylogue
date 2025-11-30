@@ -1,12 +1,8 @@
-// src/main/frontend/src/shared/hooks/useModal.js
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
-export function useModal(initialOpen = false) {
-  const [open, setOpen] = useState(initialOpen);
-
-  const onOpen = useCallback(() => setOpen(true), []);
-  const onClose = useCallback(() => setOpen(false), []);
-
+export function useModal() {
+  const [open, setOpen] = useState(false);
+  const onOpen = () => setOpen(true);
+  const onClose = () => setOpen(false);
   return { open, onOpen, onClose };
 }
-

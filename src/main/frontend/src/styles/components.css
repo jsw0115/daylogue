@@ -156,3 +156,187 @@
 .btn--primary:hover {
   background: #4338ca;
 }
+
+/* 탭바 (일간/주간/월간/연간) – TodoMate, TickTick 느낌의 세그먼트 버튼 */
+
+.tabbar {
+  display: inline-flex;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(249, 250, 251, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  gap: 4px;
+}
+
+.tabbar__item {
+  border: none;
+  background: transparent;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: var(--color-muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tabbar__item--active {
+  background: #ffffff;
+  color: #111827;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+}
+
+.mode-switch {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  background: rgba(248, 250, 252, 0.9);
+  gap: 2px;
+  font-size: 11px;
+}
+
+.mode-switch__item {
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  padding: 4px 8px;
+  cursor: pointer;
+  color: var(--color-muted);
+}
+
+.mode-switch__item--active {
+  background: #ffffff;
+  color: #111827;
+  font-weight: 600;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.12);
+}
+
+/* Timebar Preview */
+
+.timebar-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.timebar-line {
+  height: 16px;
+  border-radius: 999px;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+}
+
+.timebar-line--plan {
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(148, 163, 184, 0.5) 0,
+    rgba(148, 163, 184, 0.5) 8px,
+    transparent 8px,
+    transparent 16px
+  );
+  background-color: #e5e7eb;
+}
+
+.timebar-line--actual {
+  background: #e5e7eb;
+}
+
+.timebar-block {
+  flex: 1;
+}
+
+.timebar-block--plan {
+  flex: 1;
+  opacity: 0; /* 배경 점선만 보이게 */
+}
+
+.timebar-block--study {
+  background: #6366f1;
+}
+.timebar-block--work {
+  background: #0ea5e9;
+}
+.timebar-block--health {
+  background: #22c55e;
+}
+.timebar-block--etc {
+  background: #9ca3af;
+}
+
+/* ======================= */
+/* Timebar – Daily Planner */
+/* ======================= */
+
+.timebar {
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 8px;
+  max-height: 420px;
+  padding: 8px 4px;
+}
+
+.timebar__scale {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+.timebar__scale-row {
+  height: calc(100% / 8);
+  display: flex;
+  align-items: flex-start;
+}
+
+.timebar__blocks {
+  position: relative;
+  border-radius: 999px;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+
+/* 공통 block */
+.timebar__block {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  border-radius: 999px;
+  padding: 2px 6px;
+  font-size: 11px;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.timebar__block--plan {
+  border-width: 2px;
+  border-style: dashed;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.timebar__block--actual {
+  opacity: 0.9;
+  color: #fff;
+}
+
+.timebar__block-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 현재 시간 표시 (간단하게 중간에 고정) */
+.timebar__now-indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  background: rgba(248, 250, 252, 0.7);
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.12);
+}

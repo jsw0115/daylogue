@@ -1,30 +1,21 @@
-// src/main/frontend/src/components/common/Button.jsx
 import React from "react";
-import "../../styles/components.css";
+import clsx from "clsx";
 
-function Button({
-  children,
-  type = "button",
-  variant = "primary", // 'primary' | 'secondary' | 'ghost'
-  size = "md", // 'sm' | 'md' | 'lg'
-  fullWidth = false,
-  className = "",
-  ...rest
-}) {
-  const classes = [
-    "btn",
-    `btn--${variant}`,
-    `btn--${size}`,
-    fullWidth ? "btn--full" : "",
-    className,
-  ]
-    .filter(Boolean)
-    .join(" ");
+function Button({ variant = "primary", fullWidth, className, ...props }) {
+  const base = "btn";
+  const variantClass =
+    variant === "primary"
+      ? "btn--primary"
+      : variant === "ghost"
+      ? "btn--ghost"
+      : "";
+  const full = fullWidth ? "btn--full" : "";
 
   return (
-    <button type={type} className={classes} {...rest}>
-      {children}
-    </button>
+    <button
+      className={clsx(base, variantClass, full, className)}
+      {...props}
+    />
   );
 }
 

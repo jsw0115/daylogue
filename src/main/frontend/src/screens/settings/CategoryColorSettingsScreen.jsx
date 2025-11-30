@@ -1,127 +1,34 @@
-// src/main/frontend/src/screens/settings/CategoryColorSettingsScreen.jsx
-import React, { useState } from "react";
-import AppShell from "../../layout/AppShell";
-import { useResponsiveLayout } from "../../shared/hooks/useResponsiveLayout";
-
-const defaultCategories = [
-  { id: "study", name: "공부", color: "#4F8BFF", icon: "📚" },
-  { id: "work", name: "업무", color: "#3B5BDB", icon: "💼" },
-  { id: "health", name: "건강/운동", color: "#22C55E", icon: "💪" },
-  { id: "family", name: "가족/연인", color: "#FB7185", icon: "❤️" },
-  { id: "friends", name: "친구/약속", color: "#FB923C", icon: "🎉" },
-  { id: "rest", name: "휴식/취미", color: "#14B8A6", icon: "🎧" },
-  { id: "etc", name: "기타", color: "#9CA3AF", icon: "✨" },
-];
-
-const icons = ["📚", "💼", "💪", "❤️", "🎉", "🎧", "✨", "📝", "🌱"];
+import React from "react";
 
 function CategoryColorSettingsScreen() {
-  const viewport = useResponsiveLayout();
-  const [categories, setCategories] = useState(defaultCategories);
-  const [iconPickerFor, setIconPickerFor] = useState(null);
-
-  const updateCategory = (id, field, value) => {
-    setCategories((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, [field]: value } : c))
-    );
-  };
-
   return (
-    <AppShell title="카테고리 색/아이콘 설정">
-      <div
-        className={`screen screen--category-settings screen--${viewport}`}
-      >
-        <header className="screen-header">
-          <div className="screen-header__center">
-            <h2>카테고리 스타일</h2>
-          </div>
-        </header>
+    <div className="screen settings-screen">
+      <div className="screen-header">
+        <div className="screen-header__left">
+          <h1 className="screen-header__title">카테고리 색/아이콘</h1>
+          <p className="screen-header__subtitle">
+            공부/업무/가족/건강 등 카테고리 색과 아이콘을 설정해요.
+          </p>
+        </div>
+      </div>
 
-        <section className="category-settings">
-          <table className="category-table">
-            <thead>
-              <tr>
-                <th>카테고리</th>
-                <th>색상</th>
-                <th>아이콘/이모지</th>
-                <th>미리보기</th>
-              </tr>
-            </thead>
-            <tbody>
-              {categories && categories.map((c) => (
-                <tr key={c.id}>
-                  <td>{c.name}</td>
-                  <td>
-                    <input
-                      type="color"
-                      value={c.color}
-                      onChange={(e) =>
-                        updateCategory(c.id, "color", e.target.value)
-                      }
-                    />
-                  </td>
-                  <td>
-                    <button
-                      className="emoji-button"
-                      onClick={() =>
-                        setIconPickerFor(
-                          iconPickerFor === c.id ? null : c.id
-                        )
-                      }
-                    >
-                      {c.icon}
-                    </button>
-                  </td>
-                  <td>
-                    <span
-                      className="category-preview-chip"
-                      style={{ backgroundColor: c.color }}
-                    >
-                      {c.icon} {c.name}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {iconPickerFor && (
-            <div className="icon-picker">
-              <h4>아이콘 선택</h4>
-              <div className="icon-picker__grid">
-                {icons && icons.map((ic) => (
-                  <button
-                    key={ic}
-                    className="emoji-button"
-                    onClick={() => {
-                      updateCategory(iconPickerFor, "icon", ic);
-                      setIconPickerFor(null);
-                    }}
-                  >
-                    {ic}
-                  </button>
-                ))}
-              </div>
+      <div className="settings-grid">
+        <section className="dashboard-card settings-section">
+          <div className="settings-row">
+            <div className="settings-row__label">공부</div>
+            <div className="settings-row__control">
+              <input className="field__control" defaultValue="#6366f1" />
             </div>
-          )}
-        </section>
-
-        <section className="category-preview">
-          <h3>앱 미리보기</h3>
-          <div className="preview-row">
-            {categories && categories.map((c) => (
-              <span
-                key={c.id}
-                className="category-preview-chip"
-                style={{ backgroundColor: c.color }}
-              >
-                {c.icon} {c.name}
-              </span>
-            ))}
+          </div>
+          <div className="settings-row">
+            <div className="settings-row__label">운동</div>
+            <div className="settings-row__control">
+              <input className="field__control" defaultValue="#22c55e" />
+            </div>
           </div>
         </section>
       </div>
-    </AppShell>
+    </div>
   );
 }
 

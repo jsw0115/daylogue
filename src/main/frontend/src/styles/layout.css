@@ -430,3 +430,52 @@
   font-size: 11px;
   color: var(--color-muted);
 }
+
+/* app-shell__body 는 기본적으로 230px 사이드바 + 컨텐츠 */
+.app-shell__body {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: 0;
+}
+
+/* 사이드바 */
+.app-shell__sidebar {
+  padding: 18px 14px;
+  border-right: 1px solid rgba(15, 23, 42, 0.05);
+  background: #f8fafc;
+}
+
+/* 모바일/태블릿에서는 사이드바 숨기고 컨텐츠만 전체 폭 */
+@media (max-width: 768px) {
+  .app-shell__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app-shell__sidebar {
+    display: none;
+  }
+
+  .app-shell__content {
+    padding: 12px 12px 80px;
+  }
+
+  .screen-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .home-grid,
+  .planner-layout,
+  .weekly-grid,
+  .monthly-grid,
+  .yearly-grid,
+  .task-main,
+  .stat-grid,
+  .memo-grid,
+  .diary-grid,
+  .focus-grid,
+  .admin-grid {
+    /* 좁은 화면에서는 카드들이 한 줄씩 내려가도록 */
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
