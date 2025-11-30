@@ -1,78 +1,44 @@
-/* src/main/frontend/src/styles/screens/memo.css */
+.memo-inbox-screen .memo-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 16px;
+}
 
-.memo-inbox-screen .memo-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
+@media (max-width: 960px) {
+  .memo-inbox-screen .memo-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .memo-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
 }
 
 .memo-item {
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
   padding: 8px 10px;
-  font-size: 13px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  border-bottom: 1px solid #e5e7eb;
+  cursor: pointer;
 }
 
-.memo-item__meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  color: var(--color-muted);
+.memo-item:hover {
+  background: #f9fafb;
 }
 
-.memo-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 6px;
-  border-radius: 999px;
-  background: rgba(148, 163, 184, 0.15);
-  font-size: 11px;
-}
-
-.memo-edit-screen .memo-textarea {
-  width: 100%;
-  min-height: 120px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  background: transparent;
-  color: var(--color-text);
-  padding: 8px;
-  font-size: 13px;
-}
-
-.memo-record-box {
-  border-radius: var(--radius-lg);
-  border: 1px dashed var(--color-border);
-  padding: 10px;
-  text-align: center;
-  font-size: 13px;
-}
-
-.memo-record-box__button {
-  margin-top: 8px;
-}
+/* 메모 → To-do 변환 */
 
 .memo-to-task-list {
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
 }
 
 .memo-to-task-item {
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-  padding: 8px 10px;
-  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px dashed #e5e7eb;
 }
-

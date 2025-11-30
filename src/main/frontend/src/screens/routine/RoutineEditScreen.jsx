@@ -53,7 +53,7 @@ function RoutineEditScreen() {
           <div className="field">
             <label className="field__label">수행 요일</label>
             <div className="routine-days">
-              {dayOptions.map((d) => (
+              {dayOptions && dayOptions.map((d) => (
                 <button key={d.key}
                   type="button"
                   className={

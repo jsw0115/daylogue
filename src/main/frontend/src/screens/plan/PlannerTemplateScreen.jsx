@@ -18,7 +18,7 @@ function PlannerTemplateScreen() {
         </header>
 
         <section className="planner-template-list">
-          {templates.map((t) => (
+          {templates && templates.map((t) => (
             <div key={t.id} className="template-item">
               <div className="template-item__main">
                 <strong>{t.name}</strong>

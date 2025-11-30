@@ -5,7 +5,7 @@ import "../../styles/components.css";
 function TabBar({ tabs, activeKey, onChange }) {
   return (
     <div className="tabbar">
-      {tabs.map((tab) => {
+      {tabs && tabs.map((tab) => {
         const active = tab.key === activeKey;
         return (
           <button key={tab.key}

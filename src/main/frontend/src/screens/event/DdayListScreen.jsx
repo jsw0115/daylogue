@@ -17,7 +17,7 @@ function DdayListScreen() {
         </header>
 
         <section className="dday-list">
-          {ddayList.map((d) => (
+          {ddayList && ddayList.map((d) => (
             <div key={d.id} className="dday-item">
               <div className="dday-item__title">{d.title}</div>
               <div className="dday-item__meta">

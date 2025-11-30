@@ -1,39 +1,32 @@
-// src/main/frontend/src/layout/MobileBottomNav.jsx
+// src/layout/MobileBottomNav.jsx
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import "../styles/layout.css";
+import { NavLink } from "react-router-dom";
+import { ROUTES } from "../shared/constants/routes";
 
 function MobileBottomNav() {
-  const location = useLocation();
-
   const items = [
-    { to: "/plan/daily", label: "플랜" },
-    { to: "/focus", label: "포커스" },
-    { to: "/tasks", label: "할 일" },
-    { to: "/stat", label: "통계" },
-    { to: "/settings/category", label: "설정" },
+    { key: "home", label: "홈", to: ROUTES.HOME },
+    { key: "daily", label: "일간", to: ROUTES.DAILY },
+    { key: "tasks", label: "할 일", to: ROUTES.TASKS },
+    { key: "diary", label: "다이어리", to: ROUTES.DIARY },
   ];
 
   return (
     <nav className="mobile-bottom-nav">
-      {items.map((item) => {
-        const active = location.pathname.startsWith(item.to);
-        return (
-          <Link key={item.to}
-            to={item.to}
-            className={
-              active
-                ? "mobile-bottom-nav__item mobile-bottom-nav__item--active"
-                : "mobile-bottom-nav__item"
-            }
-          >
-            <span>{item.label}</span>
-          </Link>
-        );
-      })}
+      {items.map((item) => (
+        <NavLink
+          key={item.key}
+          to={item.to}
+          className={({ isActive }) =>
+            "mobile-bottom-nav__item" +
+            (isActive ? " mobile-bottom-nav__item--active" : "")
+          }
+        >
+          {item.label}
+        </NavLink>
+      ))}
     </nav>
   );
 }
 
 export default MobileBottomNav;
-

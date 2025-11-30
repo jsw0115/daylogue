@@ -1,39 +1,36 @@
-// src/main/frontend/src/screens/plan/MonthlyPlannerScreen.jsx
+// src/screens/plan/MonthlyPlannerScreen.jsx
 import React from "react";
-import AppShell from "../../layout/AppShell";
+import DashboardCard from "../../components/dashboard/DashboardCard";
 import MonthlyCategoryDots from "../../components/planner/MonthlyCategoryDots";
 import "../../styles/screens/planner.css";
 
-const days = Array.from({ length: 30 }).map((_, i) => {
-  const date = `2025-03-${String(i + 1).padStart(2, "0")}`;
-  const colors = ["#4F8BFF", "#3B5BDB", "#22C55E", "#FB923C"];
-  return {
-    date,
-    color: i % 4 === 0 ? colors[0] : colors[i % colors.length],
-    label: "대표 카테고리",
-  };
-});
-
 function MonthlyPlannerScreen() {
   return (
-    <AppShell title="월간 플래너">
-      <div className="screen monthly-planner-screen">
-        <header className="screen-header">
-          <h2>2025년 3월</h2>
-        </header>
+    <div className="screen monthly-planner-screen">
+      <header className="screen-header">
+        <div className="screen-header__left">
+          <h2 className="screen-header__title">월간 플래너</h2>
+          <p className="screen-header__subtitle">
+            이번 달 중요한 일정과 D-Day를 달력에서 관리해요.
+          </p>
+        </div>
+      </header>
 
-        <section className="monthly-main">
-          <MonthlyCategoryDots days={days} />
-        </section>
+      <div className="monthly-grid">
+        <DashboardCard title="월간 캘린더" subtitle="색 점으로 카테고리 표시">
+          <MonthlyCategoryDots />
+        </DashboardCard>
 
-        <section className="monthly-goals">
-          <h3>월간 목표</h3>
-          <textarea placeholder="이번 달에 꼭 이루고 싶은 것들을 적어보세요." />
-        </section>
+        <DashboardCard title="이번 달의 큰 일정" subtitle="시험, 프로젝트, 기념일 등">
+          <ul className="home-list">
+            <li>SQLD 시험 (D-7)</li>
+            <li>회사 프로젝트 마감 (D-14)</li>
+            <li>가족 모임 (D-21)</li>
+          </ul>
+        </DashboardCard>
       </div>
-    </AppShell>
+    </div>
   );
 }
 
 export default MonthlyPlannerScreen;
-

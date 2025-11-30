@@ -32,7 +32,7 @@ function StatFocusReportScreen() {
               </tr>
             </thead>
             <tbody>
-              {sessions.map((s) => (
+              {sessions && sessions.map((s) => (
                 <tr key={s.date}>
                   <td>{s.date}</td>
                   <td>{s.count}</td>

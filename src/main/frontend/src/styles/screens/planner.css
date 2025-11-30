@@ -1,34 +1,34 @@
-/* src/main/frontend/src/styles/screens/planner.css */
+/* 일간 플래너 */
 
 .daily-planner-screen .planner-layout {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 16px;
 }
 
-@media (min-width: 900px) {
+@media (max-width: 960px) {
   .daily-planner-screen .planner-layout {
-    flex-direction: row;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
-.daily-planner-screen .planner-layout__left {
-  flex: 2;
+.planner-layout__right > .dashboard-card + .dashboard-card {
+  margin-top: 12px;
 }
 
-.daily-planner-screen .planner-layout__right {
-  flex: 1;
+/* 주간/월간 플래너 */
+.weekly-planner-screen .weekly-grid,
+.monthly-planner-screen .monthly-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
 }
 
-.weekly-planner-screen textarea,
-.monthly-planner-screen textarea {
-  width: 100%;
-  min-height: 80px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  background: transparent;
-  color: var(--color-text);
-  padding: 8px;
-  font-size: 13px;
-}
+/* Yearly overview / 캔버스는 심플하게 카드 배치만 */
 
+.yearly-overview-screen .yearly-grid,
+.canvas-board-screen .canvas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}

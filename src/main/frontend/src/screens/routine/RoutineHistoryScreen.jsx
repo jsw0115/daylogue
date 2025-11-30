@@ -1,41 +1,32 @@
-// src/main/frontend/src/screens/routine/RoutineHistoryScreen.jsx
+// src/screens/routine/RoutineHistoryScreen.jsx
 import React from "react";
-import AppShell from "../../layout/AppShell";
+import DashboardCard from "../../components/dashboard/DashboardCard";
 import "../../styles/screens/routine.css";
 
 function RoutineHistoryScreen() {
-  const history = [
-    { date: "2025-03-10", name: "아침 스트레칭", done: true },
-    { date: "2025-03-11", name: "아침 스트레칭", done: false },
-    { date: "2025-03-12", name: "아침 스트레칭", done: true },
-  ];
-
   return (
-    <AppShell title="루틴 달성률/히스토리">
-      <div className="screen routine-history-screen">
-        <header className="screen-header">
-          <h2>루틴 히스토리</h2>
-        </header>
+    <div className="screen routine-screen">
+      <header className="screen-header">
+        <div className="screen-header__left">
+          <h2 className="screen-header__title">루틴 히스토리</h2>
+          <p className="screen-header__subtitle">
+            루틴을 얼마나 꾸준히 지켰는지 달력과 그래프로 확인해요.
+          </p>
+        </div>
+      </header>
 
-        <section className="routine-history-summary">
-          <p>이번 주 평균 달성률: 78%</p>
-        </section>
+      <div className="routine-history-grid">
+        <DashboardCard title="달력 뷰" subtitle="루틴 완료일 표시">
+          {/* 나중에 캘린더 컴포넌트 연동 */}
+          <div style={{ height: 260 }} />
+        </DashboardCard>
 
-        <section className="routine-history-list">
-          {history.map((h, idx) => (
-            <div key={idx} className="routine-history-item">
-              <span className="routine-history__date">{h.date}</span>
-              <span className="routine-history__name">{h.name}</span>
-              <span className="routine-history__status">
-                {h.done ? "완료" : "미완료"}
-              </span>
-            </div>
-          ))}
-        </section>
+        <DashboardCard title="달성률" subtitle="주/월 단위 통계">
+          <div style={{ height: 260 }} />
+        </DashboardCard>
       </div>
-    </AppShell>
+    </div>
   );
 }
 
 export default RoutineHistoryScreen;
-

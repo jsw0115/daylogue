@@ -1,21 +1,141 @@
-/* src/main/frontend/src/styles/screens/task.css */
+/* 할 일 리스트 화면 */
 
-.task-list {
+.task-screen {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
 }
 
-.task-item {
+/* 상단 필터/뷰 토글 */
+
+.task-filters {
   display: flex;
   justify-content: space-between;
-  padding: 8px 10px;
-  border-radius: var(--radius-lg);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.task-filter-chips {
+  display: inline-flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.task-chip {
+  border-radius: 999px;
   border: 1px solid var(--color-border);
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--color-muted);
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.task-chip--active {
+  border-color: var(--color-primary);
+  background: #eef2ff;
+  color: #312e81;
+  font-weight: 600;
+}
+
+/* 리스트 + 오른쪽 상세 분할 */
+
+.task-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 960px) {
+  .task-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 리스트 테이블 */
+
+.task-list {
+  width: 100%;
+  border-collapse: collapse;
   font-size: 13px;
 }
 
-.task-detail-main textarea {
-  min-height: 80px;
+.task-list thead {
+  background: #f9fafb;
 }
 
+.task-list th,
+.task-list td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.task-list th {
+  font-weight: 500;
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.task-row {
+  cursor: pointer;
+}
+
+.task-row:hover {
+  background: #f9fafb;
+}
+
+.task-row__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.task-row__status {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #f3f4f6;
+}
+
+.task-row__status--done {
+  background: #dcfce7;
+  color: #15803d;
+}
+.task-row__status--overdue {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* 오른쪽 상세 카드 */
+
+.task-detail-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.task-detail-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-detail-title {
+  font-size: var(--font-h3);
+  margin: 0;
+}
+
+.task-detail-meta {
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.task-detail-notes {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  min-height: 72px;
+  padding: 8px 10px;
+  font-size: 13px;
+  resize: vertical;
+}

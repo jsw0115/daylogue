@@ -1,41 +1,34 @@
-// src/main/frontend/src/screens/diary/DiaryCalendarScreen.jsx
+// src/screens/diary/DiaryCalendarScreen.jsx
 import React from "react";
-import AppShell from "../../layout/AppShell";
+import DashboardCard from "../../components/dashboard/DashboardCard";
 import "../../styles/screens/diary.css";
 
 function DiaryCalendarScreen() {
-  const days = Array.from({ length: 30 }).map((_, i) => ({
-    date: `2025-03-${String(i + 1).padStart(2, "0")}`,
-    hasEntry: [1, 2, 3, 5, 7, 10, 15, 21].includes(i + 1),
-  }));
-
   return (
-    <AppShell title="다이어리 캘린더">
-      <div className="screen diary-calendar-screen">
-        <header className="screen-header">
-          <h2>2025년 3월</h2>
-        </header>
+    <div className="screen diary-calendar-screen">
+      <header className="screen-header">
+        <div className="screen-header__left">
+          <h2 className="screen-header__title">다이어리 캘린더</h2>
+          <p className="screen-header__subtitle">
+            일기를 작성한 날과 회고를 한 눈에 볼 수 있어요.
+          </p>
+        </div>
+      </header>
 
-        <section className="diary-calendar-grid">
-          {days.map((d) => (
-            <div key={d.date}
-              className={
-                d.hasEntry
-                  ? "diary-calendar-day diary-calendar-day--filled"
-                  : "diary-calendar-day"
-              }
-            >
-              <span className="diary-calendar-day__date">
-                {d.date.split("-")[2].replace(/^0/, "")}
-              </span>
-              {d.hasEntry && <span className="diary-calendar-day__dot" />}
-            </div>
-          ))}
-        </section>
+      <div className="calendar-layout">
+        <DashboardCard title="캘린더" subtitle="기록이 있는 날에 점 표시">
+          <div style={{ height: 280 }} />
+        </DashboardCard>
+
+        <DashboardCard title="선택 날짜의 일기" subtitle="최근 일기 리스트">
+          <ul className="home-list">
+            <li>어제의 회고</li>
+            <li>지난 주말 기록</li>
+          </ul>
+        </DashboardCard>
       </div>
-    </AppShell>
+    </div>
   );
 }
 
 export default DiaryCalendarScreen;
-

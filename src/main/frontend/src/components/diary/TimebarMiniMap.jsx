@@ -5,7 +5,7 @@ import "../../styles/components.css";
 function TimebarMinMap({ blocks }) {
   return (
     <div className="timebar-mini">
-      {blocks.map((block) => {
+      {blocks && blocks.map((block) => {
         const startH = parseInt(block.start.split(":")[0], 10);
         const endH = parseInt(block.end.split(":")[0], 10);
         const startPercent = (startH / 24) * 100;

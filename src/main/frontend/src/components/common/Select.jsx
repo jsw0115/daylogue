@@ -20,7 +20,7 @@ function Select({
         {...rest}
       >
         {placeholder && <option value="">{placeholder}</option>}
-        {options.map((opt) => (
+        {options && options.map((opt) => (
           <option key={opt.value ?? opt} value={opt.value ?? opt}>
             {opt.label ?? opt}
           </option>

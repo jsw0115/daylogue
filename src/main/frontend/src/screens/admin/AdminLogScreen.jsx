@@ -36,7 +36,7 @@ function AdminUserScreen() {
               </tr>
             </thead>
             <tbody>
-              {mockUsers.map((u) => (
+              {mockUsers && mockUsers.map((u) => (
                 <tr key={u.id}>
                   <td>{u.id}</td>
                   <td>{u.email}</td>

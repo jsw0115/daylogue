@@ -1,13 +1,13 @@
-/* src/main/frontend/src/styles/screens/admin.css */
+.admin-screen .admin-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 16px;
+}
 
-.admin-user-screen .admin-filters,
-.admin-log-screen .admin-filters,
-.admin-notice-screen .admin-filters,
-.admin-stats-screen .admin-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
+@media (max-width: 960px) {
+  .admin-screen .admin-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .admin-table {
@@ -18,33 +18,12 @@
 
 .admin-table th,
 .admin-table td {
-  border-bottom: 1px solid var(--color-border);
-  padding: 6px 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid #e5e7eb;
   text-align: left;
 }
 
 .admin-table th {
-  font-size: 12px;
+  font-weight: 500;
   color: var(--color-muted);
 }
-
-.admin-table tr:nth-child(even) td {
-  background: rgba(15, 23, 42, 0.6);
-}
-
-.admin-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 6px;
-  border-radius: 999px;
-  font-size: 11px;
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-}
-
-.admin-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-}
-

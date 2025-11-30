@@ -10,5 +10,14 @@ export const ROUTES = {
 
   TASK_LIST: "/tasks",
   ROUTINE_LIST: "/routines",
+
+  TASKS: "/tasks",
+  DIARY: "/diary/daily",
+
+  SETTINGS_PROFILE: "/settings/profile",
+  ADMIN_USERS: "/admin/users",
+  ADMIN_LOGS: "/admin/logs",
+  ADMIN_NOTICE: "/admin/notices",
+
 };
 

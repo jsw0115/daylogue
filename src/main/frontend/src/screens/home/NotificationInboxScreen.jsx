@@ -17,7 +17,7 @@ function NotificationInboxScreen() {
         </header>
 
         <section className="noti-list">
-          {mockNoti.map((n) => (
+          {mockNoti && mockNoti.map((n) => (
             <div key={n.id}
               className={
                 n.read ? "noti-item noti-item--read" : "noti-item noti-item--new"

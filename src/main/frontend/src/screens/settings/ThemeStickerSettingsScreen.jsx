@@ -29,7 +29,7 @@ function ThemeStickerSettingsScreen() {
         <section className="settings-section">
           <h3>앱 테마</h3>
           <div className="theme-grid">
-            {themes.map((t) => (
+            {themes && themes.map((t) => (
               <button key={t.id}
                 type="button"
                 className={
@@ -49,7 +49,7 @@ function ThemeStickerSettingsScreen() {
         <section className="settings-section">
           <h3>스티커 팩</h3>
           <div className="sticker-grid">
-            {stickerPacks.map((s) => (
+            {stickerPacks && stickerPacks.map((s) => (
               <button key={s.id}
                 type="button"
                 className={

@@ -6,7 +6,7 @@ function MonthlyCategoryDots({ days }) {
   // days: [{ date:'2025-03-01', topCategoryId:'study', color:'#4F8BFF', label:'공부' }, ...]
   return (
     <div className="month-dots">
-      {days.map((day) => (
+      {days && days.map((day) => (
         <div key={day.date} className="month-dots__day">
           <span className="month-dots__date">
             {day.date.split("-")[2].replace(/^0/, "")}

@@ -1,39 +1,33 @@
-// src/main/frontend/src/screens/memo/MemoEditScreen.jsx
-import React, { useState } from "react";
-import AppShell from "../../layout/AppShell";
+// src/screens/memo/MemoEditScreen.jsx
+import React from "react";
+import DashboardCard from "../../components/dashboard/DashboardCard";
+import Button from "../../components/common/Button";
 import "../../styles/screens/memo.css";
 
 function MemoEditScreen() {
-  const [text, setText] = useState("");
-
   return (
-    <AppShell title="메모 작성">
-      <div className="screen memo-edit-screen">
-        <header className="screen-header">
-          <h2>메모 작성</h2>
-        </header>
+    <div className="screen memo-edit-screen">
+      <header className="screen-header">
+        <div className="screen-header__left">
+          <h2 className="screen-header__title">메모 작성</h2>
+          <p className="screen-header__subtitle">
+            지금 떠오른 생각을 간단하게 남겨두세요.
+          </p>
+        </div>
+      </header>
 
-        <section className="memo-edit-main">
-          <textarea className="memo-edit-textarea"
-            placeholder="생각나는 할 일/아이디어를 자유롭게 적어보세요."
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-          />
-        </section>
-
-        <section className="memo-edit-actions">
-          <button className="primary-button">저장</button>
-          <button className="ghost-button">취소</button>
-        </section>
-
-        <section className="memo-edit-voice">
-          <h3>음성 메모</h3>
-          <button className="primary-button">녹음 시작</button>
-        </section>
-      </div>
-    </AppShell>
+      <DashboardCard title="텍스트 메모" subtitle="간단한 TODO도 괜찮아요.">
+        <textarea
+          className="home-oneline"
+          placeholder="예) SQLD 모의고사 일정 확인, 운동 루틴 정리"
+          style={{ minHeight: 120 }}
+        />
+        <div style={{ marginTop: 10, textAlign: "right" }}>
+          <Button className="btn--primary">저장</Button>
+        </div>
+      </DashboardCard>
+    </div>
   );
 }
 
 export default MemoEditScreen;
-

@@ -48,7 +48,7 @@ function CategoryColorSettingsScreen() {
               </tr>
             </thead>
             <tbody>
-              {categories.map((c) => (
+              {categories && categories.map((c) => (
                 <tr key={c.id}>
                   <td>{c.name}</td>
                   <td>
@@ -89,7 +89,7 @@ function CategoryColorSettingsScreen() {
             <div className="icon-picker">
               <h4>아이콘 선택</h4>
               <div className="icon-picker__grid">
-                {icons.map((ic) => (
+                {icons && icons.map((ic) => (
                   <button
                     key={ic}
                     className="emoji-button"
@@ -109,7 +109,7 @@ function CategoryColorSettingsScreen() {
         <section className="category-preview">
           <h3>앱 미리보기</h3>
           <div className="preview-row">
-            {categories.map((c) => (
+            {categories && categories.map((c) => (
               <span
                 key={c.id}
                 className="category-preview-chip"

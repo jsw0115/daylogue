@@ -1,16 +1,37 @@
 /* src/main/frontend/src/styles/index.css */
+
 :root {
-  --color-bg: #0f172a;
-  --color-surface: #111827;
-  --color-surface-soft: #020617;
-  --color-border: #1f2937;
-  --color-text: #e5e7eb;
-  --color-muted: #9ca3af;
-  --color-primary: #4f46e5;
-  --color-primary-soft: rgba(79, 70, 229, 0.12);
-  --radius-lg: 16px;
-  --radius-md: 12px;
-  --radius-sm: 8px;
+  /* 컬러 팔레트 – 조금 더 무난하게 */
+  --color-bg: #f3f4f6;              /* 전체 배경 */
+  --color-surface: #ffffff;         /* 카드/컨텐츠 배경 */
+  --color-surface-soft: #f9fafb;
+  --color-border: #e5e7eb;
+
+  --color-text: #111827;
+  --color-muted: #6b7280;
+
+  --color-primary: #4f46e5;         /* 인디고 (조금 더 딥한 느낌) */
+  --color-primary-soft: rgba(79, 70, 229, 0.06);
+
+  --color-accent-pink: #f973af;
+  --color-accent-green: #22c55e;
+
+  /* 둥근 정도 ↓ */
+  --radius-xl: 12px;  /* 카드(대) */
+  --radius-lg: 10px;  /* 인풋, 모달 */
+  --radius-md: 8px;   /* 작은 카드/텍스트 영역 */
+  --radius-sm: 4px;   /* 태그, 칩 등 */
+  
+  --shadow-soft: 0 8px 24px rgba(15, 23, 42, 0.05);
+  --shadow-card: 0 6px 18px rgba(15, 23, 42, 0.04);
+
+
+  /* 타이포 */
+  --font-h1: 24px;
+  --font-h2: 19px;
+  --font-h3: 16px;
+  --font-body: 14px;
+  --font-small: 12px;
 }
 
 *,
@@ -25,13 +46,25 @@ body,
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-  background: radial-gradient(circle at top, #1e293b 0, #020617 60%);
-  color: var(--color-text);
 }
 
-button {
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans KR",
+    "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+textarea {
   font-family: inherit;
 }
-

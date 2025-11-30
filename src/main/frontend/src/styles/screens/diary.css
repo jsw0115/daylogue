@@ -1,75 +1,43 @@
-/* src/main/frontend/src/styles/screens/diary.css */
+/* 다이어리 캘린더 */
 
-.diary-calendar-screen .calendar-wrapper {
-  background: rgba(15, 23, 42, 0.9);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-  padding: 10px 12px;
-}
-
-.diary-calendar-grid {
+.diary-calendar-screen .calendar-layout {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-  margin-top: 8px;
-  font-size: 11px;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 16px;
 }
 
-.diary-calendar-day {
-  min-height: 44px;
-  border-radius: var(--radius-md);
-  padding: 4px;
-  text-align: right;
-  position: relative;
-  cursor: pointer;
-  border: 1px solid transparent;
+@media (max-width: 960px) {
+  .diary-calendar-screen .calendar-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
-.diary-calendar-day--today {
-  border-color: var(--color-primary);
+/* 일간 다이어리 */
+
+.daily-diary-screen .diary-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 16px;
 }
 
-.diary-calendar-day__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: var(--color-primary);
-  position: absolute;
-  left: 4px;
-  bottom: 4px;
+@media (max-width: 960px) {
+  .daily-diary-screen .diary-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
-.diary-list {
-  margin-top: 12px;
+.diary-mood-row {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 8px;
-}
-
-.diary-list-item {
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-  padding: 8px 10px;
   font-size: 13px;
 }
 
-.daily-diary-screen .diary-layout {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.diary-textarea {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  padding: 8px 10px;
+  min-height: 90px;
+  font-size: 13px;
+  resize: vertical;
 }
-
-@media (min-width: 900px) {
-  .daily-diary-screen .diary-layout {
-    flex-direction: row;
-  }
-
-  .daily-diary-screen .diary-layout__left {
-    flex: 2;
-  }
-
-  .daily-diary-screen .diary-layout__right {
-    flex: 1;
-  }
-}
-

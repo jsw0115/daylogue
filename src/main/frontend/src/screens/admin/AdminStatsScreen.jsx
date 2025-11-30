@@ -57,7 +57,7 @@ function AdminNoticeScreen() {
               </tr>
             </thead>
             <tbody>
-              {mockNotices.map((n) => (
+              {mockNotices && mockNotices.map((n) => (
                 <tr key={n.id}>
                   <td>{n.id}</td>
                   <td>{n.type}</td>

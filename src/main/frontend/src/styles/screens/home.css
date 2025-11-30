@@ -2,41 +2,80 @@
 
 .home-dashboard-screen .home-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 12px;
+  grid-template-columns: minmax(0, 280px) minmax(0, 280px) minmax(0, 1fr);
+  gap: 16px;
 }
 
-@media (min-width: 768px) {
+@media (max-width: 960px) {
   .home-dashboard-screen .home-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   }
 }
 
-.home-list {
-  margin: 0;
-  padding-left: 16px;
-  font-size: 13px;
+.home-dashboard-screen .home-list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding-left: 0;
+  font-size: var(--font-body);
 }
+
+.home-dashboard-screen .home-list li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+}
+
+/* 타임바 미니맵 – 얇고 심플하게 */
+
+.timebar-mini {
+  margin-top: 8px;
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #e5e7eb;
+  display: flex;
+}
+
+.timebar-mini__segment {
+  flex: 1;
+}
+
+/* 예시용 색상 – 실제론 카테고리 색으로 채우면 좋음 */
+.timebar-mini__segment--study {
+  background: #6366f1;
+}
+.timebar-mini__segment--family {
+  background: #f973af;
+}
+.timebar-mini__segment--health {
+  background: #22c55e;
+}
+.timebar-mini__segment--etc {
+  background: #9ca3af;
+}
+
+/* 상단 버튼 영역 */
+
+.home-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* 한 줄 회고 */
 
 .home-oneline {
   width: 100%;
-  min-height: 60px;
+  min-height: 64px;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
-  background: transparent;
-  color: var(--color-text);
-  padding: 8px;
+  padding: 8px 10px;
   font-size: 13px;
+  resize: vertical;
 }
 
-.noti-list .noti-item {
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-  padding: 10px 12px;
-  margin-bottom: 8px;
+.home-header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
-
-.noti-item--new {
-  border-color: var(--color-primary-soft);
-}
-

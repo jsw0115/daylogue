@@ -41,7 +41,7 @@ function AdminLogScreen() {
 
         <section className="admin-log-list">
           <ul>
-            {mockLogs.map((log) => (
+            {mockLogs && mockLogs.map((log) => (
               <li key={log.id} className={`admin-log admin-log--${log.level}`}>
                 <div className="admin-log__meta">
                   <span className="admin-log__level">{log.level}</span>

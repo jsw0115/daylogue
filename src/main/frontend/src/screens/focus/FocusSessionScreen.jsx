@@ -1,77 +1,37 @@
-// src/main/frontend/src/screens/focus/FocusSessionScreen.jsx
-import React, { useState } from "react";
-import AppShell from "../../layout/AppShell";
-import { useResponsiveLayout } from "../../shared/hooks/useResponsiveLayout";
+// src/screens/focus/FocusSessionScreen.jsx
+import React from "react";
+import DashboardCard from "../../components/dashboard/DashboardCard";
+import Button from "../../components/common/Button";
+import "../../styles/screens/focus.css";
 
 function FocusSessionScreen() {
-  const viewport = useResponsiveLayout();
-  const [isRunning, setIsRunning] = useState(false);
-  const [remaining, setRemaining] = useState(25 * 60); // 25분
-
-  const handleToggle = () => {
-    setIsRunning((prev) => !prev);
-    // TODO: 타이머 로직 추가
-  };
-
   return (
-    <AppShell title="집중 모드">
-      <div className={`screen screen--focus screen--${viewport}`}>
-        <header className="screen-header">
-          <div className="screen-header__center">
-            <h2>집중 모드</h2>
-          </div>
-        </header>
-
-        <div className="focus-layout">
-          <section className="focus-layout__main">
-            <div className="focus-timer">
-              <div className="focus-timer__category">
-                <label>
-                  카테고리
-                  <select defaultValue="study">
-                    <option value="study">공부</option>
-                    <option value="work">업무</option>
-                    <option value="health">건강</option>
-                    <option value="rest">휴식</option>
-                  </select>
-                </label>
-              </div>
-
-              <div className="focus-timer__circle">
-                <div className="focus-timer__time">
-                  {String(Math.floor(remaining / 60)).padStart(2, "0")}:
-                  {String(remaining % 60).padStart(2, "0")}
-                </div>
-              </div>
-
-              <div className="focus-timer__controls">
-                <button className="primary-button" onClick={handleToggle}>
-                  {isRunning ? "일시정지" : "시작"}
-                </button>
-                <button className="ghost-button">종료</button>
-              </div>
-            </div>
-          </section>
-
-          <section className="focus-layout__side">
-            <h3>오늘의 집중 기록</h3>
-            <ul className="focus-session-list">
-              <li>
-                <span>공부 · SQLD 인강</span>
-                <strong>25분</strong>
-              </li>
-              <li>
-                <span>업무 · 문서 작성</span>
-                <strong>50분</strong>
-              </li>
-            </ul>
-
-            <h3>오늘의 리워드</h3>
-            <p>오늘 3세션을 달성했어요! 🌱</p>
-          </section>
+    <div className="screen focus-session-screen">
+      <header className="screen-header">
+        <div className="screen-header__left">
+          <h2 className="screen-header__title">포커스 모드</h2>
+          <p className="screen-header__subtitle">
+            방해 요소를 줄이고, 한 번에 한 가지 일에만 집중해 보세요.
+          </p>
         </div>
+      </header>
+
+      <div className="focus-grid">
+        <DashboardCard title="집중 타이머" subtitle="예: 25분 집중 + 5분 휴식">
+          <div className="focus-timer-main">
+            <div className="focus-timer-circle">25:00</div>
+            <Button className="btn--primary">시작</Button>
+          </div>
+        </DashboardCard>
+
+        <DashboardCard title="최근 세션" subtitle="오늘의 집중 기록">
+          <ul className="home-list">
+            <li>📚 공부 · 25분</li>
+            <li>🧠 딥워크 · 40분</li>
+          </ul>
+        </DashboardCard>
       </div>
-    </AppShell>
+    </div>
   );
 }
 

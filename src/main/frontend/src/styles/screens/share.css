@@ -1,51 +1,25 @@
-/* src/main/frontend/src/styles/screens/share.css */
+.share-screen .share-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 16px;
+}
 
-.friend-list-screen .friend-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+@media (max-width: 960px) {
+  .share-screen .share-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .friend-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
 }
 
 .friend-item {
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
   padding: 8px 10px;
-  font-size: 13px;
+  border-bottom: 1px solid #e5e7eb;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-
-.friend-item__status {
-  font-size: 11px;
-  color: var(--color-muted);
-}
-
-.calendar-group-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.calendar-group-card {
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-  padding: 8px 10px;
-  font-size: 13px;
-}
-
-.share-visibility-options {
-  margin-top: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 13px;
-}
-

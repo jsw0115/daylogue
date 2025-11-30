@@ -41,7 +41,7 @@ function EventListScreen() {
         </section>
 
         <section className="event-list">
-          {mockEvents.map((e) => (
+          {mockEvents && mockEvents.map((e) => (
             <article key={e.id} className="event-card">
               <div className="event-card__time">{e.start}</div>
               <div className="event-card__title">{e.title}</div>

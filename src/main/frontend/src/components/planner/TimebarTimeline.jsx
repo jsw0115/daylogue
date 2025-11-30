@@ -17,7 +17,7 @@ function TimebarTimeline({ date, blocks, viewport, onBlockClick }) {
   return (
     <div className={containerClass} data-date={date}>
       <div className="timebar__column timebar__column--time">
-        {HOURS.map((h) => (
+        {HOURS && HOURS.map((h) => (
           <div key={h} className="timebar__time-label">
             {h.toString().padStart(2, "0")}:00
           </div>
@@ -25,13 +25,13 @@ function TimebarTimeline({ date, blocks, viewport, onBlockClick }) {
       </div>
 
       <div className="timebar__column timebar__column--blocks">
-        {HOURS.map((h) => (
+        {HOURS && HOURS.map((h) => (
           <div key={h} className="timebar__row">
             <div className="timebar__row-line" />
           </div>
         ))}
 
-        {blocks.map((block) => {
+        {blocks && blocks.map((block) => {
           const startHour = parseInt(block.start.split(":")[0], 10);
           const endHour = parseInt(block.end.split(":")[0], 10);
           const top = (startHour - 6) * 48;

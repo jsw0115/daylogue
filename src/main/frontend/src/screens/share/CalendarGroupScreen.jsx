@@ -18,7 +18,7 @@ function CalendarGroupScreen() {
         </header>
 
         <section className="share-group-list">
-          {groups.map((g) => (
+          {groups && groups.map((g) => (
             <div key={g.id} className="group-item">
               <div className="group-item__main">
                 <strong>{g.name}</strong>

@@ -1,36 +1,30 @@
-/* src/main/frontend/src/styles/screens/focus.css */
-
-.focus-session-screen .focus-layout {
-  display: flex;
-  flex-direction: column;
+.focus-session-screen .focus-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
   gap: 16px;
 }
 
-@media (min-width: 900px) {
-  .focus-session-screen .focus-layout {
-    flex-direction: row;
-  }
-
-  .focus-session-screen .focus-layout__left {
-    flex: 2;
-  }
-
-  .focus-session-screen .focus-layout__right {
-    flex: 1;
+@media (max-width: 960px) {
+  .focus-session-screen .focus-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
-.focus-session-screen .session-controls {
+.focus-timer-main {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.focus-timer-circle {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 10px solid #e5e7eb;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin-top: 12px;
+  font-size: 32px;
+  font-weight: 600;
 }
-
-.focus-session-screen .session-stats {
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-  padding: 10px 12px;
-  font-size: 13px;
-}
-

@@ -1,74 +1,71 @@
-// src/main/frontend/src/screens/auth/AuthLoginScreen.jsx
-import React, { useState } from "react";
-import AppShell from "../../layout/AppShell";
+// src/screens/auth/AuthLoginScreen.jsx
+import React from "react";
+import DashboardCard from "../../components/dashboard/DashboardCard";
 import TextInput from "../../components/common/TextInput";
+import Checkbox from "../../components/common/Checkbox";
 import Button from "../../components/common/Button";
 import "../../styles/screens/auth.css";
 
 function AuthLoginScreen() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // TODO: authApi.login(email, password)
-    console.log("login", { email, password });
-  };
-
   return (
-    <AppShell title="로그인">
-      <div className="screen auth-screen auth-screen--login">
-        <header className="auth-header">
-          <h2>Daylogue에 로그인</h2>
-          <p>이메일과 비밀번호를 입력해주세요.</p>
-        </header>
+    <div className="screen auth-screen">
+      <header className="screen-header">
+        <div className="screen-header__left">
+          <h2 className="screen-header__title">로그인</h2>
+          <p className="screen-header__subtitle">
+            Daylogue에 다시 오신 걸 환영해요.
+          </p>
+        </div>
+      </header>
 
-        <form className="auth-form" onSubmit={handleSubmit}>
-          <TextInput label="이메일"
-            type="email"
-            value={email}
-            onChange={setEmail}
-            placeholder="you@example.com"
-          />
-          <TextInput label="비밀번호"
-            type="password"
-            value={password}
-            onChange={setPassword}
-            placeholder="비밀번호"
-          />
+      <div className="auth-layout">
+        <section className="auth-hero">
+          <div className="auth-hero__badge">오늘 하루, 색으로 정리하기</div>
+          <h3>하루를 기록하면, 패턴이 보입니다.</h3>
+          <p>
+            타임바, 할 일, 루틴, 일기를 한 곳에서 관리하고
+            <br />
+            나만의 시간 팔레트를 만들어보세요.
+          </p>
+        </section>
 
-          <div className="auth-form__extras">
-            <label className="checkbox">
-              <input type="checkbox" />
-              <span className="checkbox__box" />
-              <span className="checkbox__label">자동 로그인</span>
-            </label>
-            <button type="button" className="link-button">
-              비밀번호 찾기
-            </button>
-          </div>
+        <div className="auth-card">
+          <DashboardCard title="이메일로 로그인">
+            <form className="auth-form">
+              <TextInput label="이메일" placeholder="you@example.com" />
+              <TextInput
+                label="비밀번호"
+                type="password"
+                placeholder="비밀번호를 입력하세요"
+              />
 
-          <Button type="submit" fullWidth>
-            로그인
-          </Button>
+              <div className="auth-form__extras">
+                <Checkbox label="자동 로그인" />
+                <button type="button" className="link-button">
+                  비밀번호 찾기
+                </button>
+              </div>
 
-          <div className="auth-divider">
-            <span>또는</span>
-          </div>
+              <Button className="btn--primary btn--full">로그인</Button>
+            </form>
 
-          <div className="auth-social-buttons">
-            <Button variant="secondary" fullWidth>
-              Google로 계속하기
-            </Button>
-            <Button variant="secondary" fullWidth>
-              Kakao로 계속하기
-            </Button>
-          </div>
-        </form>
+            <div
+              style={{
+                marginTop: 12,
+                fontSize: 12,
+                color: "var(--color-muted)",
+              }}
+            >
+              아직 계정이 없으신가요?{" "}
+              <button type="button" className="link-button">
+                회원가입하기
+              </button>
+            </div>
+          </DashboardCard>
+        </div>
       </div>
-    </AppShell>
+    </div>
   );
 }
 
 export default AuthLoginScreen;
-

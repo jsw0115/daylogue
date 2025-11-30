@@ -1,66 +1,53 @@
-// src/main/frontend/src/screens/settings/GeneralSettingsScreen.jsx
-import React, { useState } from "react";
-import AppShell from "../../layout/AppShell";
+// src/screens/settings/GeneralSettingsScreen.jsx
+import React from "react";
+import DashboardCard from "../../components/dashboard/DashboardCard";
 import "../../styles/screens/settings.css";
 
 function GeneralSettingsScreen() {
-  const [mode, setMode] = useState("balance");
-  const [defaultPage, setDefaultPage] = useState("home");
-
   return (
-    <AppShell title="환경 설정">
-      <div className="screen settings-general-screen">
-        <header className="screen-header">
-          <h2>환경 설정</h2>
-        </header>
+    <div className="screen settings-screen">
+      <header className="screen-header">
+        <div className="screen-header__left">
+          <h2 className="screen-header__title">환경 설정</h2>
+          <p className="screen-header__subtitle">
+            시간 관리 모드, 기본 시작 화면 등 전반적인 환경을 설정해요.
+          </p>
+        </div>
+      </header>
 
-        <section className="settings-section">
-          <h3>시간관리 모드(J/P)</h3>
-          <div className="settings-radio-group">
-            <label>
-              <input type="radio"
-                name="mode"
-                value="j"
-                checked={mode === "j"}
-                onChange={(e) => setMode(e.target.value)}
-              />
-              J형 (계획 중심)
-            </label>
-            <label>
-              <input type="radio"
-                name="mode"
-                value="balance"
-                checked={mode === "balance"}
-                onChange={(e) => setMode(e.target.value)}
-              />
-              밸런스
-            </label>
-            <label>
-              <input type="radio"
-                name="mode"
-                value="p"
-                checked={mode === "p"}
-                onChange={(e) => setMode(e.target.value)}
-              />
-              P형 (유연 중심)
-            </label>
+      <div className="settings-grid">
+        <DashboardCard title="시간 관리 스타일" subtitle="J / P / 밸런스 모드">
+          <div className="settings-section">
+            <div className="settings-row">
+              <div>
+                <div className="settings-row__label">J형 플래너 모드</div>
+                <div className="settings-row__desc">
+                  계획을 먼저 세우고 체크하는 방식
+                </div>
+              </div>
+            </div>
+            <div className="settings-row">
+              <div>
+                <div className="settings-row__label">P형 타임라인 모드</div>
+                <div className="settings-row__desc">
+                  지나간 시간을 기록하면서 패턴을 보는 방식
+                </div>
+              </div>
+            </div>
           </div>
-        </section>
+        </DashboardCard>
 
-        <section className="settings-section">
-          <h3>기본 시작 화면</h3>
-          <select value={defaultPage}
-            onChange={(e) => setDefaultPage(e.target.value)}
-          >
-            <option value="home">홈 대시보드</option>
-            <option value="daily">일간 플래너</option>
-            <option value="weekly">주간 플래너</option>
-          </select>
-        </section>
+        <DashboardCard title="기본 화면" subtitle="앱을 켰을 때 처음 보이는 화면">
+          <div className="settings-section">
+            <div className="settings-row">
+              <span className="settings-row__label">기본 시작 화면</span>
+              <span className="settings-row__desc">홈 대시보드</span>
+            </div>
+          </div>
+        </DashboardCard>
       </div>
-    </AppShell>
+    </div>
   );
 }
 
 export default GeneralSettingsScreen;
-
