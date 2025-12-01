@@ -1,6 +1,9 @@
-/* src/main/frontend/src/styles/index.css */
+/* FILE: src/main/frontend/src/styles/index.css */
+
+/* 디자인 토큰 & 전역 스타일 */
 
 :root {
+  /* 색상 토큰 (기본 테마) */
   --color-bg: #f3f4f6;
   --color-surface: #ffffff;
   --color-surface-soft: #f9fafb;
@@ -15,6 +18,13 @@
   --color-accent-pink: #f973af;
   --color-accent-green: #22c55e;
 
+  /* 확장 토큰 (bgElevated, accent, textMuted, danger 등) */
+  --color-bg-elevated: var(--color-surface);
+  --color-accent: var(--color-accent-pink);
+  --color-text-muted: var(--color-muted);
+  --color-danger: #ef4444;
+
+  /* radius & shadow */
   --radius-xl: 12px;
   --radius-lg: 10px;
   --radius-md: 8px;
@@ -23,6 +33,7 @@
   --shadow-soft: 0 8px 24px rgba(15, 23, 42, 0.05);
   --shadow-card: 0 6px 18px rgba(15, 23, 42, 0.04);
 
+  /* font size */
   --font-h1: 24px;
   --font-h2: 19px;
   --font-h3: 16px;
@@ -30,8 +41,7 @@
   --font-small: 12px;
 }
 
-/* reset + body, a, textarea 등도 그대로 두고, 맨 아래에 import 추가 */
-
+/* 레이아웃 & 컴포넌트 */
 @import "./layout.css";
 @import "./components.css";
 
@@ -50,7 +60,7 @@
 @import "./screens/auth.css";
 @import "./screens/dev.css";
 
-/* 테마 (원하면 body data-theme로 토글해서 사용) */
+/* 테마 (data-theme 기반) */
 @import "./theme/light.css";
 @import "./theme/dark.css";
 @import "./theme/pastel.css";
@@ -72,8 +82,9 @@ body,
 body {
   background: var(--color-bg);
   color: var(--color-text);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans KR",
-    "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont,
+    "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic",
+    sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 

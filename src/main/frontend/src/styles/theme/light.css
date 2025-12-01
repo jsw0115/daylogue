@@ -1,10 +1,16 @@
-/* src/main/frontend/src/styles/theme/light.css */
+/* FILE: src/main/frontend/src/styles/theme/light.css */
 :root[data-theme="light"] {
   --color-bg: #f9fafb;
   --color-surface: #ffffff;
   --color-surface-soft: #f3f4f6;
   --color-border: #e5e7eb;
+
   --color-text: #111827;
   --color-muted: #6b7280;
-}
 
+  /* 확장 토큰 */
+  --color-bg-elevated: var(--color-surface);
+  --color-accent: #f973af;
+  --color-text-muted: var(--color-muted);
+  --color-danger: #ef4444;
+}

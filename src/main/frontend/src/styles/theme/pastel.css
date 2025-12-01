@@ -1,12 +1,19 @@
-/* src/main/frontend/src/styles/theme/pastel.css */
+/* FILE: src/main/frontend/src/styles/theme/pastel.css */
 :root[data-theme="pastel"] {
   --color-bg: #fef9ff;
   --color-surface: #ffffff;
   --color-surface-soft: #fdf2ff;
   --color-border: #f5d0fe;
+
   --color-text: #4b5563;
   --color-muted: #9ca3af;
+
   --color-primary: #f472b6;
   --color-primary-soft: rgba(244, 114, 182, 0.16);
-}
 
+  /* 확장 토큰 */
+  --color-bg-elevated: var(--color-surface);
+  --color-accent: #f973af;
+  --color-text-muted: var(--color-muted);
+  --color-danger: #fb7185;
+}

@@ -1,67 +1,111 @@
-// src/screens/plan/YearlyOverviewScreen.jsx
-import React from "react";
+// FILE: src/main/frontend/src/screens/plan/YearlyOverviewScreen.jsx
+import React, { useState } from "react";
+import { todayStr } from "../../shared/utils/dateUtils";
+import { useAppMode, APP_MODES } from "../../shared/context/AppModeContext";
+import PlannerTabs from "./PlannerTabs";
+
+function modeShort(mode) {
+  switch (mode) {
+    case APP_MODES.J:
+      return "연간 목표/계획 중심";
+    case APP_MODES.P:
+      return "연간 기록/패턴 중심";
+    case APP_MODES.B:
+    default:
+      return "목표와 기록을 함께 보기";
+  }
+}
+
+function buildYearMonths(year) {
+  return Array.from({ length: 12 }).map((_, idx) => ({
+    month: idx + 1,
+    label: `${year}년 ${String(idx + 1).padStart(2, "0")}월`,
+  }));
+}
+
+// 간단히 월별 "활동 레벨"을 만든 더미 로직 (차후 통계 API 연동 가능)
+function buildMonthActivity(month) {
+  const level = (month % 4) + 2; // 2~5 정도
+  return Array.from({ length: 7 }).map((_, idx) => idx < level);
+}
 
 function YearlyOverviewScreen() {
+  const today = todayStr();
+  const [currentYear, setCurrentYear] = useState(
+    new Date(today).getFullYear()
+  );
+  const { mode } = useAppMode();
+
+  const months = buildYearMonths(currentYear);
+
+  const handlePrevYear = () => {
+    setCurrentYear((y) => y - 1);
+  };
+
+  const handleNextYear = () => {
+    setCurrentYear((y) => y + 1);
+  };
+
+  const titleLabel = `${currentYear}년 연간 플래너`;
+
   return (
     <div className="screen yearly-overview-screen">
-      <div className="screen-header">
+      <header className="screen-header">
         <div className="screen-header__left">
-          <h1 className="screen-header__title">연간 개요</h1>
+          <h1 className="screen-header__title">연간 플래너</h1>
           <p className="screen-header__subtitle">
-            연간 목표, 큰 이벤트, 색으로 보는 1년 히트맵을 요약해요.
+            {titleLabel} · {modeShort(mode)}
           </p>
+        </div>
+        <PlannerTabs />
+      </header>
+
+      <div
+        className="dashboard-card"
+        style={{ marginBottom: 16, paddingBottom: 10 }}
+      >
+        <div className="week-calendar-card__header">
+          <div className="week-calendar-nav">
+            <button type="button" onClick={handlePrevYear}>
+              이전
+            </button>
+            <span className="week-calendar-range">{currentYear}년</span>
+            <button type="button" onClick={handleNextYear}>
+              다음
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="yearly-grid">
-        <section className="dashboard-card">
-          <div className="dashboard-card__header">
-            <h2 className="dashboard-card__title">연간 목표</h2>
-          </div>
-          <ul className="simple-list">
-            <li>• 건강: 10km 러닝 완주</li>
-            <li>• 공부: SQLD + 추가 자격증</li>
-            <li>• 커리어: 새로운 프로젝트 런칭</li>
-          </ul>
-        </section>
-
-        <section className="dashboard-card">
-          <div className="dashboard-card__header">
-            <h2 className="dashboard-card__title">큰 이벤트</h2>
-          </div>
-          <ul className="simple-list">
-            <li>• 03월 : 자격증 시험</li>
-            <li>• 07월 : 여름 휴가</li>
-            <li>• 10월 : 신규 프로젝트 시작</li>
-          </ul>
-        </section>
-
-        <section className="dashboard-card">
-          <div className="dashboard-card__header">
-            <h2 className="dashboard-card__title">색으로 보는 1년</h2>
-          </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(12, 1fr)",
-              gap: 3,
-            }}
-          >
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div
-                key={i}
-                style={{
-                  height: 32,
-                  borderRadius: 4,
-                  background:
-                    i % 3 === 0
-                      ? "rgba(79,70,229,0.25)"
-                      : "rgba(148,163,184,0.3)",
-                }}
-              />
-            ))}
-          </div>
-        </section>
+        {months.map((m) => {
+          const activity = buildMonthActivity(m.month);
+          return (
+            <section
+              key={m.month}
+              className="dashboard-card yearly-month-card"
+            >
+              <div className="yearly-month-card__header">
+                <div className="yearly-month-card__title">{m.label}</div>
+                <div className="yearly-month-card__meta">
+                  월간 플래너 / 통계에서 상세 보기
+                </div>
+              </div>
+              <div className="yearly-month-card__heat">
+                {activity.map((active, idx) => (
+                  <div
+                    key={idx}
+                    className={
+                      active
+                        ? "yearly-month-card__dot yearly-month-card__dot--active"
+                        : "yearly-month-card__dot"
+                    }
+                  />
+                ))}
+              </div>
+            </section>
+          );
+        })}
       </div>
     </div>
   );

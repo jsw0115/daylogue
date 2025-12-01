@@ -1,3 +1,4 @@
+// FILE: src/main/frontend/src/routes.jsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
@@ -11,27 +12,60 @@ import DailyDiaryScreen from "./screens/diary/DailyDiaryScreen";
 import StatDashboardScreen from "./screens/stat/StatDashboardScreen";
 import ProfileScreen from "./screens/settings/ProfileScreen";
 import AdminUserScreen from "./screens/admin/AdminUserScreen";
-// 필요에 따라 다른 화면도 추가 가능
+
+import { ROUTES } from "./shared/constants/routes";
 
 export function AppRoutes() {
   return (
     <Routes>
-      {/* 기본 진입: 일간 플래너 */}
-      <Route path="/" element={<Navigate to="/plan/daily" replace />} />
+      {/* 기본 진입: PLAN-001 일간 플래너 */}
+      <Route
+        path="/"
+        element={<Navigate to={ROUTES.PLAN_DAILY} replace />}
+      />
 
-      <Route path="/home" element={<HomeDashboardScreen />} />
-      <Route path="/plan/daily" element={<DailyPlannerScreen />} />
-      <Route path="/plan/weekly" element={<WeeklyPlannerScreen />} />
-      <Route path="/plan/monthly" element={<MonthlyPlannerScreen />} />
-      <Route path="/plan/yearly" element={<YearlyOverviewScreen />} />
-      <Route path="/tasks" element={<TaskListScreen />} />
-      <Route path="/diary/daily" element={<DailyDiaryScreen />} />
-      <Route path="/stat" element={<StatDashboardScreen />} />
-      <Route path="/settings/profile" element={<ProfileScreen />} />
+      <Route path={ROUTES.HOME} element={<HomeDashboardScreen />} />
+      <Route
+        path={ROUTES.PLAN_DAILY}
+        element={<DailyPlannerScreen />}
+      />
+      <Route
+        path={ROUTES.PLAN_WEEKLY}
+        element={<WeeklyPlannerScreen />}
+      />
+      <Route
+        path={ROUTES.PLAN_MONTHLY}
+        element={<MonthlyPlannerScreen />}
+      />
+      <Route
+        path={ROUTES.PLAN_YEARLY}
+        element={<YearlyOverviewScreen />}
+      />
+
+      <Route path={ROUTES.TASKS} element={<TaskListScreen />} />
+      <Route
+        path={ROUTES.DIARY_DAILY}
+        element={<DailyDiaryScreen />}
+      />
+      <Route
+        path={ROUTES.STAT_DASHBOARD}
+        element={<StatDashboardScreen />}
+      />
+      <Route
+        path={ROUTES.SETTINGS_PROFILE}
+        element={<ProfileScreen />}
+      />
+
+      {/* ADM-*** : 관리자 화면 */}
       <Route path="/admin/users" element={<AdminUserScreen />} />
 
-      {/* 나머지는 임시로 홈으로 */}
-      <Route path="*" element={<Navigate to="/plan/daily" replace />} />
+      {/* 나머지는 기본 진입으로 리다이렉트 */}
+      <Route
+        path="*"
+        element={<Navigate to={ROUTES.PLAN_DAILY} replace />}
+      />
     </Routes>
   );
 }
+
+export default AppRoutes;

@@ -1,10 +1,16 @@
-/* src/main/frontend/src/styles/theme/dark.css */
+/* FILE: src/main/frontend/src/styles/theme/dark.css */
 :root[data-theme="dark"] {
   --color-bg: #020617;
   --color-surface: #020617;
   --color-surface-soft: #020617;
   --color-border: #1f2937;
+
   --color-text: #e5e7eb;
   --color-muted: #9ca3af;
-}
 
+  /* 확장 토큰 */
+  --color-bg-elevated: #020617;
+  --color-accent: #f973af;
+  --color-text-muted: var(--color-muted);
+  --color-danger: #f97373;
+}

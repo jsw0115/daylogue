@@ -1,21 +1,11 @@
+// FILE: src/main/frontend/src/main.jsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 
-// 전역 스타일
+// 전역 스타일은 styles/index.css 한 파일에서만 집약적으로 관리
 import "./styles/index.css";
-import "./styles/layout.css";
-import "./styles/components.css";
-import "./styles/screens/planner.css";
-import "./styles/screens/home.css";
-import "./styles/screens/task.css";
-import "./styles/screens/routine.css";
-import "./styles/screens/diary.css";
-import "./styles/screens/memo.css";
-import "./styles/screens/stat.css";
-import "./styles/screens/settings.css";
-import "./styles/screens/admin.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 

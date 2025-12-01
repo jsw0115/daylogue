@@ -1,33 +1,43 @@
-// src/main/frontend/src/screens/plan/PlannerTabs.jsx
+// FILE: src/main/frontend/src/screens/plan/PlannerTabs.jsx
 import React from "react";
-import { NavLink } from "react-router-dom";
-import { ROUTES } from "../../shared/constants/routes";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const PlannerTabs = () => {
-  const tabs = [
-    { to: ROUTES.DAILY, label: "일간" },
-    { to: ROUTES.WEEKLY, label: "주간" },
-    { to: ROUTES.MONTHLY, label: "월간" },
-    { to: ROUTES.YEARLY, label: "연간" },
-  ];
+const TABS = [
+  { key: "daily", label: "일간", path: "/plan/daily" },
+  { key: "weekly", label: "주간", path: "/plan/weekly" },
+  { key: "monthly", label: "월간", path: "/plan/monthly" },
+  { key: "yearly", label: "연간", path: "/plan/yearly" },
+];
+
+function PlannerTabs({ className = "" }) {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const activeKey =
+    TABS.find((tab) => location.pathname.startsWith(tab.path))?.key || "daily";
+
+  const containerClass = ["planner-tabs", className].filter(Boolean).join(" ");
 
   return (
-    <div className="planner-tabs">
+    <div className={containerClass}>
       <div className="tabbar">
-        {tabs.map((tab) => (
-          <NavLink
-            key={tab.to}
-            to={tab.to}
-            className={({ isActive }) =>
-              "tabbar__item" + (isActive ? " tabbar__item--active" : "")
+        {TABS.map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            className={
+              tab.key === activeKey
+                ? "tabbar__item tabbar__item--active"
+                : "tabbar__item"
             }
+            onClick={() => navigate(tab.path)}
           >
             {tab.label}
-          </NavLink>
+          </button>
         ))}
       </div>
     </div>
   );
-};
+}
 
 export default PlannerTabs;
