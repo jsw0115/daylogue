@@ -1,4 +1,6 @@
-/* src/main/frontend/src/styles/layout.css */
+/* FILE: src/main/frontend/src/styles/layout.css */
+
+/* 앱 전체 레이아웃 */
 
 .app-shell {
   display: flex;
@@ -8,21 +10,9 @@
   color: var(--color-text);
 }
 
-/* 상단 헤더 – 완전 흰색 바에서 아주 가벼운 라인만 */
+/* 상단 헤더 – 데스크탑 기본 */
 
 .app-shell__header {
-  /*
-  position: sticky;
-  top: 0;
-  z-index: 30;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
-  */
   height: 56px;
   padding: 0 20px;
   display: flex;
@@ -42,16 +32,6 @@
   width: 26px;
   height: 26px;
   border-radius: 8px;
-  /*
-  background: conic-gradient(
-    from 150deg,
-    #4f46e5,
-    #818cf8,
-    #f973af,
-    #22c55e,
-    #4f46e5
-  );
-  */
   background: linear-gradient(135deg, #6366f1, #ec4899);
 }
 
@@ -65,37 +45,20 @@
   color: var(--color-muted);
 }
 
-/* 본문 */
+/* 본문 – 좌: 사이드바 / 우: 컨텐츠 */
 
 .app-shell__body {
-  flex: 1;
-  /*
-  display: flex;
-  min-height: 0;
-  */
   display: grid;
   grid-template-columns: 230px minmax(0, 1fr);
   gap: 0;
 }
 
-/* 좌측 사이드바 – 모서리 거의 직각, 액티브만 살짝 둥글게 */
+/* 좌측 사이드바 */
 
 .app-shell__sidebar {
-  /*
-  width: 210px;
-  padding: 20px 16px;
-  border-right: 1px solid #e5e7eb;
-  background: #f9fafb;
-  display: none;
-  */
   padding: 18px 14px;
   border-right: 1px solid rgba(15, 23, 42, 0.05);
   background: #f8fafc;
-}
-
-.app-shell--tablet .app-shell__sidebar,
-.app-shell--desktop .app-shell__sidebar {
-  display: block;
 }
 
 .app-shell__sidebar-title {
@@ -129,7 +92,6 @@
   color: var(--color-primary);
 }
 
-/* 왼쪽 컬러 바 + 평평한 레이블 느낌 (TodoMate 스타일) */
 .app-shell__sidebar-item--active a {
   position: relative;
   background: #eef2ff;
@@ -149,110 +111,6 @@
   background: var(--color-primary);
 }
 
-/* 메인 컨텐츠 */
-
-/*
-.app-shell__content {
-  flex: 1;
-  padding: 20px 24px 72px;
-  overflow-y: auto;
-}
-*/
-
-.app-shell__content {
-  padding: 20px 24px 24px;
-  overflow: auto;
-}
-
-.page-container {
-  max-width: 1180px;
-  margin: 0 auto;
-}
-
-/* 공통 screen */
-
-.screen {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/*
-.screen-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-*/
-.screen-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.screen-header__left {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-/*
-.screen-header__title {
-  font-size: var(--font-h1);
-  margin: 0;
-}
-*/
-
-.screen-header__title {
-  margin: 0 0 4px;
-  font-size: 22px;
-  font-weight: 700;
-}
-
-.screen-header__subtitle {
-  margin: 0;
-  font-size: 13px;
-  color: var(--color-muted);
-}
-
-/* 모바일 하단 탭 */
-
-.mobile-bottom-nav {
-  position: fixed;
-  left: 16px;
-  right: 16px;
-  bottom: 12px;
-  z-index: 40;
-  height: 50px;
-  border-radius: 14px;
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
-  display: flex;
-}
-
-.mobile-bottom-nav__item {
-  flex: 1;
-  font-size: 11px;
-  color: var(--color-muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mobile-bottom-nav__item--active {
-  color: var(--color-primary);
-  font-weight: 600;
-}
-
-@media (max-width: 768px) {
-  .app-shell__content {
-    padding: 16px 16px 80px;
-  }
-}
 /* 사이드바 섹션 */
 
 .app-shell__sidebar-section + .app-shell__sidebar-section {
@@ -303,7 +161,53 @@
   background: #4f46e5;
 }
 
-/* 헤더 오른쪽 영역 */
+/* 메인 컨텐츠 */
+
+.app-shell__content {
+  padding: 20px 24px 24px;
+  overflow: auto;
+}
+
+.page-container {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+/* 공통 screen */
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.screen-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.screen-header__left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.screen-header__title {
+  margin: 0 0 4px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.screen-header__subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+/* 헤더 오른쪽 (링크 + 유저) */
 
 .app-shell__header-right {
   display: flex;
@@ -326,18 +230,6 @@
   background: transparent;
 }
 
-/*
-.header-link--accent {
-  background: #eef2ff;
-  color: #312e81;
-  border-color: #e0e7ff;
-}
-
-.header-link--active {
-  border-color: var(--color-primary);
-}
-*/
-
 .header-link:hover {
   background: #f3f4ff;
 }
@@ -352,44 +244,7 @@
   border-color: #4f46e5;
 }
 
-/* 헤더 프로필 미니 카드 */
-
-/*
-.app-shell__user {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.app-shell__user-avatar {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #4f46e5, #ec4899);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  color: #ffffff;
-  font-weight: 600;
-}
-
-.app-shell__user-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.app-shell__user-name {
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.app-shell__user-role {
-  font-size: 11px;
-  color: var(--color-muted);
-}
-*/
+/* 헤더 프로필 */
 
 .app-shell__user {
   display: flex;
@@ -426,27 +281,88 @@
   color: var(--color-muted);
 }
 
-.app-shell__user-role {
+/* 모바일 하단 탭 */
+
+.mobile-bottom-nav {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 12px;
+  z-index: 40;
+  height: 50px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+  display: flex;
+}
+
+.mobile-bottom-nav__item {
+  flex: 1;
   font-size: 11px;
   color: var(--color-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* app-shell__body 는 기본적으로 230px 사이드바 + 컨텐츠 */
-.app-shell__body {
-  display: grid;
-  grid-template-columns: 230px minmax(0, 1fr);
-  gap: 0;
+.mobile-bottom-nav__item--active {
+  color: var(--color-primary);
+  font-weight: 600;
 }
 
-/* 사이드바 */
-.app-shell__sidebar {
-  padding: 18px 14px;
-  border-right: 1px solid rgba(15, 23, 42, 0.05);
-  background: #f8fafc;
-}
+/* ========= */
+/* 모바일 UX */
+/* ========= */
 
-/* 모바일/태블릿에서는 사이드바 숨기고 컨텐츠만 전체 폭 */
 @media (max-width: 768px) {
+  /* 헤더: 두 줄 레이아웃 + 불필요한 텍스트 숨김 */
+
+  .app-shell__header {
+    padding: 8px 12px;
+    height: auto;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+  }
+
+  .app-shell__brand {
+    flex: 1 1 100%;
+  }
+
+  .app-shell__brand-name {
+    font-size: 14px;
+  }
+
+  /* 서브타이틀은 모바일에서 숨김 */
+  .app-shell__title {
+    display: none;
+  }
+
+  /* 헤더 액션 링크(통합 통계, 할 일 리스트)는 모바일에서 숨김 */
+  .app-shell__header-actions {
+    display: none;
+  }
+
+  .app-shell__header-right {
+    flex: 1 1 100%;
+    justify-content: space-between;
+  }
+
+  /* 유저 이름/역할은 숨기고 아바타만 노출 */
+  .app-shell__user-meta {
+    display: none;
+  }
+
+  /* 모드 스위치가 있다면 살짝 작게 */
+  .mode-switch {
+    font-size: 10px;
+  }
+
+  .app-shell__content {
+    padding: 16px 16px 80px;
+  }
+
   .app-shell__body {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -455,15 +371,12 @@
     display: none;
   }
 
-  .app-shell__content {
-    padding: 12px 12px 80px;
-  }
-
   .screen-header {
     flex-direction: column;
     align-items: flex-start;
   }
 
+  /* 좁은 화면에서는 주요 그리드 레이아웃 1열로 변경 */
   .home-grid,
   .planner-layout,
   .weekly-grid,
@@ -475,7 +388,6 @@
   .diary-grid,
   .focus-grid,
   .admin-grid {
-    /* 좁은 화면에서는 카드들이 한 줄씩 내려가도록 */
     grid-template-columns: minmax(0, 1fr) !important;
   }
 }
