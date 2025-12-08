@@ -1,397 +1,252 @@
-/* FILE: src/main/frontend/src/styles/components.css */
+/* src/main/frontend/src/styles/components.css */
 
-/* ===================== */
-/* 카드 / 대시보드 카드 */
-/* ===================== */
-
-.card,
-.dashboard-card {
-  background: var(--color-bg-elevated);
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-card);
-  padding: 14px 16px;
-}
-
-.dashboard-card__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 10px;
-}
-
-.dashboard-card__title-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+/* Card */
+.card {
+    background-color: white;
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .dashboard-card__title {
-  font-size: var(--font-h3);
-  font-weight: 600;
-  margin: 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--color-text-default);
 }
 
-.dashboard-card__subtitle {
-  font-size: var(--font-small);
-  color: var(--color-text-muted);
-}
-
-.dashboard-card__badge {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-}
-
-/* ========= */
-/*  버튼     */
-/* ========= */
-
-.btn,
-.primary-button,
-.ghost-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 7px 14px;
-  border-radius: 999px;
-  border: 1px solid transparent;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: inherit;
-  background: var(--color-surface);
-  color: var(--color-text);
-  transition:
-    background 0.12s ease,
-    color 0.12s ease,
-    border-color 0.12s ease,
-    box-shadow 0.12s ease,
-    transform 0.06s ease;
-}
-
-.btn:focus-visible,
-.primary-button:focus-visible,
-.ghost-button:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 1px var(--color-primary-soft);
-}
-
-.btn:active,
-.primary-button:active,
-.ghost-button:active {
-  transform: translateY(1px);
-}
-
-.btn--primary,
+/* Button */
 .primary-button {
-  background: var(--color-primary);
-  color: #ffffff;
-  border-color: var(--color-primary);
-  box-shadow: 0 6px 16px var(--color-primary-soft);
+    padding: 8px 16px;
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
-.btn--primary:hover,
 .primary-button:hover {
-  filter: brightness(1.04);
+    background-color: #3b30e8; 
 }
-
-.btn--ghost,
-.ghost-button {
-  background: transparent;
-  border-color: var(--color-border);
-  color: var(--color-text-muted);
-}
-
-.btn--ghost:hover,
-.ghost-button:hover {
-  background: rgba(148, 163, 184, 0.06);
-}
-
-.btn--full {
-  width: 100%;
-}
-
-.btn:disabled,
-.primary-button:disabled,
-.ghost-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-/* 버튼 사이즈 & 아이콘 */
 
 .btn--sm {
-  padding: 4px 10px;
-  font-size: 12px;
+    padding: 6px 12px;
+    font-size: 0.9rem;
 }
 
-.btn--lg {
-  padding: 9px 18px;
-  font-size: 14px;
+/* Tabs - 모든 플래너 화면에 통일 적용 */
+.tabbar {
+    display: flex;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: var(--color-background-hover);
 }
 
-.btn--icon-only {
-  padding-left: 8px;
-  padding-right: 8px;
+.tabbar a {
+    padding: 8px 12px;
+    text-decoration: none;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
 }
 
-.btn__icon {
-  display: inline-flex;
+.tabbar a:hover {
+    background-color: var(--color-border);
+}
+
+.tabbar .tabbar__item--active {
+    background-color: var(--color-primary);
+    color: white;
+    font-weight: bold;
+}
+
+/* J/P/B Mode Tabs (Header에 사용) */
+.mode-tabs {
+    display: flex;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.mode-tabs__item {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: white;
+    color: var(--color-text-muted);
+    border-right: 1px solid var(--color-border);
+}
+
+.mode-tabs__item:last-child {
+    border-right: none;
+}
+
+.mode-tabs__item--active {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+
+/* --- Planner Specific Styles --- */
+
+/* Weekly Planner Grid */
+.weekly-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); 
+}
+
+.weekly-day-card {
+    border: 1px solid var(--color-border);
+    transition: transform 0.1s, box-shadow 0.1s;
+    background-color: var(--color-background-hover);
+    cursor: pointer; /* 클릭 기능 강조 */
+}
+
+.weekly-day-card:hover {
+    background-color: #f0f3f5;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Monthly Planner Grid */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.calendar-header-day {
+    background-color: var(--color-background-hover);
+    padding: 8px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.calendar-cell {
+    min-height: 100px;
+    border-right: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    background-color: white;
+}
+
+/* 마지막 주 오른쪽, 마지막 행 아래쪽 border 제거 */
+.calendar-cell:nth-child(7n) {
+    border-right: none;
+}
+.calendar-cell:nth-last-child(-n + 7) {
+    border-bottom: none;
+}
+
+/* src/main/frontend/src/styles/components.css 맨 아래쪽에 추가 */
+
+/* 버튼 공통 */
+.btn {
+  border-radius: 4px;
+  border: 1px solid transparent;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.btn--primary {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.btn--secondary {
+  background-color: #e5e7eb;
+  color: var(--color-text-default);
+}
+
+.btn--ghost {
+  background-color: #ffffff;
+  color: var(--color-text-default);
+  border-color: var(--color-border);
+}
+
+.btn--sm {
+  padding: 4px 8px;
+  font-size: 0.8rem;
+}
+
+.btn-link {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+/* 폼 공통 */
+.form-row {
+  margin-bottom: 12px;
+}
+
+.form-row--inline {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  font-size: 0.9rem;
+}
+
+.form-textarea {
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.td-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.25);
+  display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 50;
 }
 
-.btn__icon--left {
-  margin-right: 4px;
+.td-modal {
+  background: #fff;
+  min-width: 320px;
+  max-width: 480px;
+  border-radius: 10px;
+  padding: 16px 18px;
+  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.35);
 }
 
-.btn__icon--right {
-  margin-left: 4px;
-}
-
-.btn__label {
-  white-space: nowrap;
-}
-
-/* ========= */
-/* 인풋      */
-/* ========= */
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.td-modal__title {
+  font-size: 1rem;
+  font-weight: 600;
   margin-bottom: 10px;
 }
 
-.field__label {
-  font-size: 12px;
-  color: var(--color-text-muted);
+.td-modal__body {
+  font-size: 0.9rem;
 }
 
-.field__control {
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface-soft);
-  padding: 8px 10px;
-  font-size: 14px;
-  outline: none;
-}
-
-.field__control:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 1px var(--color-primary-soft);
-}
-
-/* 간단 태그 */
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 11px;
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-}
-
-/* 홈 한 줄 회고 인풋 radius만 통일 */
-
-.home-oneline {
-  border-radius: var(--radius-md);
-}
-
-/* 탭바 (일간/주간/월간/연간) */
-
-.tabbar {
-  display: inline-flex;
-  padding: 4px;
-  border-radius: 999px;
-  background: rgba(249, 250, 251, 0.9);
-  border: 1px solid rgba(148, 163, 184, 0.5);
-  gap: 4px;
-}
-
-.tabbar__item {
-  border: none;
-  background: transparent;
-  padding: 6px 14px;
-  border-radius: 999px;
-  font-size: 12px;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.tabbar__item--active {
-  background: #ffffff;
-  color: #111827;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
-}
-
-/* 모드 스위치 (J/P/B) */
-
-.mode-switch {
-  display: inline-flex;
-  padding: 3px;
-  border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.6);
-  background: rgba(248, 250, 252, 0.9);
-  gap: 2px;
-  font-size: 11px;
-}
-
-.mode-switch__item {
-  border: none;
-  background: transparent;
-  border-radius: 999px;
-  padding: 4px 8px;
-  cursor: pointer;
-  color: var(--color-text-muted);
-}
-
-.mode-switch__item--active {
-  background: #ffffff;
-  color: #111827;
-  font-weight: 600;
-  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.12);
-}
-
-/* ======================= */
-/* Timebar – 미니 프리뷰   */
-/* (홈/요약 카드 등에서)   */
-/* ======================= */
-
-.timebar-stack {
+.td-modal__footer {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.timebar-line {
-  height: 16px;
-  border-radius: 999px;
-  overflow: hidden;
-  display: flex;
-  align-items: stretch;
-}
-
-/* Plan 라인은 점선 배경 */
-.timebar-line--plan {
-  background-image: repeating-linear-gradient(
-    90deg,
-    rgba(148, 163, 184, 0.5) 0,
-    rgba(148, 163, 184, 0.5) 8px,
-    transparent 8px,
-    transparent 16px
-  );
-  background-color: #e5e7eb;
-}
-
-.timebar-line--actual {
-  background: #e5e7eb;
-}
-
-/* 미니 프리뷰용 블록 – .timebar-stack 범위 안에서만 적용 (planner의 .timebar-block과 충돌 방지) */
-.timebar-stack .timebar-block {
-  flex: 1;
-}
-
-.timebar-stack .timebar-block--plan {
-  flex: 1;
-  opacity: 0; /* 배경 점선만 보이게 */
-}
-
-.timebar-stack .timebar-block--study {
-  background: #6366f1;
-}
-.timebar-stack .timebar-block--work {
-  background: #0ea5e9;
-}
-.timebar-stack .timebar-block--health {
-  background: #22c55e;
-}
-.timebar-stack .timebar-block--etc {
-  background: #9ca3af;
-}
-
-/* ===================== */
-/* 체크박스 공통 스타일   */
-/* ===================== */
-
-.checkbox {
-  display: inline-flex;
-  align-items: flex-start;
+  justify-content: flex-end;
   gap: 8px;
-  font-size: 13px;
-  color: var(--color-text);
-  cursor: pointer;
-}
-
-.checkbox--disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.checkbox__control {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.checkbox__input {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.checkbox__box {
-  width: 16px;
-  height: 16px;
-  border-radius: 6px;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface-soft);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    background 0.12s ease,
-    border-color 0.12s ease,
-    box-shadow 0.12s ease;
-}
-
-.checkbox__box--checked {
-  border-color: var(--color-primary);
-  background: var(--color-primary);
-  box-shadow: 0 0 0 1px var(--color-primary-soft);
-}
-
-.checkbox__icon {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-  background: var(--color-surface);
-}
-
-.checkbox__text {
-  display: inline-flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.checkbox__label {
-  font-size: 13px;
-}
-
-.checkbox__description {
-  font-size: 11px;
-  color: var(--color-text-muted);
+  margin-top: 12px;
 }

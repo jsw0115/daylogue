@@ -1,393 +1,255 @@
-/* FILE: src/main/frontend/src/styles/layout.css */
+/* src/main/frontend/src/styles/layout.css */
 
-/* 앱 전체 레이아웃 */
+:root {
+    --color-background: #f4f7f9;
+    --color-background-hover: #e9eef2;
+    --color-text-default: #1c1c1c;
+    --color-text-muted: #6b7280;
+    --color-primary: #4f46e5;
+    --color-success: #10b981;
+    --color-danger: #ef4444;
+    --color-warning: #f59e0b;
+    --color-border: #e5e7eb;
+    --border-radius: 8px;
+    --sidebar-width: 240px;
+    --header-height: 56px;
+    --bottom-nav-height: 60px;
+}
 
+/* App Shell (Main Layout) */
 .app-shell {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background: #f4f5f7;
-  color: var(--color-text);
+    display: grid;
+    grid-template-areas:
+        "header header"
+        "sidebar content";
+    grid-template-columns: var(--sidebar-width) 1fr;
+    grid-template-rows: var(--header-height) 1fr;
+    height: 100vh;
+    overflow: hidden; 
 }
 
-/* 상단 헤더 – 데스크탑 기본 */
+.app-shell__content {
+    grid-area: content;
+    padding: 24px;
+    overflow-y: auto; 
+}
 
+/* Header */
 .app-shell__header {
-  height: 56px;
-  padding: 0 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #ffffff;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.05);
+    grid-area: header;
+    height: var(--header-height);
+    background-color: white;
+    border-bottom: 1px solid var(--color-border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 헤더 영역 수정 */
 }
 
-.app-shell__brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.app-shell__brand-logo {
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #6366f1, #ec4899);
-}
-
-.app-shell__brand-name {
-  font-weight: 700;
-  font-size: 15px;
-}
-
-.app-shell__title {
-  font-size: 11px;
-  color: var(--color-muted);
-}
-
-/* 본문 – 좌: 사이드바 / 우: 컨텐츠 */
-
-.app-shell__body {
-  display: grid;
-  grid-template-columns: 230px minmax(0, 1fr);
-  gap: 0;
-}
-
-/* 좌측 사이드바 */
-
+/* Sidebar */
 .app-shell__sidebar {
-  padding: 18px 14px;
-  border-right: 1px solid rgba(15, 23, 42, 0.05);
-  background: #f8fafc;
+    grid-area: sidebar;
+    width: var(--sidebar-width);
+    background-color: white;
+    border-right: 1px solid var(--color-border);
+    padding: 24px 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-shell__sidebar-section {
+    padding: 0 24px;
+    margin-bottom: 16px;
 }
 
 .app-shell__sidebar-title {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--color-muted);
-  margin-bottom: 6px;
-}
-
-.app-shell__sidebar-nav {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 13px;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+    margin-bottom: 8px;
+    text-transform: uppercase;
 }
 
 .app-shell__sidebar-item a {
-  display: flex;
-  align-items: center;
-  padding: 7px 10px;
-  border-radius: 10px;
-  color: var(--color-muted);
-  transition: background 0.15s ease, color 0.15s ease;
+    display: block;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: var(--color-text-default);
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    margin-left: -12px; 
 }
 
 .app-shell__sidebar-item a:hover {
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
+    background-color: var(--color-background-hover);
 }
 
 .app-shell__sidebar-item--active a {
-  position: relative;
-  background: #eef2ff;
-  color: #312e81;
-  font-weight: 600;
+    background-color: var(--color-primary);
+    color: white;
+    font-weight: bold;
 }
 
-.app-shell__sidebar-item--active a::before {
-  content: "";
-  position: absolute;
-  left: -8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 18px;
-  border-radius: 999px;
-  background: var(--color-primary);
-}
-
-/* 사이드바 섹션 */
-
-.app-shell__sidebar-section + .app-shell__sidebar-section {
-  margin-top: 18px;
-}
-
-.app-shell__sidebar-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.app-shell__sidebar-link {
-  display: flex;
-  align-items: center;
-  padding: 7px 10px;
-  border-radius: 10px;
-  color: var(--color-muted);
-  font-size: 13px;
-  text-decoration: none;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.app-shell__sidebar-link:hover {
-  background: #e5ecff;
-  color: #312e81;
-}
-
-.app-shell__sidebar-link--active {
-  position: relative;
-  background: #eef2ff;
-  color: #312e81;
-  font-weight: 600;
-}
-
-.app-shell__sidebar-link--active::before {
-  content: "";
-  position: absolute;
-  left: -6px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 18px;
-  border-radius: 999px;
-  background: #4f46e5;
-}
-
-/* 메인 컨텐츠 */
-
-.app-shell__content {
-  padding: 20px 24px 24px;
-  overflow: auto;
-}
-
-.page-container {
-  max-width: 1180px;
-  margin: 0 auto;
-}
-
-/* 공통 screen */
-
-.screen {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
+/* Screen Layouts */
 .screen-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.screen-header__left {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
 }
 
 .screen-header__title {
-  margin: 0 0 4px;
-  font-size: 22px;
-  font-weight: 700;
+    font-size: 1.8rem;
+    font-weight: bold;
 }
 
-.screen-header__subtitle {
-  margin: 0;
-  font-size: 13px;
-  color: var(--color-muted);
+/* Daily Planner Layout */
+.daily-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
 }
 
-/* 헤더 오른쪽 (링크 + 유저) */
+/* src/main/frontend/src/styles/layout.css */
 
-.app-shell__header-right {
+/* 기존 app-shell__header 정의를 덮어쓰기/보완 */
+.app-shell__header {
+  grid-area: header;
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--color-border);
   display: flex;
   align-items: center;
-  gap: 14px;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 10;
 }
 
-.app-shell__header-actions {
+/* 상단 바 전체 */
+.header-bar {
+  height: var(--header-height);
+}
+
+/* 좌/우 영역 공통 */
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* 앱 타이틀 */
+.header-logo {
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-right: 12px;
+}
+
+/* 모드 셀렉트 */
+.header-mode-select select {
+  font-size: 0.85rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  background-color: #fff;
+}
+
+/* 헤더용 플래너 탭 */
+.header-planner-tabs {
   display: flex;
   gap: 8px;
-  font-size: 12px;
 }
 
-.header-link {
-  padding: 6px 10px;
+.header-planner-tab {
+  font-size: 0.85rem;
+  padding: 4px 10px;
   border-radius: 999px;
   text-decoration: none;
-  color: var(--color-muted);
+  color: var(--color-text-muted);
+  background-color: transparent;
   border: 1px solid transparent;
-  background: transparent;
+  cursor: pointer;
 }
 
-.header-link:hover {
-  background: #f3f4ff;
+.header-planner-tab.is-active {
+  background-color: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
 }
 
-.header-link--accent {
-  background: #eef2ff;
-  color: #312e81;
-  border-color: #e0e7ff;
+/* 날짜 네비 */
+.header-date-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
 }
 
-.header-link--active {
-  border-color: #4f46e5;
+.header-date-nav button {
+  border: 1px solid var(--color-border);
+  background-color: #fff;
+  border-radius: 4px;
+  padding: 2px 6px;
+  cursor: pointer;
 }
 
-/* 헤더 프로필 */
+.header-date-text {
+  margin: 0 4px;
+  white-space: nowrap;
+}
 
-.app-shell__user {
+/* 유저 정보 */
+.header-user {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 0.85rem;
 }
 
-.app-shell__user-avatar {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #4f46e5, #ec4899);
+.header-user-name {
+  color: var(--color-text-muted);
+}
+
+.header-bell {
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--color-text-muted);
+}
+
+/* src/main/frontend/src/styles/layout.css */
+
+/* 이미 있음 (한 번 확인) */
+.screen-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  font-size: 13px;
+  margin-bottom: 24px;
+}
+
+.screen-header__title {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+/* 플래너 뷰 탭 (일간/주간/월간/연간) */
+.planner-view-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.planner-view-tab {
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border-radius: 999px;
+  text-decoration: none;
+  color: var(--color-text-muted);
+  background-color: #ffffff;
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+}
+
+.planner-view-tab.is-active {
+  background-color: var(--color-primary);
   color: #ffffff;
-  font-weight: 600;
-}
-
-.app-shell__user-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.app-shell__user-name {
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.app-shell__user-role {
-  font-size: 11px;
-  color: var(--color-muted);
-}
-
-/* 모바일 하단 탭 */
-
-.mobile-bottom-nav {
-  position: fixed;
-  left: 16px;
-  right: 16px;
-  bottom: 12px;
-  z-index: 40;
-  height: 50px;
-  border-radius: 14px;
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
-  display: flex;
-}
-
-.mobile-bottom-nav__item {
-  flex: 1;
-  font-size: 11px;
-  color: var(--color-muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mobile-bottom-nav__item--active {
-  color: var(--color-primary);
-  font-weight: 600;
-}
-
-/* ========= */
-/* 모바일 UX */
-/* ========= */
-
-@media (max-width: 768px) {
-  /* 헤더: 두 줄 레이아웃 + 불필요한 텍스트 숨김 */
-
-  .app-shell__header {
-    padding: 8px 12px;
-    height: auto;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px 8px;
-  }
-
-  .app-shell__brand {
-    flex: 1 1 100%;
-  }
-
-  .app-shell__brand-name {
-    font-size: 14px;
-  }
-
-  /* 서브타이틀은 모바일에서 숨김 */
-  .app-shell__title {
-    display: none;
-  }
-
-  /* 헤더 액션 링크(통합 통계, 할 일 리스트)는 모바일에서 숨김 */
-  .app-shell__header-actions {
-    display: none;
-  }
-
-  .app-shell__header-right {
-    flex: 1 1 100%;
-    justify-content: space-between;
-  }
-
-  /* 유저 이름/역할은 숨기고 아바타만 노출 */
-  .app-shell__user-meta {
-    display: none;
-  }
-
-  /* 모드 스위치가 있다면 살짝 작게 */
-  .mode-switch {
-    font-size: 10px;
-  }
-
-  .app-shell__content {
-    padding: 16px 16px 80px;
-  }
-
-  .app-shell__body {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .app-shell__sidebar {
-    display: none;
-  }
-
-  .screen-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  /* 좁은 화면에서는 주요 그리드 레이아웃 1열로 변경 */
-  .home-grid,
-  .planner-layout,
-  .weekly-grid,
-  .monthly-grid,
-  .yearly-grid,
-  .task-main,
-  .stat-grid,
-  .memo-grid,
-  .diary-grid,
-  .focus-grid,
-  .admin-grid {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
+  border-color: var(--color-primary);
 }

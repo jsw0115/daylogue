@@ -1,0 +1,57 @@
+/*
+ * Timebar Diary - Daily Planner Screen Styles
+ * 파일: src/main/frontend/src/styles/screens/daily-planner.css
+ * (A 영역 전체를 활용하는 일간 플래너 스타일)
+ */
+
+.daily-planner-screen {
+    /* app-shell__content의 자식으로 렌더링되므로, 별도 레이아웃 설정 불필요 */
+}
+
+/* 일간 플래너의 메인 그리드 (screen-grid 클래스 사용) */
+.daily-layout {
+    /* 기본적으로 layout.css의 screen-grid(1fr 1.2fr)를 따름 */
+    height: 100%;
+}
+
+/* Daily Todo / Memo / Timeline 영역 분리를 위한 클래스 */
+.daily-layout .card {
+    height: auto;
+    min-height: 200px;
+}
+
+.daily-layout .flex-1 {
+    flex-grow: 1; /* Timeline 영역이 남은 공간을 차지하도록 */
+}
+
+/* Daily Todo Item 스타일 */
+.todo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--color-surface-soft);
+}
+
+/* Daily Memo 텍스트 영역 */
+.memo-textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Quote 스타일 (UX 개선) */
+.memo-quote {
+    font-size: var(--font-small);
+    color: var(--color-muted);
+    margin-top: 15px;
+    border-left: 4px solid var(--color-info);
+    padding-left: 10px;
+    font-style: italic;
+}
+
+/* 모바일 환경 조정 */
+@media (max-width: 768px) {
+    .daily-layout {
+        gap: 16px; 
+    }
+}

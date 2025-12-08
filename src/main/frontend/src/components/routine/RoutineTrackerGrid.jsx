@@ -1,194 +1,87 @@
-// src/components/routine/RoutineTrackerGrid.jsx
-import React, { useMemo, useRef, useState } from "react";
+// FILE: src/main/frontend/src/components/routine/RoutineTrackerGrid.jsx
+import React from "react";
+import Checkbox from "../common/Checkbox";
 
 /**
- * 루틴 × 날짜 그리드
+ * ROUT-003: 루틴 히스토리 / 달성률 그리드용 간단한 컴포넌트
  *
  * props:
- *  - startDate: Date | string (YYYY-MM-DD)
- *  - dayCount: number (기본 7, 30 등)
- *  - routines: { id: string; name: string; icon?: string }[]
- *  - cells: {
- *      routineId: string;
- *      date: string | Date;   // 수행된 날짜
- *      status?: "done" | "missed" | "skip";
- *    }[]
- *  - onCellToggle?: (routineId: string, dateKey: string) => void
- *  - onCellLongPress?: (routineId: string, dateKey: string) => void
+ *  - routines: [
+ *      { id, name, categoryName, color, streak, days: ['월','화',...] }
+ *    ]
+ *  - weekDays: ['월','화','수','목','금','토','일']
  */
+const DEFAULT_WEEK_DAYS = ["월", "화", "수", "목", "금", "토", "일"];
 
-const WEEKDAY_KO = ["일", "월", "화", "수", "목", "금", "토"];
-
-// Date | string -> Date 객체로 통일
-function toDate(value) {
-  if (value instanceof Date) return value;
-  if (typeof value === "string") return new Date(value);
-  return new Date();
-}
-
-// Date | string -> 'YYYY-MM-DD'
-function toDateKey(value) {
-  const d = toDate(value);
-  return d.toISOString().slice(0, 10);
-}
-
-// Date | string -> 'M/D(요일)' 라벨 (JSX에 Date 직접 안 쓰고 문자열만)
-function formatDayLabel(value) {
-  const d = toDate(value);
-  const month = d.getMonth() + 1;
-  const date = d.getDate();
-  const weekday = WEEKDAY_KO[d.getDay()];
-  return `${month}/${date}(${weekday})`;
-}
-
-function RoutineTrackerGrid({
-  startDate,
-  dayCount = 7,
-  routines = [],
-  cells = [],
-  onCellToggle,
-  onCellLongPress,
-}) {
-  const start = toDate(startDate);
-  const [dragging, setDragging] = useState(false);
-
-  // 날짜 배열 생성
-  const days = useMemo(() => {
-    return Array.from({ length: dayCount }, (_, idx) => {
-      const d = new Date(start);
-      d.setDate(d.getDate() + idx);
-      return d;
-    });
-  }, [start.getTime(), dayCount]); // startDate 변경 시 재계산
-
-  // cells -> Map('routineId|YYYY-MM-DD' -> status)
-  const cellMap = useMemo(() => {
-    const map = {};
-    cells.forEach((c) => {
-      const key = `${c.routineId}|${toDateKey(c.date)}`;
-      map[key] = c.status || "done"; // 기본 done
-    });
-    return map;
-  }, [cells]);
-
-  // 롱프레스 핸들링용
-  const longPressTimer = useRef(null);
-
-  const handlePointerDown = (routineId, dateKey) => {
-    setDragging(true);
-
-    // 롱프레스 타이머 시작
-    if (onCellLongPress) {
-      longPressTimer.current = setTimeout(() => {
-        onCellLongPress(routineId, dateKey);
-        longPressTimer.current = null;
-        setDragging(false);
-      }, 500); // 0.5초 이상 누르면 롱프레스
-    }
-  };
-
-  const handlePointerUp = (routineId, dateKey) => {
-    const timer = longPressTimer.current;
-    if (timer) {
-      clearTimeout(timer);
-      longPressTimer.current = null;
-
-      // 롱프레스가 아니라면 토글로 처리
-      if (onCellToggle) {
-        onCellToggle(routineId, dateKey);
-      }
-    }
-    setDragging(false);
-  };
-
-  const handlePointerLeave = () => {
-    // 영역 벗어나면 롱프레스 취소
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-    setDragging(false);
-  };
+function RoutineTrackerGrid({ routines = [], weekDays = DEFAULT_WEEK_DAYS }) {
+  const hasData = routines.length > 0;
 
   return (
     <div className="routine-grid">
-      {/* 상단 날짜 헤더 */}
-      <div className="routine-grid__header-row">
-        <div className="routine-grid__corner-cell">루틴</div>
-        {days.map((d) => {
-          const dateKey = toDateKey(d);
-          return (
-            <div key={dateKey} className="routine-grid__day-header">
-              {/* ✅ 여기서 Date 객체 직접 안 쓰고, 문자열만 렌더링 */}
-              <span className="routine-grid__day-label">
-                {formatDayLabel(d)}
-              </span>
-            </div>
-          );
-        })}
-      </div>
+      <header className="routine-grid__header">
+        <h3 className="routine-grid__title">루틴 달성 현황</h3>
+        <p className="routine-grid__subtitle">
+          요일별 체크 상태와 연속 스트릭을 한눈에 확인할 수 있습니다.
+        </p>
+      </header>
 
-      {/* 루틴별 행 */}
-      {routines.length === 0 ? (
-        <div className="routine-grid__empty">
-          아직 등록된 루틴이 없습니다. 루틴을 추가하고 매일 체크해보세요 ✨
-        </div>
-      ) : (
-        routines.map((routine) => (
-          <div
-            key={routine.id}
-            className="routine-grid__row"
-            onMouseLeave={handlePointerLeave}
-            onTouchMove={handlePointerLeave}
-          >
-            <div className="routine-grid__routine-cell">
-              {routine.icon && (
-                <span className="routine-grid__routine-icon">
-                  {routine.icon}
-                </span>
-              )}
-              <span className="routine-grid__routine-name">
-                {routine.name}
-              </span>
-            </div>
-
-            {days.map((d) => {
-              const dateKey = toDateKey(d);
-              const mapKey = `${routine.id}|${dateKey}`;
-              const status = cellMap[mapKey]; // "done" | "missed" | "skip" | undefined
-              const isActive = !!status;
-
-              let emoji = "";
-              if (status === "done") emoji = "✅";
-              else if (status === "missed") emoji = "⚪";
-              else if (status === "skip") emoji = "➖";
-
-              return (
-                <button
-                  key={mapKey}
-                  type="button"
-                  className={
-                    "routine-grid__cell" +
-                    (isActive ? " routine-grid__cell--active" : "")
-                  }
-                  onMouseDown={() =>
-                    handlePointerDown(routine.id, dateKey)
-                  }
-                  onMouseUp={() => handlePointerUp(routine.id, dateKey)}
-                  onTouchStart={() =>
-                    handlePointerDown(routine.id, dateKey)
-                  }
-                  onTouchEnd={() => handlePointerUp(routine.id, dateKey)}
+      <div className="routine-grid__table-wrapper">
+        <table className="routine-grid__table">
+          <thead>
+            <tr>
+              <th>루틴</th>
+              {weekDays.map((d) => (
+                <th key={d}>{d}</th>
+              ))}
+              <th>연속 스트릭</th>
+            </tr>
+          </thead>
+          <tbody>
+            {hasData ? (
+              routines.map((r) => (
+                <tr key={r.id}>
+                  <td className="routine-grid__routine-cell">
+                    <span
+                      className="routine-grid__color-dot"
+                      style={{ backgroundColor: r.color || "#6366f1" }}
+                    />
+                    <div>
+                      <div className="routine-grid__routine-name">
+                        {r.name}
+                      </div>
+                      {r.categoryName && (
+                        <div className="routine-grid__routine-category">
+                          {r.categoryName}
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                  {weekDays.map((d) => (
+                    <td key={d} className="routine-grid__check-cell">
+                      <Checkbox
+                        checked={r.days?.includes(d)}
+                        onChange={() => {}}
+                      />
+                    </td>
+                  ))}
+                  <td className="routine-grid__streak-cell">
+                    {r.streak ?? 0}일
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  className="routine-grid__empty"
+                  colSpan={weekDays.length + 2}
                 >
-                  <span className="routine-grid__cell-emoji">
-                    {emoji || ""}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        ))
-      )}
+                  아직 등록된 루틴이 없습니다. 상단에서 루틴을 추가해 보세요.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

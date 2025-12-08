@@ -1,7 +1,17 @@
+/*
+ * Timebar Diary - Settings Screen Styles
+ * 파일: src/main/frontend/src/styles/screens/settings.css
+ */
+
+.settings-screen {
+  /* Settings Main Layout */
+}
+
+/* 개선: settings-grid는 layout.css의 screen-grid와 구조를 통일 */
 .settings-screen .settings-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 24px;
 }
 
 @media (max-width: 960px) {
@@ -10,49 +20,139 @@
   }
 }
 
-.settings-row__desc {
-  font-size: 12px;
-  color: var(--color-muted);
-}
-
-
-/* src/styles/screens/settings.css */
-
-.settings-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr);
-  gap: 18px;
-}
-
 .settings-section {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+  padding: 20px;
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 24px;
+}
+
+.settings-section__title {
+  font-size: var(--font-h3);
+  font-weight: 600;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .settings-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px; /* 간격 확대 */
+  padding: 8px 0; /* 터치 영역 고려 */
 }
 
 .settings-row__label {
-  width: 120px;
-  font-size: 13px;
+  width: 140px; /* 라벨 영역 확대 (UX 개선) */
+  flex-shrink: 0;
+  font-size: var(--font-body);
+  color: var(--color-text); /* Muted 대신 기본 Text로 강조 */
+  font-weight: 500;
+}
+
+.settings-row__desc {
+  font-size: var(--font-small);
   color: var(--color-muted);
 }
 
 .settings-row__control {
   flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Profile / Account Settings (SET-001) */
+.profile-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .profile-avatar {
-  width: 40px;
-  height: 40px;
+  width: 50px; /* 아바타 크기 확대 */
+  height: 50px;
   border-radius: 50%;
-  background: #fef3c7;
-  display: inline-flex;
+  background: var(--color-surface-soft);
+  overflow: hidden;
+  border: 2px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.profile-info__name {
+  font-size: var(--font-body);
+  font-weight: 600;
+}
+
+/* Category Color Settings (SET-006) */
+.category-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.category-item {
+  display: flex;
   align-items: center;
-  justify-content: center;
+  padding: 8px 12px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-soft);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.category-item:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.category-color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
   margin-right: 8px;
+  border: 1px solid var(--color-border);
+}
+
+/* Mode Selection Toggle */
+.mode-toggle-group {
+    display: inline-flex;
+    gap: 8px;
+    background: var(--color-surface-soft);
+    padding: 6px;
+    border-radius: var(--radius-lg);
+}
+
+.mode-toggle-button {
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    font-size: var(--font-small);
+    font-weight: 500;
+    color: var(--color-text-muted);
+    background: transparent;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.mode-toggle-button.active {
+    background: var(--color-surface);
+    color: var(--color-primary);
+    box-shadow: var(--shadow-soft);
 }

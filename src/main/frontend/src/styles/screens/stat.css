@@ -1,7 +1,17 @@
+/*
+ * Timebar Diary - Statistics Screen Styles
+ * 파일: src/main/frontend/src/styles/screens/stat.css
+ */
+
+.stat-screen {
+  /* Statistics Main Layout */
+}
+
 .stat-screen .stat-grid {
+  /* 개선: screen-grid와 구조 통일 */
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-  gap: 16px;
+  gap: 24px;
 }
 
 @media (max-width: 960px) {
@@ -10,16 +20,86 @@
   }
 }
 
+/* Common Chart Styling */
+.chart-container {
+  height: 350px; /* 차트 컨테이너 높이 통일 */
+  width: 100%;
+  padding: 15px;
+}
+
+/* Plan vs Actual Comparison (STAT-003) */
+.plan-actual-comparison {
+  /* Large area for line/bar charts */
+}
+
+/* Category Breakdown (STAT-002) */
+.category-breakdown {
+  /* Area for Doughnut or Pie Chart */
+}
+
 .stat-legend {
-  font-size: 12px;
+  font-size: var(--font-small);
   color: var(--color-muted);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  padding: 10px;
 }
 
-.stat-legend__item {
+.stat-legend-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.legend-color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-name {
+  flex-grow: 1;
+}
+
+.legend-value {
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+/* Gatsaeng Report (STAT-004) */
+.gatsaeng-report-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.gatsaeng-score-card {
+  text-align: center;
+  padding: 25px 15px;
+}
+
+.score-number {
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--color-success);
+}
+
+.ranking-info {
+  font-size: var(--font-body);
+  color: var(--color-primary);
+  font-weight: 500;
+  margin-top: 5px;
+}
+
+/* Focus/Routine Stats */
+.focus-stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--color-surface-soft);
 }

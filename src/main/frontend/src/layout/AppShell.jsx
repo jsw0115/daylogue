@@ -1,262 +1,166 @@
+// src/main/frontend/src/layout/AppShell.jsx
+
 import React from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { useResponsiveLayout } from "../shared/hooks/useResponsiveLayout";
-import { useAuth } from "../shared/hooks/useAuth";
-import { useAppMode, APP_MODES } from "../shared/context/AppModeContext";
+import { Routes, Route } from "react-router-dom";
 
-function AppShell({ children }) {
+// 1. 레이아웃 및 공통 컴포넌트
+import Sidebar from "./MainSidebar";
+import Header from "./Header";
+import MobileBottomNav from "./MobileBottomNav";
+
+// 2. 화면 컴포넌트들
+import HomeDashboardScreen from "./../screens/home/HomeDashboardScreen";
+
+// PLAN 영역
+import DailyPlannerScreen from "./../screens/plan/DailyPlannerScreen";
+import WeeklyPlannerScreen from "./../screens/plan/WeeklyPlannerScreen";
+import MonthlyPlannerScreen from "./../screens/plan/MonthlyPlannerScreen";
+import YearlyOverviewScreen from "./../screens/plan/YearlyOverviewScreen";
+
+// ACTION 영역
+import TaskListScreen from "./../screens/task/TaskListScreen";
+import RoutineListScreen from "./../screens/routine/RoutineListScreen";
+import DailyDiaryScreen from "./../screens/diary/DailyDiaryScreen";
+import FocusModeScreen from "./../screens/focus/FocusModeScreen";
+
+// INSIGHT/SETTING 영역
+import StatDashboardScreen from "./../screens/stat/StatDashboardScreen";
+import SettingsScreen from "./../screens/settings/SettingsScreen";
+import PlaceholderScreen from "./../screens/PlaceholderScreen";
+
+// 일정(Event) 영역
+import EventCreateScreen from "./../screens/event/EventCreateScreen";
+import EventGroupSettingsScreen from "./../screens/event/EventGroupSettingsScreen";
+
+
+// 3. 반응형 레이아웃 훅 (임시)
+const useResponsiveLayout = () => ({ isMobile: false });
+
+const AppShell = () => {
   const { isMobile } = useResponsiveLayout();
-  const { user } = useAuth();
-  const { mode, setMode } = useAppMode();
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const handleModeChange = (nextMode) => {
-    setMode(nextMode);
-  };
 
   return (
     <div className="app-shell">
-      {/* 상단 헤더 */}
-      <header className="app-shell__header">
-        <div className="app-shell__brand" onClick={() => navigate("/plan/daily")}>
-          <div className="app-shell__brand-logo" />
-          <div>
-            <div className="app-shell__brand-name">Timebar Diary</div>
-            <div className="app-shell__title">B 모드 · Plan + Actual 밸런스</div>
-          </div>
-        </div>
+      <Header />
+      {!isMobile && <Sidebar />}
 
-        <div className="app-shell__header-right">
-          {/* 모드 스위치 J / P / B */}
-          <div className="mode-switch">
-            <button
-              type="button"
-              className={
-                "mode-switch__item" +
-                (mode === APP_MODES.J ? " mode-switch__item--active" : "")
-              }
-              onClick={() => handleModeChange(APP_MODES.J)}
-            >
-              J
-            </button>
-            <button
-              type="button"
-              className={
-                "mode-switch__item" +
-                (mode === APP_MODES.P ? " mode-switch__item--active" : "")
-              }
-              onClick={() => handleModeChange(APP_MODES.P)}
-            >
-              P
-            </button>
-            <button
-              type="button"
-              className={
-                "mode-switch__item" +
-                (mode === APP_MODES.B ? " mode-switch__item--active" : "")
-              }
-              onClick={() => handleModeChange(APP_MODES.B)}
-            >
-              B
-            </button>
-          </div>
+      <div className="app-shell__content">
+        <Routes>
+          {/* HOME 영역 */}
+          <Route path="/" element={<HomeDashboardScreen />} />
+          <Route path="/home" element={<HomeDashboardScreen />} />
+          <Route
+            path="/inbox"
+            element={<PlaceholderScreen title="알림/인박스 화면 (HOME-002)" />}
+          />
 
-          {/* 헤더 링크들 (통합 통계 / 할 일 리스트 등 필요 시 추가) */}
-          <div className="app-shell__header-actions">
-            <NavLink
-              to="/stat"
-              className={({ isActive }) =>
-                "header-link" +
-                (isActive ? " header-link--active header-link--accent" : "")
-              }
-            >
-              통합 통계
-            </NavLink>
-            <NavLink
-              to="/tasks"
-              className={({ isActive }) =>
-                "header-link" + (isActive ? " header-link--active" : "")
-              }
-            >
-              할 일 리스트
-            </NavLink>
-          </div>
+          {/* PLAN 영역 */}
+          <Route path="/planner/daily" element={<DailyPlannerScreen />} />
+          <Route path="/planner/weekly" element={<WeeklyPlannerScreen />} />
+          <Route path="/planner/monthly" element={<MonthlyPlannerScreen />} />
+          <Route path="/planner/yearly" element={<YearlyOverviewScreen />} />
+          <Route
+            path="/planner/templates"
+            element={<PlaceholderScreen title="플래너 템플릿 관리 (PLAN-005)" />}
+          />
+          <Route
+            path="/planner/canvas"
+            element={
+              <PlaceholderScreen title="연간/프로젝트 캔버스 보드 (PLAN-006)" />
+            }
+          />
 
-          {/* 사용자 정보 */}
-          <div className="app-shell__user">
-            <div className="app-shell__user-avatar">
-              {user?.name?.[0] ?? "D"}
-            </div>
-            <div className="app-shell__user-meta">
-              <div className="app-shell__user-name">{user?.name ?? "DATA"}</div>
-              <div className="app-shell__user-role">관리자</div>
-            </div>
-          </div>
-        </div>
-      </header>
+            {/* EVENT (일정) 영역 */}
+            <Route
+            path="/event/list"
+            element={<PlaceholderScreen title="일정 리스트/검색 (EVT-001)" />}
+            />
+            <Route
+            path="/event/dday"
+            element={<PlaceholderScreen title="D-Day 전용 목록 (EVT-004)" />}
+            />
+            <Route path="/event/create" element={<EventCreateScreen />} />
+            <Route
+            path="/event/group-settings"
+            element={<EventGroupSettingsScreen />}
+            />
 
-      {/* 좌측 사이드바 + 메인 컨텐츠 */}
-      <div className="app-shell__body">
-        <aside className="app-shell__sidebar">
-          <div className="app-shell__sidebar-section">
-            <div className="app-shell__sidebar-title">플래너</div>
-            <ul className="app-shell__sidebar-list">
-              <li>
-                <NavLink
-                  to="/plan/daily"
-                  className={({ isActive }) =>
-                    "app-shell__sidebar-link" +
-                    (isActive ? " app-shell__sidebar-link--active" : "")
-                  }
-                >
-                  일간 플래너
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/plan/weekly"
-                  className={({ isActive }) =>
-                    "app-shell__sidebar-link" +
-                    (isActive ? " app-shell__sidebar-link--active" : "")
-                  }
-                >
-                  주간 플래너
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/plan/monthly"
-                  className={({ isActive }) =>
-                    "app-shell__sidebar-link" +
-                    (isActive ? " app-shell__sidebar-link--active" : "")
-                  }
-                >
-                  월간 플래너
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/plan/yearly"
-                  className={({ isActive }) =>
-                    "app-shell__sidebar-link" +
-                    (isActive ? " app-shell__sidebar-link--active" : "")
-                  }
-                >
-                  연간 캔버스
-                </NavLink>
-              </li>
-            </ul>
-          </div>
 
-          <div className="app-shell__sidebar-section">
-            <div className="app-shell__sidebar-title">오늘의 일</div>
-            <ul className="app-shell__sidebar-list">
-              <li>
-                <NavLink
-                  to="/tasks"
-                  className={({ isActive }) =>
-                    "app-shell__sidebar-link" +
-                    (isActive ? " app-shell__sidebar-link--active" : "")
-                  }
-                >
-                  할 일 리스트
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/diary/daily"
-                  className={({ isActive }) =>
-                    "app-shell__sidebar-link" +
-                    (isActive ? " app-shell__sidebar-link--active" : "")
-                  }
-                >
-                  일간 다이어리
-                </NavLink>
-              </li>
-            </ul>
-          </div>
+          {/* FOCUS 영역 */}
+          <Route path="/focus-mode" element={<FocusModeScreen />} />
 
-          <div className="app-shell__sidebar-section">
-            <div className="app-shell__sidebar-title">관리</div>
-            <ul className="app-shell__sidebar-list">
-              <li>
-                <NavLink
-                  to="/stat"
-                  className={({ isActive }) =>
-                    "app-shell__sidebar-link" +
-                    (isActive ? " app-shell__sidebar-link--active" : "")
-                  }
-                >
-                  통합 통계
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/settings/profile"
-                  className={({ isActive }) =>
-                    "app-shell__sidebar-link" +
-                    (isActive ? " app-shell__sidebar-link--active" : "")
-                  }
-                >
-                  개인 설정
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/admin/users"
-                  className={({ isActive }) =>
-                    "app-shell__sidebar-link" +
-                    (isActive ? " app-shell__sidebar-link--active" : "")
-                  }
-                >
-                  관리자 사용자 관리
-                </NavLink>
-              </li>
-            </ul>
-          </div>
-        </aside>
+          {/* ACTION 영역 */}
+          <Route path="/action/task" element={<TaskListScreen />} />
+          <Route path="/action/routine/list" element={<RoutineListScreen />} />
+          <Route path="/action/diary" element={<DailyDiaryScreen />} />
 
-        <main className="app-shell__content">
-          <div className="page-container">{children}</div>
-        </main>
+          {/* EVENT 영역 */}
+          <Route
+            path="/event/list"
+            element={<PlaceholderScreen title="일정 리스트/검색 (EVT-001)" />}
+          />
+          <Route
+            path="/event/dday"
+            element={<PlaceholderScreen title="D-Day 전용 목록 (EVT-004)" />}
+          />
+
+          {/* DIARY/MEMO 영역 */}
+          <Route
+            path="/diary/calendar"
+            element={
+              <PlaceholderScreen title="다이어리 캘린더/목록 (DIARY-001)" />
+            }
+          />
+          <Route
+            path="/memo/inbox"
+            element={<PlaceholderScreen title="메모 인박스 (MEMO-001)" />}
+          />
+
+          {/* INSIGHT/SETTING 영역 */}
+          <Route path="/insight/stat" element={<StatDashboardScreen />} />
+          <Route
+            path="/insight/category"
+            element={<PlaceholderScreen title="카테고리별 통계 (STAT-002)" />}
+          />
+          <Route
+            path="/insight/plan-vs-actual"
+            element={<PlaceholderScreen title="Plan vs Actual 비교 (STAT-003)" />}
+          />
+
+          {/* SETTING 영역 */}
+          <Route path="/settings" element={<SettingsScreen />} />
+          <Route
+            path="/settings/profile"
+            element={<PlaceholderScreen title="프로필/계정 정보 (SET-001)" />}
+          />
+          <Route
+            path="/settings/theme"
+            element={<PlaceholderScreen title="테마/색상/스티커 설정 (SET-003)" />}
+          />
+          <Route
+            path="/settings/alarm"
+            element={<PlaceholderScreen title="알림 설정 (SET-004)" />}
+          />
+          <Route
+            path="/settings/security"
+            element={<PlaceholderScreen title="보안/로그인 설정 (SET-005)" />}
+          />
+          <Route
+            path="/settings/category"
+            element={<PlaceholderScreen title="카테고리 색/아이콘 설정 (SET-006)" />}
+          />
+
+          {/* 기타 */}
+          <Route path="/data" element={<PlaceholderScreen title="데이터 관리" />} />
+
+          {/* fallback */}
+          <Route path="*" element={<HomeDashboardScreen />} />
+        </Routes>
       </div>
 
-      {/* ✅ 모바일에서만 하단 네비게이션 노출 */}
-      {isMobile && <MobileBottomNav currentPath={location.pathname} />}
+      {isMobile && <MobileBottomNav />}
     </div>
   );
-}
-
-function MobileBottomNav({ currentPath }) {
-  const items = [
-    { key: "plan", label: "플래너", to: "/plan/daily" },
-    { key: "tasks", label: "할 일", to: "/tasks" },
-    { key: "diary", label: "다이어리", to: "/diary/daily" },
-    { key: "stat", label: "통계", to: "/stat" },
-    { key: "settings", label: "설정", to: "/settings/profile" },
-  ];
-
-  return (
-    <nav className="mobile-bottom-nav">
-      {items.map((item) => {
-        const isActive =
-          currentPath === item.to || currentPath.startsWith(item.to + "/");
-        return (
-          <NavLink
-            key={item.key}
-            to={item.to}
-            className={
-              "mobile-bottom-nav__item" +
-              (isActive ? " mobile-bottom-nav__item--active" : "")
-            }
-          >
-            {item.label}
-          </NavLink>
-        );
-      })}
-    </nav>
-  );
-}
+};
 
 export default AppShell;

@@ -1,4 +1,5 @@
-// FILE: src/main/frontend/src/shared/context/AppModeContext.jsx
+// src/main/frontend/src/shared/context/AppModeContext.jsx
+
 import React, { createContext, useContext, useState } from "react";
 
 export const APP_MODES = {

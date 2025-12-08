@@ -1,50 +1,112 @@
-// src/screens/share/FriendListScreen.jsx
+// FILE: src/main/frontend/src/screens/share/FriendListScreen.jsx
 import React from "react";
-import DashboardCard from "../../components/dashboard/DashboardCard";
+import PageContainer from "../../layout/PageContainer";
 import Button from "../../components/common/Button";
-import "../../styles/screens/share.css";
+import TextInput from "../../components/common/TextInput";
 
-const SAMPLE_FRIENDS = [
-  { id: 1, name: "지은", status: "수락" },
-  { id: 2, name: "민수", status: "요청중" },
+const MOCK_FRIENDS = [
+  { id: 1, name: "친구 A", status: "accepted", note: "매일 공부 타임 공유" },
+  { id: 2, name: "친구 B", status: "pending", note: "초대 보냄 · 대기 중" },
+  { id: 3, name: "친구 C", status: "blocked", note: "차단됨" },
 ];
 
 function FriendListScreen() {
   return (
-    <div className="screen share-screen">
-      <header className="screen-header">
-        <div className="screen-header__left">
-          <h2 className="screen-header__title">친구/지인</h2>
-          <p className="screen-header__subtitle">
-            함께 일정을 공유할 친구를 관리해요.
-          </p>
-        </div>
-        <Button className="btn--primary">친구 초대</Button>
-      </header>
+    <PageContainer
+      screenId="SHARE-001"
+      title="친구 / 지인 목록"
+      subtitle="친구 검색/초대/삭제 및 요청 상태를 관리합니다."
+    >
+      <div className="screen share-screen share-screen--friends">
+        <div className="share-card">
+          {/* 상단: 초대 + 검색 */}
+          <div className="share-card__header">
+            <div>
+              <h3 className="share-card__title">친구 관리</h3>
+              <p className="share-card__subtitle">
+                함께 플래너를 쓰고 싶은 사람을 초대하거나, 기존 친구를 관리할 수
+                있어요.
+              </p>
+            </div>
+            <Button type="button" size="sm" variant="primary">
+              친구 초대
+            </Button>
+          </div>
 
-      <div className="share-grid">
-        <DashboardCard title="친구 목록" subtitle="요청/수락 상태 포함">
-          <ul className="friend-list">
-            {SAMPLE_FRIENDS && SAMPLE_FRIENDS.map((f) => (
-              <li key={f.id} className="friend-item">
-                <span>{f.name}</span>
-                <span
-                  style={{ fontSize: 12, color: "var(--color-muted)" }}
-                >
-                  {f.status}
-                </span>
+          <div className="share-friends-toolbar">
+            <div className="share-friends-search">
+              <TextInput
+                label="친구 검색"
+                placeholder="닉네임 또는 이메일로 검색"
+              />
+            </div>
+            <div className="share-friends-filter">
+              <button className="share-segment share-segment--active">
+                전체
+              </button>
+              <button className="share-segment">요청 대기</button>
+              <button className="share-segment">친구</button>
+              <button className="share-segment">차단</button>
+            </div>
+          </div>
+
+          {/* 친구 리스트 */}
+          <ul className="share-friend-list">
+            {MOCK_FRIENDS.map((f) => (
+              <li key={f.id} className="share-friend-item">
+                <div className="share-friend-item__avatar">
+                  <span>{f.name.charAt(0)}</span>
+                </div>
+                <div className="share-friend-item__info">
+                  <div className="share-friend-item__name-row">
+                    <span className="share-friend-item__name">{f.name}</span>
+                    <span
+                      className={`share-status-pill share-status-pill--${f.status}`}
+                    >
+                      {f.status === "accepted"
+                        ? "친구"
+                        : f.status === "pending"
+                        ? "요청 대기"
+                        : "차단됨"}
+                    </span>
+                  </div>
+                  <div className="share-friend-item__meta">
+                    <span className="share-friend-item__note">{f.note}</span>
+                  </div>
+                </div>
+                <div className="share-friend-item__actions">
+                  {f.status === "pending" && (
+                    <>
+                      <Button type="button" size="xs" variant="primary">
+                        수락
+                      </Button>
+                      <Button type="button" size="xs" variant="ghost">
+                        거절
+                      </Button>
+                    </>
+                  )}
+                  {f.status === "accepted" && (
+                    <>
+                      <Button type="button" size="xs" variant="ghost">
+                        프로필
+                      </Button>
+                      <Button type="button" size="xs" variant="ghost">
+                        삭제
+                      </Button>
+                    </>
+                  )}
+                  {f.status === "blocked" && (
+                    <Button type="button" size="xs" variant="ghost">
+                      차단 해제
+                    </Button>
+                  )}
+                </div>
               </li>
             ))}
           </ul>
-        </DashboardCard>
-
-        <DashboardCard title="선택된 친구" subtitle="공유 옵션 설정">
-          <p style={{ fontSize: 13, color: "var(--color-muted)" }}>
-            친구를 선택하면 공유 캘린더 및 가시성 설정을 여기에 표시합니다.
-          </p>
-        </DashboardCard>
+        </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }
 

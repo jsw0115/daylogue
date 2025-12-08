@@ -1,40 +1,51 @@
-import React from "react";
+// src/main/frontend/src/screens/stat/StatDashboardScreen.jsx
 
-function StatDashboardScreen() {
-  return (
-    <div className="screen stat-screen">
-      <div className="screen-header">
-        <div className="screen-header__left">
-          <h1 className="screen-header__title">통합 통계</h1>
-          <p className="screen-header__subtitle">
-            완료 Task, 루틴 달성률, 일기 작성일 수를 한 눈에 봅니다.
-          </p>
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+
+const StatDashboardScreen = () => {
+    const chartData = [
+        { label: 'PLAN 달성률', value: 85, color: 'primary' },
+        { label: 'ACTION 완료율', value: 60, color: 'success' },
+        { label: 'DIARY 작성율', value: 95, color: 'warning' },
+    ];
+    
+    return (
+        <div>
+            <div className="screen-header">
+                <div className="screen-header__title">통합 통계 대시보드</div>
+                {/* 임시 탭 바 */}
+                <div className="tabbar tabbar--sm">
+                    <NavLink to="/insight/stat" className="tabbar__item tabbar__item--active">개요</NavLink>
+                    <NavLink to="/insight/stat/routine" className="tabbar__item">루틴</NavLink>
+                    <NavLink to="/insight/stat/task" className="tabbar__item">할 일</NavLink>
+                </div>
+            </div>
+            
+            <h3 className="text-muted mb-4">전반적인 활동 분석</h3>
+            
+            <div className="card grid-3-cols gap-4 stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)' }}>
+                {chartData.map((data, index) => (
+                    <div key={index} className="stat-card p-4 flex-col items-center justify-center text-center">
+                        <div 
+                            className={`stat-circle font-bold text-${data.color}`} 
+                            style={{ fontSize: '32px', marginBottom: '8px' }}
+                        >
+                            {data.value}%
+                        </div>
+                        <h4 className="font-bold text-muted">{data.label}</h4>
+                    </div>
+                ))}
+            </div>
+
+            <div className="card mt-4 p-4">
+                <h4 className="dashboard-card__title mb-3">주간 시간 사용 분포</h4>
+                <div style={{ height: '200px', backgroundColor: 'var(--color-background-hover)', borderRadius: 'var(--border-radius)' }} className="flex justify-center items-center text-muted">
+                    Bar Chart Placeholder
+                </div>
+            </div>
         </div>
-      </div>
-
-      <div className="stat-grid">
-        <section className="dashboard-card">
-          <div className="dashboard-card__header">
-            <h2 className="dashboard-card__title">오늘·이번 주 요약</h2>
-          </div>
-          <ul className="simple-list">
-            <li>• 완료 Task: 5개</li>
-            <li>• 루틴 달성률: 72%</li>
-            <li>• 일기 작성일 수: 18일</li>
-          </ul>
-        </section>
-
-        <section className="dashboard-card">
-          <div className="dashboard-card__header">
-            <h2 className="dashboard-card__title">Plan vs Actual</h2>
-          </div>
-          <p className="stat-legend">
-            나중에 Recharts 같은 라이브러리로 그래프를 붙이면 돼요.
-          </p>
-        </section>
-      </div>
-    </div>
-  );
+    );
 }
 
 export default StatDashboardScreen;

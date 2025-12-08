@@ -1,30 +1,197 @@
-.focus-session-screen .focus-grid {
+/* FILE: styles/screens/focus.css */
+
+.focus-screen {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.focus-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-  gap: 16px;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.1fr);
+  gap: 20px;
 }
 
-@media (max-width: 960px) {
-  .focus-session-screen .focus-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
+.focus-main-card {
+  background: var(--color-surface, #ffffff);
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  padding: 24px 28px;
 }
 
-.focus-timer-main {
+.focus-main-header {
+  margin-bottom: 16px;
+}
+
+.focus-main-title {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.focus-main-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-muted, #6b7280);
+}
+
+.focus-timer-wrapper {
+  margin: 12px 0 16px;
+}
+
+.focus-mode-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.focus-dnd-banner {
+  border-radius: 14px;
+  background: #f5f3ff;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.focus-dnd-banner__text {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+}
+
+.focus-dnd-banner__text span {
+  color: var(--color-muted, #6b7280);
+}
+
+/* Side cards */
+
+.focus-side .dashboard-card {
+  margin-bottom: 16px;
+}
+
+.focus-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
-.focus-timer-circle {
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  border: 10px solid #e5e7eb;
+.focus-category-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.focus-category-item {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.focus-category-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  margin-right: 6px;
+}
+
+.focus-category-dot--study {
+  background: #4f46e5;
+}
+
+.focus-category-dot--work {
+  background: #0ea5e9;
+}
+
+.focus-category-dot--health {
+  background: #22c55e;
+}
+
+.focus-category-name {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.focus-category-time {
+  font-size: 12px;
+  color: var(--color-muted, #6b7280);
+}
+
+.focus-streak-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.focus-streak-main {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.focus-streak-number {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.focus-streak-label {
+  font-size: 13px;
+}
+
+.focus-streak-help {
+  font-size: 12px;
+  color: var(--color-muted, #6b7280);
+}
+
+/* Responsive */
+
+@media (max-width: 960px) {
+  .focus-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .focus-main-card {
+    padding: 20px 18px;
+  }
+
+  .focus-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.focus-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.focus-timer-display {
+  margin: 12px 0;
+  text-align: center;
+}
+
+.focus-timer-time {
+  font-size: 2.4rem;
+  font-weight: 700;
+}
+
+.focus-timer-actions {
+  display: flex;
+  gap: 8px;
   justify-content: center;
-  font-size: 32px;
-  font-weight: 600;
+}
+
+.focus-pomodoro-mode {
+  font-size: 0.9rem;
+  margin-top: 6px;
 }

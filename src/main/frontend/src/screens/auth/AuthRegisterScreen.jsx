@@ -1,51 +1,104 @@
-// src/screens/auth/AuthRegisterScreen.jsx
+// FILE: src/main/frontend/src/screens/auth/AuthRegisterScreen.jsx
 import React from "react";
-import DashboardCard from "../../components/dashboard/DashboardCard";
+import { useNavigate } from "react-router-dom";
+import PageContainer from "../../layout/PageContainer";
 import TextInput from "../../components/common/TextInput";
 import Button from "../../components/common/Button";
-import "../../styles/screens/auth.css";
 
 function AuthRegisterScreen() {
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // TODO: AUTH-002-F01 회원가입 API 연동
+  };
+
   return (
-    <div className="screen auth-screen">
-      <header className="screen-header">
-        <div className="screen-header__left">
-          <h2 className="screen-header__title">회원가입</h2>
-          <p className="screen-header__subtitle">
-            Daylogue와 함께 나만의 시간 관리 루틴을 만들어보세요.
-          </p>
-        </div>
-      </header>
+    <PageContainer
+      screenId="AUTH-002"
+      title="회원가입"
+      subtitle="새 계정을 만들고 나만의 타임바 다이어리를 시작해요."
+    >
+      <div className="screen auth-screen">
+        <div className="auth-layout">
+          <section className="auth-card">
+            <header className="auth-card__header">
+              <h2 className="auth-card__title">계정 만들기</h2>
+              <p className="auth-card__subtitle">
+                기본 정보만 입력하면 바로 플래너를 사용할 수 있어요.
+              </p>
+            </header>
 
-      <div className="auth-layout">
-        <section className="auth-hero">
-          <div className="auth-hero__badge">첫 시작을 위한 설정</div>
-          <h3>오늘부터의 기록이 쌓여 내일을 바꿉니다.</h3>
-          <p>MBTI J/P 스타일에 맞춰 플래너 템플릿을 추천해 드릴게요.</p>
-        </section>
-
-        <div className="auth-card">
-          <DashboardCard title="기본 정보 입력">
-            <form className="auth-form">
-              <TextInput label="이름 또는 닉네임" placeholder="예) 성원" />
-              <TextInput label="이메일" placeholder="you@example.com" />
+            <form className="auth-form" onSubmit={handleSubmit}>
+              <TextInput
+                label="이름"
+                name="name"
+                placeholder="홍길동"
+                fullWidth
+                required
+              />
+              <TextInput
+                label="닉네임"
+                name="nickname"
+                placeholder="표시될 닉네임을 입력하세요"
+                fullWidth
+              />
+              <TextInput
+                label="이메일"
+                type="email"
+                name="email"
+                placeholder="you@example.com"
+                fullWidth
+                required
+              />
               <TextInput
                 label="비밀번호"
                 type="password"
-                placeholder="8자 이상 입력"
+                name="password"
+                placeholder="8자 이상 입력하세요"
+                fullWidth
+                required
               />
               <TextInput
                 label="비밀번호 확인"
                 type="password"
-                placeholder="다시 한 번 입력"
+                name="passwordConfirm"
+                placeholder="비밀번호를 한 번 더 입력하세요"
+                fullWidth
+                required
               />
 
-              <Button className="btn--primary btn--full">가입하기</Button>
+              <Button
+                type="submit"
+                variant="primary"
+                fullWidth
+              >
+                회원가입 완료
+              </Button>
+
+              <div className="auth-form__footer">
+                <span>이미 계정이 있나요?</span>
+                <button
+                  type="button"
+                  className="link-button"
+                  onClick={() => navigate("/auth/login")}
+                >
+                  로그인
+                </button>
+              </div>
             </form>
-          </DashboardCard>
+          </section>
+
+          <aside className="auth-side">
+            <h3 className="auth-side__title">J / P / B 모드로 나에게 맞는 플래너</h3>
+            <p className="auth-side__text">
+              가입 후 첫 로그인에서 시간관리 모드와 기본 시작 화면을 고르면
+              홈과 플래너, 통계 레이아웃이 자동으로 맞춰져요.
+            </p>
+          </aside>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }
 

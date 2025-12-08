@@ -1,9 +1,17 @@
-/* 루틴 목록 */
+/*
+ * Timebar Diary - Routine Screen Styles
+ * 파일: src/main/frontend/src/styles/screens/routine.css
+ */
+
+.routine-screen {
+  /* Routine List Screen */
+}
 
 .routine-screen .routine-list-grid {
+  /* 개선: screen-grid와 유사하게 1:1 비율로 변경 */
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); 
+  gap: 24px;
 }
 
 @media (max-width: 960px) {
@@ -12,31 +20,67 @@
   }
 }
 
+/* Routine List Table */
 .routine-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
 }
 
-.routine-table th,
-.routine-table td {
-  padding: 8px 10px;
-  border-bottom: 1px solid #e5e7eb;
+.routine-table th {
   text-align: left;
+  padding: 10px 12px;
+  font-size: var(--font-small);
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
 }
 
+.routine-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--color-surface-soft);
+  font-size: var(--font-body);
+}
+
+.routine-table tbody tr:hover {
+  background: var(--color-surface-soft);
+}
+
+.routine-status {
+  font-size: var(--font-xs);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.routine-status--active {
+  background: var(--color-success);
+  color: var(--color-surface);
+}
+
+.routine-status--inactive {
+  background: var(--color-muted);
+  color: var(--color-surface);
+}
+
+/* Routine Edit Form */
 .routine-edit-form {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
 }
 
-/* 루틴 히스토리 – 달력/그래프 컨테이너 */
+.routine-edit-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Routine History Screen */
 
 .routine-history-grid {
+  /* 개선: screen-grid 공통 사용을 위해 1:1.2 비율 대신 유동적으로 설정 */
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); 
+  gap: 24px;
 }
 
 @media (max-width: 960px) {
@@ -46,62 +90,84 @@
 }
 
 .routine-tracker {
+  /* UX 개선: 시각적 분리 강화 */
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
-  background: #ffffff;
+  background: var(--color-surface);
   overflow: hidden;
-  font-size: 11px;
+  font-size: var(--font-xs);
 }
 
 .routine-tracker__header {
-  display: grid;
-  grid-template-columns: 120px repeat(auto-fit, minmax(24px, 1fr));
-  align-items: center;
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 10px 12px;
+  background: var(--color-surface-soft);
+  font-weight: 500;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
 }
 
-.routine-tracker__corner {
-  padding: 6px 8px;
-}
-
-.routine-tracker__day-header {
-  padding: 6px 4px;
-  text-align: center;
-  color: var(--color-muted);
-}
-
-.routine-tracker__body {
-  display: flex;
-  flex-direction: column;
-}
-
-.routine-tracker__row {
-  display: grid;
-  grid-template-columns: 120px repeat(auto-fit, minmax(24px, 1fr));
-  align-items: center;
-}
-
-.routine-tracker__row-label {
-  padding: 6px 8px;
-  border-right: 1px solid #e5e7eb;
-  font-size: 12px;
+.routine-tracker__table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .routine-tracker__cell {
-  padding: 4px 0;
-  border: 1px solid #f3f4f6;
-  border-top: none;
-  border-right: none;
-  border-bottom: none;
-  background: #ffffff;
+  /* UX 개선: 배경색 변경으로 Done 상태 강조 */
+  background: var(--color-surface);
   cursor: pointer;
+  padding: 6px 0; /* 셀 높이 확대 */
+  text-align: center;
+  border-right: 1px solid var(--color-surface-soft);
+  border-bottom: 1px solid var(--color-surface-soft);
+  transition: all 0.1s ease;
+}
+
+.routine-tracker__cell:last-child {
+  border-right: none;
+}
+
+.routine-tracker__cell--day {
+  font-weight: 500;
+  color: var(--color-text);
+  background: var(--color-surface-soft);
+  border-right: 1px solid var(--color-border);
 }
 
 .routine-tracker__cell--done {
-  background: #ecfdf5;
+  background: var(--color-success); /* 초록색으로 변경 */
+  color: var(--color-surface);
+  opacity: 0.8;
 }
 
 .routine-tracker__cell--hovered {
-  background: #eef2ff;
+  background: var(--color-primary-soft);
+}
+
+.routine-tracker__cell--done:hover {
+  opacity: 1;
+}
+
+/* 달성률 그래프 */
+.routine-achievement-chart {
+  height: 250px;
+  padding: 15px;
+}
+
+.routine-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.routine-table th,
+.routine-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.routine-weekdays {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
 }

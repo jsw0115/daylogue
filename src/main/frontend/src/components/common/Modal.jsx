@@ -1,29 +1,20 @@
-// src/main/frontend/src/components/common/Modal.jsx
 import React from "react";
-import "../../styles/components.css";
 
-function Modal({ open, title, children, onClose, footer }) {
+const Modal = ({ open, title, onClose, children, footer }) => {
   if (!open) return null;
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal"
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
+    <div className="td-modal-backdrop" onClick={onClose}>
+      <div
+        className="td-modal"
+        onClick={(e) => e.stopPropagation()}
       >
-        <header className="modal__header">
-          <h3>{title}</h3>
-          <button className="modal__close" onClick={onClose}>
-            ✕
-          </button>
-        </header>
-        <div className="modal__body">{children}</div>
-        {footer && <footer className="modal__footer">{footer}</footer>}
+        {title && <h3 className="td-modal__title">{title}</h3>}
+        <div className="td-modal__body">{children}</div>
+        {footer && <div className="td-modal__footer">{footer}</div>}
       </div>
     </div>
   );
-}
+};
 
 export default Modal;
-

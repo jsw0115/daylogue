@@ -1,70 +1,113 @@
-// src/screens/auth/AuthLoginScreen.jsx
+// FILE: src/main/frontend/src/screens/auth/AuthLoginScreen.jsx
 import React from "react";
-import DashboardCard from "../../components/dashboard/DashboardCard";
+import { useNavigate } from "react-router-dom";
+import PageContainer from "../../layout/PageContainer";
 import TextInput from "../../components/common/TextInput";
 import Checkbox from "../../components/common/Checkbox";
 import Button from "../../components/common/Button";
-import "../../styles/screens/auth.css";
 
 function AuthLoginScreen() {
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // TODO: AUTH-001-F01 이메일 로그인 API 연동
+  };
+
   return (
-    <div className="screen auth-screen">
-      <header className="screen-header">
-        <div className="screen-header__left">
-          <h2 className="screen-header__title">로그인</h2>
-          <p className="screen-header__subtitle">
-            Daylogue에 다시 오신 걸 환영해요.
-          </p>
-        </div>
-      </header>
+    <PageContainer
+      screenId="AUTH-001"
+      title="로그인"
+      subtitle="이메일/비밀번호로 로그인하고 Timebar Diary를 시작해요."
+    >
+      <div className="screen auth-screen">
+        <div className="auth-layout">
+          <section className="auth-card">
+            <header className="auth-card__header">
+              <h2 className="auth-card__title">Timebar Diary에 로그인</h2>
+              <p className="auth-card__subtitle">
+                오늘의 타임바와 갓생 기록을 이어서 관리해요.
+              </p>
+            </header>
 
-      <div className="auth-layout">
-        <section className="auth-hero">
-          <div className="auth-hero__badge">오늘 하루, 색으로 정리하기</div>
-          <h3>하루를 기록하면, 패턴이 보입니다.</h3>
-          <p>
-            타임바, 할 일, 루틴, 일기를 한 곳에서 관리하고
-            <br />
-            나만의 시간 팔레트를 만들어보세요.
-          </p>
-        </section>
-
-        <div className="auth-card">
-          <DashboardCard title="이메일로 로그인">
-            <form className="auth-form">
-              <TextInput label="이메일" placeholder="you@example.com" />
+            <form className="auth-form" onSubmit={handleSubmit}>
+              <TextInput
+                label="이메일"
+                type="email"
+                name="email"
+                placeholder="you@example.com"
+                fullWidth
+                required
+              />
               <TextInput
                 label="비밀번호"
                 type="password"
+                name="password"
                 placeholder="비밀번호를 입력하세요"
+                fullWidth
+                required
               />
 
-              <div className="auth-form__extras">
-                <Checkbox label="자동 로그인" />
-                <button type="button" className="link-button">
-                  비밀번호 찾기
+              <div className="auth-form__row">
+                <Checkbox
+                  label="자동 로그인 유지"
+                  defaultChecked={true}
+                />
+                <button
+                  type="button"
+                  className="link-button"
+                  onClick={() => navigate("/auth/password-reset")}
+                >
+                  비밀번호 재설정
                 </button>
               </div>
 
-              <Button className="btn--primary btn--full">로그인</Button>
-            </form>
+              <Button
+                type="submit"
+                variant="primary"
+                fullWidth
+              >
+                로그인
+              </Button>
 
-            <div
-              style={{
-                marginTop: 12,
-                fontSize: 12,
-                color: "var(--color-muted)",
-              }}
-            >
-              아직 계정이 없으신가요?{" "}
-              <button type="button" className="link-button">
-                회원가입하기
-              </button>
-            </div>
-          </DashboardCard>
+              <div className="auth-form__footer">
+                <span>아직 계정이 없나요?</span>
+                <button
+                  type="button"
+                  className="link-button"
+                  onClick={() => navigate("/auth/register")}
+                >
+                  회원가입
+                </button>
+              </div>
+
+              <div className="auth-divider">
+                <span className="auth-divider__line" />
+                <span className="auth-divider__label">또는</span>
+                <span className="auth-divider__line" />
+              </div>
+
+              <Button
+                type="button"
+                variant="ghost"
+                fullWidth
+                onClick={() => navigate("/auth/social-link")}
+              >
+                소셜 계정으로 계속하기
+              </Button>
+            </form>
+          </section>
+
+          <aside className="auth-side">
+            <h3 className="auth-side__title">타임바로 하루를 색으로 기록하기</h3>
+            <p className="auth-side__text">
+              일/주/월 타임바, 루틴, 포커스, 다이어리를 한 번에 관리하고
+              모드(J/P/B)에 맞는 갓생 리포트를 받아볼 수 있어요.
+            </p>
+          </aside>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }
 

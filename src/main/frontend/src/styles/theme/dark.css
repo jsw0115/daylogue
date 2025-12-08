@@ -1,16 +1,52 @@
-/* FILE: src/main/frontend/src/styles/theme/dark.css */
-:root[data-theme="dark"] {
-  --color-bg: #020617;
-  --color-surface: #020617;
-  --color-surface-soft: #020617;
-  --color-border: #1f2937;
+/*
+ * Timebar Diary - Dark Theme Overrides
+ * 파일: src/main/frontend/src/styles/theme/dark.css
+ */
 
-  --color-text: #e5e7eb;
-  --color-muted: #9ca3af;
+:root[data-theme="dark"] {
+  /* 기본 색상 토큰 반전 및 조정 */
+  --color-bg: #0f172a; /* 배경을 너무 어둡지 않게 약간 밝게 조정 */
+  --color-surface: #1e293b; /* 카드 표면을 배경과 대비되도록 */
+  --color-surface-soft: #0f172a; 
+  --color-border: #334155;
+
+  --color-text: #f8fafc;
+  --color-muted: #94a3b8;
+  
+  --color-primary: #818cf8; /* Primary 색상 밝게 조정 */
+  --color-primary-soft: rgba(129, 140, 248, 0.2);
+  
+  --color-success: #34d399;
+  --color-warning: #facc15; 
+  --color-info: #22d3ee;
 
   /* 확장 토큰 */
-  --color-bg-elevated: #020617;
+  --color-bg-elevated: var(--color-surface);
   --color-accent: #f973af;
   --color-text-muted: var(--color-muted);
-  --color-danger: #f97373;
+  --color-danger: #fca5a5;
+  
+  /* 다크 모드용 그림자 조정 */
+  --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --shadow-card: 0 4px 10px rgba(0, 0, 0, 0.4); 
+
+  /* 컴포넌트 조정 */
+  
+  .app-shell__sidebar {
+    background: var(--color-bg);
+    border-right-color: var(--color-border);
+  }
+
+  .app-shell__header {
+    background: var(--color-surface);
+    border-bottom-color: var(--color-border);
+  }
+  
+  .tabbar__item--active {
+    background: var(--color-bg);
+  }
+  
+  .field__control {
+    background: var(--color-bg);
+  }
 }

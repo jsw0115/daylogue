@@ -1849,3 +1849,40 @@
 .daily-stat-footer {
   margin-top: 6px;
 }
+
+.planner-datepicker-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 간단한 모달 */
+.planner-datepicker-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+}
+
+.planner-datepicker-modal {
+  background: #fff;
+  padding: 16px 18px;
+  border-radius: 8px;
+  min-width: 260px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.35);
+}
+
+.planner-datepicker-title {
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+
+.planner-datepicker-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 12px;
+}

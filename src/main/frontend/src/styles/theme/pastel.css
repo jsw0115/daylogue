@@ -1,19 +1,44 @@
-/* FILE: src/main/frontend/src/styles/theme/pastel.css */
+/*
+ * Timebar Diary - Pastel Theme Overrides
+ * 파일: src/main/frontend/src/styles/theme/pastel.css
+ */
+
 :root[data-theme="pastel"] {
-  --color-bg: #fef9ff;
+  --color-bg: #fffcfd; /* 배경을 더욱 밝게 */
   --color-surface: #ffffff;
   --color-surface-soft: #fdf2ff;
-  --color-border: #f5d0fe;
+  --color-border: #f9e2fb; /* 테두리 색상 조정 */
 
   --color-text: #4b5563;
-  --color-muted: #9ca3af;
+  --color-muted: #a1a1aa;
 
-  --color-primary: #f472b6;
-  --color-primary-soft: rgba(244, 114, 182, 0.16);
+  --color-primary: #f472b6; /* 핑크 계열 Primary */
+  --color-primary-soft: rgba(244, 114, 182, 0.15); /* Soft 색상 명암비 증가 */
+  
+  --color-success: #84cc16; /* 연두색 */
+  --color-warning: #fde047; /* 밝은 노랑 */
+  --color-info: #7dd3fc; /* 하늘색 */
 
   /* 확장 토큰 */
   --color-bg-elevated: var(--color-surface);
-  --color-accent: #f973af;
+  --color-accent: var(--color-primary);
   --color-text-muted: var(--color-muted);
   --color-danger: #fb7185;
+
+  /* Shadow를 더 부드럽게 */
+  --shadow-card: 0 4px 12px rgba(244, 114, 182, 0.1); 
+
+  /* 컴포넌트 조정 */
+  .app-shell__sidebar {
+    background: var(--color-surface-soft);
+  }
+
+  .btn--primary,
+  .primary-button {
+    box-shadow: 0 4px 12px var(--color-primary-soft);
+  }
+
+  .tabbar__item--active {
+    border: 1px solid var(--color-border);
+  }
 }

@@ -1,7 +1,17 @@
+/*
+ * Timebar Diary - Share Screen Styles
+ * 파일: src/main/frontend/src/styles/screens/share.css
+ */
+
+.share-screen {
+  /* Share Main Layout */
+}
+
 .share-screen .share-grid {
+  /* 개선: screen-grid와 구조 통일 */
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); 
+  gap: 24px;
 }
 
 @media (max-width: 960px) {
@@ -10,16 +20,67 @@
   }
 }
 
+/* Friend/User List (SHARE-001) */
+.friend-list-card {
+  height: 100%;
+}
+
+.friend-search {
+  margin-bottom: 15px;
+}
+
 .friend-list {
   list-style: none;
   margin: 0;
   padding-left: 0;
+  max-height: 400px; /* 스크롤 가능한 영역 지정 */
+  overflow-y: auto;
 }
 
 .friend-item {
-  padding: 8px 10px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 10px 12px; /* 패딩 확대 */
+  border-bottom: 1px solid var(--color-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: var(--font-body);
+}
+
+.friend-item__info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.friend-item__name {
+  font-weight: 500;
+}
+
+.friend-status-badge {
+  font-size: var(--font-xs);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+/* Group Management (SHARE-002) */
+.group-management-card {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.group-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.group-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-surface-soft);
+  cursor: pointer;
+}
+
+.group-item:hover {
+  background: var(--color-surface-soft);
 }
