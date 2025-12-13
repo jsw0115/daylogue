@@ -29,6 +29,9 @@ import "./styles/screens/settings.css";
 import "./styles/screens/admin.css";
 import "./styles/screens/dev.css";
 
+import "./styles/screens/homeDashboard.css";
+import "./styles/screens/taskList.css"; // TaskList 개선 버전 쓰면
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(

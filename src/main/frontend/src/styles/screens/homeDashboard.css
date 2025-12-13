@@ -1,0 +1,117 @@
+.home-dashboard .layout {
+  min-height: 540px;
+}
+
+.portlet {
+  background: #fff;
+  border: 1px solid #e8eaf0;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.portlet__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 12px;
+  border-bottom: 1px solid #eef0f5;
+}
+
+.portlet__head-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.portlet__drag {
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: grab;
+  user-select: none;
+}
+
+.portlet__titles { min-width: 0; }
+.portlet__title { font-weight: 800; font-size: 14px; color: #111827; }
+.portlet__subtitle { font-size: 12px; color: #6b7280; margin-top: 2px; }
+
+.portlet__body {
+  padding: 12px 12px 14px;
+  overflow: auto;
+}
+
+.portlet-picker {
+  background: #fff;
+  border: 1px solid #e8eaf0;
+  border-radius: 16px;
+  padding: 12px;
+  margin-bottom: 14px;
+}
+.portlet-picker__title { font-weight: 800; margin-bottom: 8px; }
+.portlet-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.portlet-picker__item { display: flex; gap: 8px; align-items: center; font-size: 13px; color: #374151; }
+
+.quicknav { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  border: 1px solid #e8eaf0;
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.chip:hover { background: #f3f4f6; }
+
+.plan-actual .table { margin-top: 10px; display: grid; gap: 6px; }
+.plan-actual .tr { display: grid; grid-template-columns: 1.2fr 0.6fr 0.6fr 1.6fr; gap: 10px; align-items: center; }
+.plan-actual .tr.th { font-size: 12px; color: #6b7280; }
+.barcell { display: grid; grid-template-columns: 1fr 44px; gap: 8px; align-items: center; }
+.bar { height: 10px; background: #eef0f5; border-radius: 999px; overflow: hidden; }
+.bar__fill { height: 100%; background: #8b5cf6; }
+.bar__text { font-size: 12px; color: #6b7280; text-align: right; }
+
+.today-memo textarea { min-height: 120px; }
+
+.month-cal__top { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
+.month-cal__title { font-weight: 800; }
+.month-cal__dow, .month-cal__grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.month-cal__dow-item { font-size: 12px; color: #6b7280; text-align: center; }
+.month-cal__cell {
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid #eef0f5;
+  background: #fff;
+  cursor: pointer;
+}
+.month-cal__cell.is-today { border-color: #c7d2fe; background: #eef2ff; }
+.month-cal__cell.is-sel { border-color: #4f46e5; background: #4f46e5; color: #fff; }
+
+.month-cal__bottom { margin-top: 10px; }
+
+.upcoming__row { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #eef0f5; }
+.upcoming__row:last-child { border-bottom: 0; }
+.upcoming__date { width: 92px; font-size: 12px; color: #6b7280; }
+.upcoming__title { font-weight: 700; }
+.upcoming__time { font-size: 12px; color: #6b7280; }
+
+.focus-mini__actions { display: flex; gap: 10px; margin-top: 12px; }
+
+.task-mini__row { display: grid; grid-template-columns: 28px 1fr 56px; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid #eef0f5; }
+.task-mini__row:last-child { border-bottom: 0; }
+.chk {
+  width: 26px; height: 26px; border-radius: 10px;
+  border: 1px solid #e8eaf0; display: grid; place-items: center;
+}
+.chk.is-done { background: #ecfdf3; border-color: #a7f3d0; color: #065f46; }
+.task-mini__meta { font-size: 12px; color: #6b7280; text-align: right; }

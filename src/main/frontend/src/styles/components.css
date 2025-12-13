@@ -1,252 +1,58 @@
-/* src/main/frontend/src/styles/components.css */
-
-/* Card */
-.card {
-    background-color: white;
-    padding: 20px;
-    border-radius: var(--border-radius);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.dashboard-card__title {
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: var(--color-text-default);
-}
-
-/* Button */
-.primary-button {
-    padding: 8px 16px;
-    background-color: var(--color-primary);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.primary-button:hover {
-    background-color: #3b30e8; 
-}
-
-.btn--sm {
-    padding: 6px 12px;
-    font-size: 0.9rem;
-}
-
-/* Tabs - 모든 플래너 화면에 통일 적용 */
-.tabbar {
-    display: flex;
-    border-radius: 4px;
-    overflow: hidden;
-    background-color: var(--color-background-hover);
-}
-
-.tabbar a {
-    padding: 8px 12px;
-    text-decoration: none;
-    color: var(--color-text-muted);
-    font-size: 0.9rem;
-    transition: background-color 0.2s;
-}
-
-.tabbar a:hover {
-    background-color: var(--color-border);
-}
-
-.tabbar .tabbar__item--active {
-    background-color: var(--color-primary);
-    color: white;
-    font-weight: bold;
-}
-
-/* J/P/B Mode Tabs (Header에 사용) */
-.mode-tabs {
-    display: flex;
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.mode-tabs__item {
-    padding: 4px 10px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    cursor: pointer;
-    background-color: white;
-    color: var(--color-text-muted);
-    border-right: 1px solid var(--color-border);
-}
-
-.mode-tabs__item:last-child {
-    border-right: none;
-}
-
-.mode-tabs__item--active {
-    background-color: var(--color-primary);
-    color: white;
-}
-
-
-/* --- Planner Specific Styles --- */
-
-/* Weekly Planner Grid */
-.weekly-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr); 
-}
-
-.weekly-day-card {
-    border: 1px solid var(--color-border);
-    transition: transform 0.1s, box-shadow 0.1s;
-    background-color: var(--color-background-hover);
-    cursor: pointer; /* 클릭 기능 강조 */
-}
-
-.weekly-day-card:hover {
-    background-color: #f0f3f5;
-    transform: translateY(-2px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Monthly Planner Grid */
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    border: 1px solid var(--color-border);
-    border-radius: var(--border-radius);
-    overflow: hidden;
-}
-
-.calendar-header-day {
-    background-color: var(--color-background-hover);
-    padding: 8px;
-    border-bottom: 1px solid var(--color-border);
-}
-
-.calendar-cell {
-    min-height: 100px;
-    border-right: 1px solid var(--color-border);
-    border-bottom: 1px solid var(--color-border);
-    background-color: white;
-}
-
-/* 마지막 주 오른쪽, 마지막 행 아래쪽 border 제거 */
-.calendar-cell:nth-child(7n) {
-    border-right: none;
-}
-.calendar-cell:nth-last-child(-n + 7) {
-    border-bottom: none;
-}
-
-/* src/main/frontend/src/styles/components.css 맨 아래쪽에 추가 */
-
-/* 버튼 공통 */
-.btn {
-  border-radius: 4px;
-  border: 1px solid transparent;
-  padding: 6px 12px;
-  font-size: 0.85rem;
-  cursor: pointer;
-}
-
-.btn--primary {
-  background-color: var(--color-primary);
-  color: #ffffff;
-}
-
-.btn--secondary {
-  background-color: #e5e7eb;
-  color: var(--color-text-default);
-}
-
-.btn--ghost {
-  background-color: #ffffff;
-  color: var(--color-text-default);
-  border-color: var(--color-border);
-}
-
-.btn--sm {
-  padding: 4px 8px;
-  font-size: 0.8rem;
-}
-
-.btn-link {
-  border: none;
-  background: none;
-  padding: 0;
-  color: var(--color-primary);
-  cursor: pointer;
-}
-
-/* 폼 공통 */
-.form-row {
-  margin-bottom: 12px;
-}
-
-.form-row--inline {
+.screen-head {
   display: flex;
-  gap: 12px;
   align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
 }
 
-.form-label {
-  display: block;
-  font-size: 0.85rem;
-  margin-bottom: 4px;
+.screen-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  color: #111827;
 }
 
-.form-input,
-.form-textarea {
-  width: 100%;
-  padding: 6px 10px;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--color-border);
-  font-size: 0.9rem;
+.screen-subtitle {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #6b7280;
 }
 
-.form-textarea {
-  resize: vertical;
-}
-
-.form-actions {
+.screen-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 8px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.td-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-}
-
-.td-modal {
+.btn {
+  border: 1px solid #e8eaf0;
   background: #fff;
-  min-width: 320px;
-  max-width: 480px;
-  border-radius: 10px;
-  padding: 16px 18px;
-  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.35);
+  border-radius: 12px;
+  padding: 9px 12px;
+  cursor: pointer;
+  font-size: 13px;
 }
 
-.td-modal__title {
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
+.btn:hover { background: #f3f4f6; }
+.btn.primary { background: #4f46e5; border-color: #4f46e5; color: #fff; }
+.btn.primary:hover { filter: brightness(0.97); }
+.btn.danger { border-color: #f1c0c0; color: #b42318; }
+.btn.xs { padding: 6px 8px; border-radius: 10px; font-size: 12px; }
 
-.td-modal__body {
-  font-size: 0.9rem;
-}
+.muted { color: #6b7280; font-size: 13px; }
 
-.td-modal__footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 12px;
+.field .label {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 6px;
 }
+.field input, .field textarea {
+  width: 100%;
+  border: 1px solid #e8eaf0;
+  border-radius: 12px;
+  padding: 10px 12px;
+  outline: none;
+  background: #fff;
+}
+.field textarea { resize: vertical; }

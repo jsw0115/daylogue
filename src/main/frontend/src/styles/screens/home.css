@@ -1,331 +1,366 @@
-/* src/main/frontend/src/styles/screens/home.css */
-
-.home-dashboard-screen .home-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 280px) minmax(0, 280px) minmax(0, 1fr);
-  gap: 16px;
-}
-
-@media (max-width: 960px) {
-  .home-dashboard-screen .home-grid {
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  }
-}
-
-.home-dashboard-screen .home-list {
-  list-style: none;
-  margin: 4px 0 0;
-  padding-left: 0;
-  font-size: var(--font-body);
-}
-
-.home-dashboard-screen .home-list li {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 2px 0;
-}
-
-/* 타임바 미니맵 – 얇고 심플하게 */
-
-.timebar-mini {
-  margin-top: 8px;
-  height: 14px;
-  border-radius: 999px;
-  overflow: hidden;
-  background: #e5e7eb;
-  display: flex;
-}
-
-.timebar-mini__segment {
-  flex: 1;
-}
-
-/* 예시용 색상 – 실제론 카테고리 색으로 채우면 좋음 */
-.timebar-mini__segment--study {
-  background: #6366f1;
-}
-.timebar-mini__segment--family {
-  background: #f973af;
-}
-.timebar-mini__segment--health {
-  background: #22c55e;
-}
-.timebar-mini__segment--etc {
-  background: #9ca3af;
-}
-
-/* 상단 버튼 영역 */
-
-.home-header-actions {
-  display: flex;
-  gap: 8px;
-}
-
-/* 한 줄 회고 */
-
-.home-oneline {
+/* ===== base helpers ===== */
+.home-dashboard-screen {
   width: 100%;
-  min-height: 64px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  padding: 8px 10px;
+  padding: 16px;
+}
+
+.card {
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+}
+
+.text-muted {
+  color: var(--color-muted, #6b7280);
+}
+
+.font-small {
   font-size: 13px;
-  resize: vertical;
 }
 
-.home-header-actions {
+.mb-3 { margin-bottom: 12px; }
+.mt-2 { margin-top: 8px; }
+.mt-3 { margin-top: 12px; }
+.mt-4 { margin-top: 16px; }
+
+/* ===== header ===== */
+.screen-header {
   display: flex;
-  gap: 8px;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
-.timebar-mini-container .timebar-mini {
-  border: none;
-  padding: 0;
-  cursor: pointer;
+.screen-header__title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
 }
-
-/* ----- Dashboard 추가 스타일 ----- */
 
 .screen-header__subtitle {
-  font-size: 0.9rem;
-  color: var(--color-text-muted);
+  margin: 6px 0 0 0;
 }
 
-/* 카드 공통 (components.css의 .card와 같이 사용) */
-.dashboard-card {
+.home-header-actions {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-/* PLAN vs ACTUAL 테이블 */
+/* ===== buttons (minimal, your project button system 있으면 대체 가능) ===== */
+.btn {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: var(--color-surface, #fff);
+  color: inherit;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  border-color: rgba(99, 102, 241, 0.45);
+  background: rgba(99, 102, 241, 0.12);
+}
+
+.btn--secondary {
+  background: rgba(0,0,0,0.03);
+}
+
+.btn--ghost {
+  background: transparent;
+}
+
+.btn--ghost.is-active {
+  border-color: rgba(99, 102, 241, 0.45);
+}
+
+.btn--sm {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+/* ===== plan actual table ===== */
 .plan-actual-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85rem;
-  margin-top: 8px;
+  font-size: 13px;
 }
 
 .plan-actual-table th,
 .plan-actual-table td {
-  border-bottom: 1px solid var(--color-border);
-  padding: 6px 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
   text-align: left;
+}
+
+.plan-actual-table th {
+  font-weight: 600;
+  color: var(--color-muted, #6b7280);
 }
 
 .plan-actual-progress {
   position: relative;
-  background-color: #e5e7eb;
+  height: 18px;
   border-radius: 999px;
-  height: 14px;
+  background: rgba(0,0,0,0.06);
   overflow: hidden;
 }
 
 .plan-actual-progress__bar {
   height: 100%;
-  border-radius: 999px;
-  background-color: var(--color-primary);
+  background: var(--color-primary, #6366f1);
+  opacity: 0.35;
 }
 
 .plan-actual-progress__text {
   position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  color: #ffffff;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: rgba(0,0,0,0.7);
 }
 
-/* 오늘 메모/좌우명 */
+/* ===== memo ===== */
 .dashboard-label {
-  font-size: 0.85rem;
-  font-weight: 500;
-  margin-bottom: 4px;
   display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.home-oneline {
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: var(--color-surface, #fff);
+  color: inherit;
+  font-size: 13px;
+  outline: none;
 }
 
 .today-quote-input {
   width: 100%;
-  padding: 6px 10px;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--color-border);
-  font-size: 0.9rem;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: var(--color-surface, #fff);
+  outline: none;
 }
 
-/* 월간 일정 달력 + 리스트 */
-.month-schedule-card {
-  grid-column: 1 / -1; /* 한 줄 전체 사용 */
-}
-
+/* ===== month schedule ===== */
 .month-schedule-header {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 12px;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
 }
 
 .month-schedule-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-  gap: 16px;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 14px;
 }
 
-.monthly-calendar {
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  background-color: #ffffff;
+@media (max-width: 960px) {
+  .month-schedule-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
-.calendar-weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  background-color: var(--color-background-hover);
-}
-
-.calendar-weekday {
-  font-size: 0.8rem;
-  text-align: center;
-  padding: 6px 0;
-}
-
-.calendar-days {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-}
-
-.calendar-day {
-  position: relative;
-  height: 40px;
-  border-right: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border);
-  background-color: #ffffff;
-  text-align: left;
-  padding: 4px 6px;
-  font-size: 0.8rem;
-  cursor: pointer;
-}
-
-.calendar-day:nth-child(7n) {
-  border-right: none;
-}
-
-.calendar-day.empty {
-  background-color: #f9fafb;
-  cursor: default;
-}
-
-.calendar-day__num {
-  font-size: 0.8rem;
-}
-
-.calendar-day__dot {
-  position: absolute;
-  right: 4px;
-  bottom: 4px;
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background-color: var(--color-primary);
-}
-
-.calendar-day.has-events {
-  font-weight: 500;
-}
-
-.calendar-day.is-selected {
-  background-color: #eef2ff;
-}
-
-/* 선택된 날짜 일정 목록 */
 .daily-event-list {
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  padding: 10px 12px;
-  background-color: #ffffff;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 14px;
+  padding: 12px;
+  background: rgba(0,0,0,0.015);
 }
 
 .daily-event-list__header {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
-  align-items: center;
+  gap: 10px;
+}
+
+.daily-event-list__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .daily-event-list__items {
-  list-style: none;
-  margin: 8px 0 0;
+  margin: 10px 0 0 0;
   padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
 }
 
-.daily-event-list__items li + li {
-  margin-top: 6px;
+.daily-event-list__items li {
+  padding: 10px 10px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 12px;
+  background: var(--color-surface, #fff);
 }
 
 .daily-event-title {
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
+  margin-bottom: 4px;
 }
 
-.group-color-dot {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-}
-/* ----- PLAN 뷰 탭 ----- */
-.plan-view-card {
-  grid-column: 1 / -1;
-  margin-top: 16px;
+.daily-event-actions {
+  margin-top: 8px;
 }
 
-.plan-view-header {
+/* ===== react-calendar overrides ===== */
+.monthly-calendar__toolbar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.monthly-calendar__date-input {
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 10px;
+  background: var(--color-surface, #fff);
+  color: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.monthly-calendar .react-calendar {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+}
+
+.monthly-calendar .react-calendar__navigation {
+  display: flex;
   align-items: center;
-  margin-bottom: 12px;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 
-.plan-view-tabs {
-  display: flex;
-  gap: 4px;
-}
-
-.plan-view-tab {
-  border-radius: 999px;
-  border: 1px solid var(--color-border);
-  padding: 4px 10px;
-  background-color: #fff;
-  font-size: 0.8rem;
+.monthly-calendar .react-calendar__navigation button {
+  min-width: 36px;
+  height: 34px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: var(--color-surface, #fff);
+  border-radius: 10px;
   cursor: pointer;
 }
 
-.plan-view-tab--active {
-  background-color: var(--color-primary);
-  color: #fff;
+.monthly-calendar .react-calendar__month-view__weekdays {
+  text-align: center;
+  font-size: 12px;
+  color: var(--color-muted, #6b7280);
 }
 
-/* 차트형 */
-.plan-view-chart-row {
+.monthly-calendar .react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none;
+}
+
+.monthly-calendar .react-calendar__tile {
+  position: relative;
+  height: 52px;
+  padding: 8px 6px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  font-size: 13px;
+}
+
+.monthly-calendar .react-calendar__tile:enabled:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.monthly-calendar .react-calendar__tile.is-selected,
+.monthly-calendar .react-calendar__tile--active {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.45);
+}
+
+.monthly-calendar .react-calendar__tile.has-events .calendar-day__dot {
+  position: absolute;
+  left: 50%;
+  bottom: 7px;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-primary, #6366f1);
+}
+
+.monthly-calendar .react-calendar__tile.is-sun {
+  color: var(--color-danger, #ef4444);
+}
+
+.monthly-calendar .react-calendar__tile.is-sat {
+  color: var(--color-info, #3b82f6);
+}
+
+/* ===== plan view ===== */
+.plan-view-tabs {
   display: flex;
-  align-items: center;
   gap: 8px;
-  margin-bottom: 6px;
+  flex-wrap: wrap;
 }
 
-.plan-view-chart-label {
-  width: 48px;
-  font-size: 0.8rem;
+.plan-view-tab {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: var(--color-surface, #fff);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.plan-view-tab--active {
+  border-color: rgba(99, 102, 241, 0.45);
+  background: rgba(99, 102, 241, 0.12);
+}
+
+.plan-view-chart {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.plan-view-chart-row {
+  display: grid;
+  grid-template-columns: 60px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
 }
 
 .plan-view-chart-bar-bg {
-  flex: 1;
-  position: relative;
-  height: 16px;
+  height: 14px;
   border-radius: 999px;
-  background-color: #e5e7eb;
+  background: rgba(0,0,0,0.06);
+  position: relative;
   overflow: hidden;
 }
 
@@ -333,108 +368,394 @@
   position: absolute;
   top: 0;
   bottom: 0;
+  border-radius: 999px;
 }
 
 .plan-view-chart-bar--plan {
   left: 0;
-  width: 70%;
-  background-color: #c4b5fd;
+  width: 65%;
+  background: rgba(99,102,241,0.25);
 }
 
 .plan-view-chart-bar--actual {
   left: 0;
-  width: 55%;
-  background-color: var(--color-primary);
-  opacity: 0.9;
+  width: 45%;
+  background: rgba(16,185,129,0.25);
 }
 
-/* 간트형 */
+.plan-view-gantt {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
 .plan-view-gantt-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 60px minmax(0, 1fr);
+  gap: 10px;
   align-items: center;
-  margin-bottom: 8px;
-  gap: 8px;
-}
-
-.plan-view-gantt-label {
-  width: 48px;
-  font-size: 0.8rem;
 }
 
 .plan-view-gantt-track {
-  flex: 1;
   display: flex;
-  gap: 4px;
+  gap: 8px;
 }
 
 .plan-view-gantt-block {
-  flex: 1;
-  font-size: 0.8rem;
-  padding: 4px 6px;
-  border-radius: 6px;
-  color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: rgba(0,0,0,0.02);
+  font-size: 12px;
 }
 
-.plan-view-gantt-block--study {
-  background-color: #4f46e5;
-}
-.plan-view-gantt-block--work {
-  background-color: #2563eb;
-}
-.plan-view-gantt-block--health {
-  background-color: #10b981;
-}
-.plan-view-gantt-block--rest {
-  background-color: #6b7280;
-}
-
-/* 시간표형 */
 .plan-view-timetable {
-  border-top: 1px dashed var(--color-border);
-  margin-top: 4px;
+  margin-top: 12px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .plan-view-timetable-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 0;
+  display: grid;
+  grid-template-columns: 60px minmax(0, 1fr);
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+}
+
+.plan-view-timetable-row:last-child {
+  border-bottom: none;
 }
 
 .plan-view-timetable-time {
-  width: 48px;
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
+  padding: 10px;
+  background: rgba(0,0,0,0.02);
+  font-size: 12px;
+  color: var(--color-muted, #6b7280);
 }
 
 .plan-view-timetable-cell {
-  flex: 1;
-  min-height: 20px;
-  border-bottom: 1px dashed #e5e7eb;
+  padding: 10px;
+  min-height: 34px;
 }
 
-/* 목록형 */
+.plan-view-list {
+  margin-top: 12px;
+}
+
 .plan-view-list ul {
-  list-style: none;
   margin: 0;
   padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
 }
 
 .plan-view-list li {
-  display: flex;
-  gap: 8px;
-  padding: 4px 0;
+  display: grid;
+  grid-template-columns: 60px minmax(0, 1fr);
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 12px;
 }
 
 .plan-view-list-time {
-  width: 48px;
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
+  color: var(--color-muted, #6b7280);
+  font-size: 12px;
 }
 
 .plan-view-list-title {
-  font-size: 0.9rem;
+  font-weight: 600;
+  font-size: 13px;
 }
+
+.home-calDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-primary, #6366f1);
+  margin: 6px auto 0;
+}
+
+.home-event-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.home-event-main {
+  flex: 1;
+  text-align: left;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 10px;
+}
+
+.home-event-main:hover {
+  background: rgba(99, 102, 241, 0.08);
+  border-color: rgba(99, 102, 241, 0.18);
+}
+/* ---- Dashboard responsive header ---- */
+.screen-header--row{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.screen-header__left{ min-width: 240px; }
+.screen-header__right{ display:flex; gap:8px; flex-wrap:wrap; }
+
+/* ---- Dashboard grid ---- */
+.dashboard-grid{
+  width:100%;
+}
+
+/* 포틀릿: 높이 고정(react-grid-layout의 h 기반) + 내부만 스크롤 */
+.dashboard-item, .portlet{
+  height:100%;
+  min-height:0;
+}
+
+.portlet{
+  border:1px solid var(--color-border, #e5e7eb);
+  border-radius:14px;
+  background: var(--color-surface, #fff);
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.portlet__head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 12px;
+  border-bottom:1px solid var(--color-border, #e5e7eb);
+}
+
+.portlet__title{
+  font-weight:800;
+  font-size:14px;
+}
+
+.portlet__actions{ display:flex; gap:8px; align-items:center; }
+.portlet__drag{ cursor:grab; user-select:none; }
+
+.portlet__body{
+  padding:12px;
+  flex:1;
+  min-height:0;
+}
+
+.portlet-scroll{
+  height:100%;
+  overflow:auto;
+  min-height:0;
+}
+
+/* “탭 눌러도 포틀릿 크기 변함” 방지: 내부 영역 고정 + 스크롤 */
+.planview-fixed{
+  min-height: 220px;
+  max-height: 420px;
+  overflow:auto;
+  padding-top:8px;
+}
+
+/* ---- 편집 모드 표시(드래그 중에만 강하게) ---- */
+.dashboard-grid--edit .portlet{
+  outline: 1px dashed rgba(99,102,241,.35);
+  outline-offset: -6px;
+}
+
+.dashboard-grid--dragging .portlet{
+  outline: 2px solid rgba(239,68,68,.35);
+}
+
+/* react-grid-layout placeholder */
+.dashboard-grid--dragging .react-grid-placeholder{
+  background: rgba(239,68,68,.12);
+  border-radius:14px;
+}
+
+/* ---- Mobile / tablet tweaks ---- */
+@media (max-width: 768px){
+  .screen-header__left{ min-width: 0; }
+  .portlet__head{ padding:10px; }
+  .portlet__body{ padding:10px; }
+}
+
+/* dashboard grid */
+.home-dashboard-screen .dashboard-topActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.home-dashboard-screen .dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 960px) {
+  .home-dashboard-screen .dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.home-dashboard-screen .dashboard-portlet {
+  position: relative;
+}
+
+.home-dashboard-screen .dashboard-portlet.is-edit {
+  outline: 2px dashed rgba(99, 102, 241, 0.35);
+  outline-offset: -8px;
+}
+
+.home-dashboard-screen .dashboard-portlet__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.home-dashboard-screen .dashboard-portlet__title {
+  font-weight: 600;
+}
+
+.home-dashboard-screen .dashboard-portlet__actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.home-dashboard-screen .dashboard-portlet__body {
+  min-height: 60px;
+}
+
+.home-dashboard-screen .dashboard-portlet__hint {
+  margin-top: 10px;
+}
+
+/* KPI table */
+.home-dashboard-screen .dashboard-kpiTable {
+  display: grid;
+  gap: 8px;
+}
+.home-dashboard-screen .dashboard-kpiRow {
+  display: grid;
+  grid-template-columns: 90px 60px 60px 1fr;
+  gap: 10px;
+  align-items: center;
+}
+.home-dashboard-screen .dashboard-kpiRow--head {
+  font-weight: 500;
+  color: var(--color-muted);
+}
+.home-dashboard-screen .dashboard-kpiBar {
+  position: relative;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.25);
+  overflow: hidden;
+}
+.home-dashboard-screen .dashboard-kpiBar__fill {
+  height: 100%;
+  background: rgba(99, 102, 241, 0.45);
+}
+.home-dashboard-screen .dashboard-kpiBar__text {
+  position: absolute;
+  right: 8px;
+  top: -2px;
+  font-size: 12px;
+  color: rgba(30, 41, 59, 0.8);
+}
+
+/* calendar portlet */
+.home-dashboard-screen .dashboard-calendar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+  gap: 14px;
+  align-items: start;
+}
+@media (max-width: 960px) {
+  .home-dashboard-screen .dashboard-calendar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.home-dashboard-screen .react-calendar {
+  width: 100%;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.home-dashboard-screen .dashboard-calDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  margin: 6px auto 0;
+  background: rgba(99, 102, 241, 0.8);
+}
+
+.home-dashboard-screen .dashboard-calList__title {
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.home-dashboard-screen .dashboard-miniItem {
+  width: 100%;
+  text-align: left;
+  padding: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+}
+.home-dashboard-screen .dashboard-miniItem + .dashboard-miniItem {
+  margin-top: 8px;
+}
+.home-dashboard-screen .dashboard-miniItem__title {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.home-dashboard-screen .dashboard-miniList {
+  display: grid;
+  gap: 10px;
+}
+.home-dashboard-screen .dashboard-miniRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.home-dashboard-screen .dashboard-miniRow__title {
+  font-weight: 500;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-dashboard-screen .dashboard-quick {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.home-dashboard-screen .dashboard-focusBox {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+ 

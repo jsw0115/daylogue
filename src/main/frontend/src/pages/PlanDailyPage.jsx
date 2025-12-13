@@ -1,5 +1,6 @@
 import React from "react";
-import { ChevronLeft, ChevronRight, Clock, List, Calendar } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, List } from "lucide-react";
+import Calendar from 'react-calendar';
 
 function TimebarPlaceholder() {
   const blocks = [
@@ -113,7 +114,7 @@ export default function PlanDailyPage() {
           <section className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm">
             <header className="mb-2 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-indigo-500" />
+                <Calendar className="w-4 h-4 text-indigo-500" formatDay={(locale, date) => moment(date).format("DD")} />
                 <h2 className="text-sm font-semibold text-slate-900">
                   오늘 일정
                 </h2>

@@ -1,0 +1,96 @@
+.dashboard-grid-wrap {
+  width: 100%;
+}
+
+.dashboard-grid-item {
+  height: 100%;
+}
+
+.dashboard-grid .react-grid-item {
+  transition: transform 120ms ease, width 120ms ease, height 120ms ease;
+}
+
+.dashboard-grid--edit .react-grid-item {
+  outline: 1px dashed rgba(99, 102, 241, 0.45);
+  outline-offset: 2px;
+}
+
+.dashboard-portlet__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.dashboard-portlet__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.dashboard-portlet__title {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-portlet__draghandle {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: var(--color-surface, #fff);
+  opacity: 0.55;
+  cursor: default;
+  user-select: none;
+}
+
+.dashboard-portlet__draghandle.is-edit {
+  cursor: grab;
+  opacity: 1;
+}
+
+.dashboard-portlet__draghandle.is-edit:active {
+  cursor: grabbing;
+}
+
+.dashboard-portlet__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn.btn--xs {
+  height: 26px;
+  padding: 0 8px;
+  font-size: 12px;
+  border-radius: 8px;
+}
+
+.header-divider {
+  width: 1px;
+  height: 26px;
+  background: var(--color-border, #e5e7eb);
+  margin: 0 6px;
+}
+
+.dashboard-hidden-portlets {
+  margin-top: 16px;
+  padding: 12px;
+}
+
+.dashboard-hidden-portlets__title {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.dashboard-hidden-portlets__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

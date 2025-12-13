@@ -1,66 +1,179 @@
-// src/main/frontend/src/screens/plan/WeeklyPlannerScreen.jsx
+// src/screens/plan/WeeklyPlannerScreen.jsx
+import React, { useMemo, useState } from "react";
+import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import moment from "moment";
 
-import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom'; 
+import "react-datepicker/dist/react-datepicker.css";
+import "../../styles/screens/weekly-planner.css";
 
-const WeeklyPlannerScreen = () => {
-    const navigate = useNavigate(); 
-    const weeklyData = [
-        { day: '월', date: '12/01', tasks: 3, mood: '좋음' },
-        { day: '화', date: '12/02', tasks: 5, mood: '보통' },
-        { day: '수', date: '12/03', tasks: 2, mood: '나쁨' },
-        { day: '목', 'date': '12/04', tasks: 4, mood: '좋음' },
-        { day: '금', date: '12/05', tasks: 1, mood: '최고' },
-        { day: '토', date: '12/06', tasks: 0, mood: '휴식' },
-        { day: '일', date: '12/07', tasks: 2, mood: '보통' },
-    ];
-    
-    const handleDayClick = (dateString) => {
-        navigate(`/planner/daily`); 
-    }
-    
-    return (
-        <div>
-            <div className="screen-header">
-                <div className="screen-header__title">주간 플래너</div>
-                {/* 탭을 NavLink로 수정하여 라우팅 연동 */}
-                <div className="tabbar tabbar--sm">
-                    <NavLink to="/planner/daily" className={({ isActive }) => `tabbar__item ${isActive ? 'tabbar__item--active' : ''}`}>일간</NavLink>
-                    <NavLink to="/planner/weekly" className={({ isActive }) => `tabbar__item ${isActive ? 'tabbar__item--active' : ''}`}>주간</NavLink>
-                    <NavLink to="/planner/monthly" className={({ isActive }) => `tabbar__item ${isActive ? 'tabbar__item--active' : ''}`}>월간</NavLink>
-                    <NavLink to="/planner/yearly" className={({ isActive }) => `tabbar__item ${isActive ? 'tabbar__item--active' : ''}`}>연간</NavLink>
-                </div>
-            </div>
-            
-            <h3 className="text-muted mb-4">2025년 12월 첫째 주</h3>
-            
-            <div className="card weekly-grid gap-3">
-                {weeklyData.map((data, index) => (
-                    <div 
-                        key={index} 
-                        className={`weekly-day-card flex-col items-center p-3 rounded-md ${data.day === '일' ? 'text-danger' : ''}`}
-                        onClick={() => handleDayClick(data.date)} 
-                        style={{ border: '1px solid var(--color-border)', cursor: 'pointer' }}
-                    >
-                        <div className="font-bold">{data.day}</div>
-                        <div className="text-muted font-small mb-2">{data.date}</div>
-                        <div className="text-primary font-bold">{data.tasks} Tasks</div>
-                        <div className="text-secondary font-small">{data.mood}</div>
-                    </div>
-                ))}
-            </div>
+import { safeStorage } from "../../shared/utils/safeStorage";
+import ScheduleFormModal from "../../components/schedule/ScheduleFormModal";
 
-            <div className="card mt-4 p-4">
-                <h4 className="dashboard-card__title">주간 리뷰 및 요약</h4>
-                <textarea 
-                    className="field__control memo-textarea" 
-                    placeholder="이번 주를 요약하고 다음 주 계획을 세우세요..."
-                    rows="5"
-                    style={{ width: '100%', padding: '10px', border: '1px solid var(--color-border)', borderRadius: '4px', resize: 'vertical' }}
-                ></textarea>
-            </div>
-        </div>
-    );
+moment.locale("ko");
+
+// 일요일 시작으로 고정(기존 UI: 일~토 기준)
+moment.updateLocale("ko", { week: { dow: 0, doy: 1 } });
+
+const toDateKey = (d) => moment(d).format("YYYY-MM-DD");
+
+function loadEvents(dateKey) {
+  const list = safeStorage.getJSON(`planner.events.${dateKey}`, []);
+  return Array.isArray(list) ? list : [];
 }
 
-export default WeeklyPlannerScreen;
+export default function WeeklyPlannerScreen() {
+  const nav = useNavigate();
+  const [sp] = useSearchParams();
+
+  const initialDate = useMemo(() => {
+    const q = sp.get("date");
+    const m = q ? moment(q, "YYYY-MM-DD", true) : null;
+    return m && m.isValid() ? m.toDate() : new Date();
+  }, [sp]);
+
+  const [selectedDate, setSelectedDate] = useState(initialDate);
+  const dateKey = useMemo(() => toDateKey(selectedDate), [selectedDate]);
+
+  const weekStart = useMemo(() => moment(selectedDate).startOf("week"), [selectedDate]);
+  const weekDays = useMemo(
+    () => Array.from({ length: 7 }).map((_, i) => weekStart.clone().add(i, "day")),
+    [weekStart],
+  );
+
+  const [tick, setTick] = useState(0);
+  const reload = () => setTick((v) => v + 1);
+
+  const selectedEvents = useMemo(() => {
+    void tick;
+    return loadEvents(dateKey);
+  }, [dateKey, tick]);
+
+  const moveWeek = (deltaWeeks) => setSelectedDate(weekStart.clone().add(deltaWeeks, "week").toDate());
+  const goToday = () => setSelectedDate(new Date());
+
+  // 모달
+  const [openQuick, setOpenQuick] = useState(false);
+  const [openDetail, setOpenDetail] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [editing, setEditing] = useState(null);
+
+  const openEditModal = (ev) => {
+    setEditing(ev);
+    setOpenEdit(true);
+  };
+
+  return (
+    <div className="weekly-planner-screen">
+      {/* 월간 플래너와 동일한 헤더 구조 */}
+      <div className="screen-header">
+        <div className="screen-header__title">주간 플래너</div>
+        <div className="tabbar tabbar--sm">
+          <NavLink to={`/planner/daily?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>일간</NavLink>
+          <NavLink to={`/planner/weekly?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>주간</NavLink>
+          <NavLink to={`/planner/monthly?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>월간</NavLink>
+          <NavLink to={`/planner/yearly?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>연간</NavLink>
+        </div>
+      </div>
+
+      {/* 주간 네비게이션 */}
+      <div className="weekly-topbar">
+        <div className="weekly-topbar__left">
+          <button type="button" className="btn btn--sm btn--ghost" onClick={() => moveWeek(-1)}>←</button>
+          <div className="weekly-topbar__label text-primary">
+            {weekStart.format("YYYY. MM. D")} ~ {weekStart.clone().add(6, "day").format("MM. D")}
+          </div>
+          <button type="button" className="btn btn--sm btn--ghost" onClick={() => moveWeek(1)}>→</button>
+
+          <button type="button" className="btn btn--sm btn--secondary" onClick={goToday}>오늘</button>
+
+          <DatePicker
+            selected={selectedDate}
+            onChange={(d) => d && setSelectedDate(d)}
+            dateFormat="yyyy-MM-dd"
+            className="weekly-date-input"
+            placeholderText="해당 일자로 이동"
+          />
+        </div>
+
+        <div className="weekly-topbar__right">
+          <button type="button" className="btn btn--sm btn--primary" onClick={() => setOpenQuick(true)}>
+            + 일정(간단)
+          </button>
+          <button type="button" className="btn btn--sm btn--secondary" onClick={() => setOpenDetail(true)}>
+            + 일정(상세)
+          </button>
+        </div>
+      </div>
+
+      {/* 본문: 좌(주간 날짜 선택) / 우(선택 날짜 일정 리스트) */}
+      <div className="weekly-layout">
+        <div className="card weekly-left">
+          <div className="weekly-dayStrip">
+            {weekDays.map((m) => {
+              const k = m.format("YYYY-MM-DD");
+              const isActive = k === dateKey;
+              return (
+                <button
+                  key={k}
+                  type="button"
+                  className={"weekly-dayBtn " + (isActive ? "is-active" : "")}
+                  onClick={() => setSelectedDate(m.toDate())}
+                >
+                  <div className="weekly-dayBtn__dow">{m.format("ddd")}</div>
+                  <div className="weekly-dayBtn__date">{m.format("D")}</div>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="weekly-hint text-muted font-small">
+            날짜를 클릭하면 우측에 해당 날짜 일정이 표시됩니다.
+          </div>
+        </div>
+
+        <div className="card weekly-right">
+          <div className="weekly-right__head">
+            <div>
+              <div className="weekly-right__title">선택 날짜</div>
+              <div className="text-muted font-small">{dateKey}</div>
+            </div>
+            <div className="weekly-right__actions">
+              <button type="button" className="btn btn--sm btn--primary" onClick={() => setOpenQuick(true)}>+ 간단</button>
+              <button type="button" className="btn btn--sm btn--secondary" onClick={() => setOpenDetail(true)}>+ 상세</button>
+              <button type="button" className="btn btn--sm btn--secondary" onClick={() => nav(`/planner/daily?date=${dateKey}`)}>
+                일간으로
+              </button>
+            </div>
+          </div>
+
+          {selectedEvents.length ? (
+            <div className="weekly-eventList">
+              {selectedEvents.map((e) => (
+                <div key={e.id} className="weekly-eventRow">
+                  <button type="button" className="weekly-eventMain" onClick={() => openEditModal(e)}>
+                    <div className="weekly-eventTitle">{e.title}</div>
+                    <div className="text-muted font-small">
+                      {e.start}~{e.end}
+                      {e.sharedUserIds?.length ? ` · 공유 ${e.sharedUserIds.length}` : ""}
+                    </div>
+                  </button>
+                  <button type="button" className="btn btn--sm btn--ghost" onClick={() => openEditModal(e)}>
+                    수정
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-muted font-small">등록된 일정이 없습니다.</div>
+          )}
+        </div>
+      </div>
+
+      {/* 모달 */}
+      <ScheduleFormModal open={openQuick} onClose={() => setOpenQuick(false)} date={selectedDate} mode="quick" onSaved={reload} />
+      <ScheduleFormModal open={openDetail} onClose={() => setOpenDetail(false)} date={selectedDate} mode="detail" onSaved={reload} />
+      <ScheduleFormModal open={openEdit} onClose={() => setOpenEdit(false)} date={selectedDate} initialEvent={editing} mode="detail" onSaved={() => { setOpenEdit(false); setEditing(null); reload(); }} />
+    </div>
+  );
+}

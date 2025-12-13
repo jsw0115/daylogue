@@ -1,0 +1,57 @@
+/* src/styles/components/shareUserPicker.css */
+.share-picker {
+  display: grid;
+  gap: 10px;
+}
+
+.share-picker__selected {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 30px;
+}
+
+.share-chip {
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.share-chip__email {
+  opacity: 0.7;
+}
+
+.share-picker__list {
+  display: grid;
+  gap: 6px;
+  max-height: 220px;
+  overflow: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.share-row {
+  text-align: left;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.share-row.is-active {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.22);
+}
+
+.share-row__name {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.share-row__email {
+  font-size: 12px;
+  opacity: 0.7;
+}

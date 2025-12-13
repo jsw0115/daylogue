@@ -1,0 +1,47 @@
+/* src/styles/components/shareEditor.css */
+
+.shareEditor { display: flex; flex-direction: column; gap: 10px; }
+
+.shareEditor__title { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+
+.shareEditor__search { position: relative; }
+.shareEditor__results {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0; right: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 8px;
+  z-index: 50;
+}
+
+.shareEditor__resultItem {
+  width: 100%;
+  text-align: left;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+.shareEditor__resultItem:hover { background: var(--color-surface-soft); }
+.shareEditor__resultName { font-weight: 600; font-size: 13px; }
+
+.shareEditor__list { display: flex; flex-direction: column; gap: 8px; }
+
+.shareEditor__row {
+  display: grid;
+  grid-template-columns: 1.4fr 0.7fr 0.7fr 0.7fr 0.5fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.shareEditor__row--head {
+  color: var(--color-muted);
+  font-size: 12px;
+  padding: 0 2px;
+}
+
+.shareEditor__userName { font-weight: 600; font-size: 13px; }
+.shareEditor__actions { display: flex; justify-content: flex-end; }

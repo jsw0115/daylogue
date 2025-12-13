@@ -1,158 +1,155 @@
-/*
- * Timebar Diary - Settings Screen Styles
- * 파일: src/main/frontend/src/styles/screens/settings.css
- */
+/* src/styles/screens/settings.css */
 
-.settings-screen {
-  /* Settings Main Layout */
-}
+.settings-screen {}
 
-/* 개선: settings-grid는 layout.css의 screen-grid와 구조를 통일 */
-.settings-screen .settings-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-  gap: 24px;
-}
-
-@media (max-width: 960px) {
-  .settings-screen .settings-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-.settings-section {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 20px;
-  background: var(--color-surface);
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-soft);
-  margin-bottom: 24px;
-}
-
-.settings-section__title {
-  font-size: var(--font-h3);
-  font-weight: 600;
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: 10px;
-  margin-bottom: 10px;
-}
-
-.settings-row {
-  display: flex;
-  align-items: center;
-  gap: 20px; /* 간격 확대 */
-  padding: 8px 0; /* 터치 영역 고려 */
-}
-
-.settings-row__label {
-  width: 140px; /* 라벨 영역 확대 (UX 개선) */
-  flex-shrink: 0;
-  font-size: var(--font-body);
-  color: var(--color-text); /* Muted 대신 기본 Text로 강조 */
-  font-weight: 500;
-}
-
-.settings-row__desc {
-  font-size: var(--font-small);
-  color: var(--color-muted);
-}
-
-.settings-row__control {
-  flex: 1;
+.settings-adminToggle {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* Profile / Account Settings (SET-001) */
-.profile-row {
+.settings-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.settings-card {
+  min-height: 110px;
+}
+
+.settings-card__head {
   display: flex;
   align-items: center;
-  gap: 20px;
-}
-
-.profile-avatar {
-  width: 50px; /* 아바타 크기 확대 */
-  height: 50px;
-  border-radius: 50%;
-  background: var(--color-surface-soft);
-  overflow: hidden;
-  border: 2px solid var(--color-border);
-  flex-shrink: 0;
-}
-
-.profile-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.profile-info {
-  flex: 1;
-}
-
-.profile-info__name {
-  font-size: var(--font-body);
-  font-weight: 600;
-}
-
-/* Category Color Settings (SET-006) */
-.category-list {
-  display: flex;
-  flex-wrap: wrap;
+  justify-content: space-between;
   gap: 12px;
 }
 
-.category-item {
+.settings-card__titleRow {
+  display: grid;
+  gap: 4px;
+}
+
+.settings-card__title {
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.settings-card__body {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.settings-kv {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+}
+
+.settings-kv__k {
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.settings-kv__v {
+  font-weight: 600;
+}
+
+.settings-chipRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.settings-chip {
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-muted);
+}
+
+.settings-cat {
+  display: grid;
+  gap: 14px;
+}
+
+.settings-cat__add {
+  display: grid;
+  gap: 8px;
+}
+
+.settings-cat__row {
+  display: grid;
+  grid-template-columns: 1fr 160px;
+  gap: 10px;
+}
+
+.settings-cat__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.settings-cat__col {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.settings-cat__title {
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.settings-cat__list {
+  display: grid;
+  gap: 8px;
+}
+
+.settings-cat__item {
   display: flex;
   align-items: center;
-  padding: 8px 12px;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--color-surface-soft);
   background: var(--color-surface-soft);
-  cursor: pointer;
-  transition: all 0.15s ease;
 }
 
-.category-item:hover {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 1px var(--color-primary);
+@media (max-width: 980px) {
+  .settings-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .settings-cat__grid {
+    grid-template-columns: 1fr;
+  }
+  .settings-cat__row {
+    grid-template-columns: 1fr;
+  }
+}
+/* SettingsScreen 추가 스타일 */
+.settings-shareList {
+  display: grid;
+  gap: 8px;
 }
 
-.category-color-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  margin-right: 8px;
-  border: 1px solid var(--color-border);
-}
-
-/* Mode Selection Toggle */
-.mode-toggle-group {
-    display: inline-flex;
-    gap: 8px;
-    background: var(--color-surface-soft);
-    padding: 6px;
-    border-radius: var(--radius-lg);
-}
-
-.mode-toggle-button {
-    padding: 8px 16px;
-    border-radius: var(--radius-md);
-    font-size: var(--font-small);
-    font-weight: 500;
-    color: var(--color-text-muted);
-    background: transparent;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s ease-in-out;
-}
-
-.mode-toggle-button.active {
-    background: var(--color-surface);
-    color: var(--color-primary);
-    box-shadow: var(--shadow-soft);
+.settings-shareRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px 12px;
 }

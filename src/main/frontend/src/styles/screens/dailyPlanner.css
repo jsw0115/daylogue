@@ -1,0 +1,28 @@
+.dailyPlanner__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.dailyPlanner__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dailyPlanner__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 16px;
+}
+
+.dailyPlanner__grid .card:nth-child(3) {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 960px) {
+  .dailyPlanner__grid { grid-template-columns: 1fr; }
+  .dailyPlanner__grid .card:nth-child(3) { grid-column: auto; }
+}

@@ -1,134 +1,104 @@
-import React, { useState } from "react";
-import "../../styles/screens/task.css";
-import Modal from "../../components/common/Modal";
+import React, { useMemo, useState } from "react";
+import "./../../styles/screens/taskList.css";
 
-const initialTasks = [
-  { id: 1, title: "SQLD 1강 복습", category: "공부", done: false },
-  { id: 2, title: "프로젝트 요구사항 정리", category: "업무", done: true },
-];
+export default function TaskListScreen() {
+  const [q, setQ] = useState("");
+  const [filter, setFilter] = useState("today"); // today | week
+  const [status, setStatus] = useState("all"); // all | open | done
 
-const TaskListScreen = () => {
-  const [tasks, setTasks] = useState(initialTasks);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [newTask, setNewTask] = useState({
-    title: "",
-    category: "기타",
-  });
+  const [showAdd, setShowAdd] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newMin, setNewMin] = useState(30);
+
+  const [tasks, setTasks] = useState([
+    { id: 1, title: "SQLD 1일 1문제", done: true, durationMin: 30 },
+    { id: 2, title: "프로젝트 이슈 정리", done: false, durationMin: 40 },
+  ]);
+
+  const view = useMemo(() => {
+    return tasks
+      .filter((t) => (status === "all" ? true : status === "done" ? t.done : !t.done))
+      .filter((t) => t.title.toLowerCase().includes(q.toLowerCase()));
+  }, [tasks, status, q]);
 
   const toggleDone = (id) => {
-    setTasks((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
-    );
+    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
   };
 
-  const handleCreate = () => {
-    if (!newTask.title.trim()) return;
-    setTasks((prev) => [
-      ...prev,
-      { id: Date.now(), title: newTask.title.trim(), category: newTask.category, done: false },
-    ]);
-    setNewTask({ title: "", category: "기타" });
-    setModalOpen(false);
-    // TODO: backend POST /api/tasks 로 연동
+  const addTask = () => {
+    const title = newTitle.trim();
+    if (!title) return;
+    setTasks((prev) => [{ id: Date.now(), title, done: false, durationMin: newMin }, ...prev]);
+    setNewTitle("");
+    setNewMin(30);
+    setShowAdd(false);
   };
 
   return (
-    <div className="screen task-list-screen">
-      <div className="screen-header">
+    <div className="task-screen">
+      <div className="task-head">
         <div>
-          <h1 className="screen-header__title">할 일 목록</h1>
-          <p className="text-muted font-small">
-            오늘/이번 주에 해야 할 일을 관리합니다.
-          </p>
+          <div className="screen-title">할 일</div>
+          <div className="screen-subtitle">오늘/이번 주 할 일을 빠르게 관리</div>
         </div>
-        <button
-          className="btn btn--primary"
-          onClick={() => setModalOpen(true)}
-        >
-          + 새 할 일 추가
+
+        <button className="btn primary" onClick={() => setShowAdd(true)} type="button">
+          + 추가
         </button>
       </div>
 
-      <div className="card">
-        <ul className="task-list">
-          {tasks.map((task) => (
-            <li key={task.id} className="task-item">
-              <label className="task-item__left">
-                <input
-                  type="checkbox"
-                  checked={task.done}
-                  onChange={() => toggleDone(task.id)}
-                />
-                <span
-                  className={
-                    "task-item__title" +
-                    (task.done ? " task-item__title--done" : "")
-                  }
-                >
-                  {task.title}
-                </span>
-              </label>
-              <span className="task-item__category">{task.category}</span>
-            </li>
-          ))}
-        </ul>
+      <div className="task-toolbar">
+        <input className="task-search" placeholder="검색..." value={q} onChange={(e) => setQ(e.target.value)} />
+
+        <div className="chips">
+          <button className={`chip ${filter === "today" ? "is-on" : ""}`} onClick={() => setFilter("today")} type="button">오늘</button>
+          <button className={`chip ${filter === "week" ? "is-on" : ""}`} onClick={() => setFilter("week")} type="button">이번 주</button>
+        </div>
+
+        <div className="chips">
+          <button className={`chip ${status === "all" ? "is-on" : ""}`} onClick={() => setStatus("all")} type="button">전체</button>
+          <button className={`chip ${status === "open" ? "is-on" : ""}`} onClick={() => setStatus("open")} type="button">미완료</button>
+          <button className={`chip ${status === "done" ? "is-on" : ""}`} onClick={() => setStatus("done")} type="button">완료</button>
+        </div>
       </div>
 
-      {/* 새 할 일 추가 모달 */}
-      <Modal
-        open={modalOpen}
-        title="새 할 일 추가"
-        onClose={() => setModalOpen(false)}
-        footer={
-          <>
-            <button
-              className="btn btn--ghost btn--sm"
-              type="button"
-              onClick={() => setModalOpen(false)}
-            >
-              취소
-            </button>
-            <button
-              className="btn btn--primary btn--sm"
-              type="button"
-              onClick={handleCreate}
-            >
-              저장
-            </button>
-          </>
-        }
-      >
-        <div className="form-row">
-          <label className="form-label">제목</label>
-          <input
-            type="text"
-            className="form-input"
-            value={newTask.title}
-            onChange={(e) =>
-              setNewTask((prev) => ({ ...prev, title: e.target.value }))
-            }
-            placeholder="예) SQLD 1강 복습"
-          />
+      <div className="task-card">
+        {view.length === 0 ? (
+          <div className="empty">표시할 항목이 없습니다.</div>
+        ) : (
+          view.map((t) => (
+            <div className="task-row" key={t.id}>
+              <button className={`chk ${t.done ? "is-done" : ""}`} onClick={() => toggleDone(t.id)} type="button">
+                {t.done ? "✓" : ""}
+              </button>
+              <div className={`task-title ${t.done ? "is-done" : ""}`}>{t.title}</div>
+              <div className="task-meta">{t.durationMin}분</div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {showAdd && (
+        <div className="modal-backdrop" onMouseDown={() => setShowAdd(false)} role="presentation">
+          <div className="modal" onMouseDown={(e) => e.stopPropagation()}>
+            <div className="modal__title">할 일 추가</div>
+            <div className="modal__body">
+              <div className="field">
+                <div className="label">제목</div>
+                <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="예) 프로젝트 회의" />
+              </div>
+              <div className="field">
+                <div className="label">예상 시간(분)</div>
+                <input type="number" min={5} value={newMin} onChange={(e) => setNewMin(Number(e.target.value || 30))} />
+              </div>
+            </div>
+            <div className="modal__actions">
+              <button className="btn" onClick={() => setShowAdd(false)} type="button">취소</button>
+              <button className="btn primary" onClick={addTask} type="button">저장</button>
+            </div>
+          </div>
         </div>
-        <div className="form-row">
-          <label className="form-label">카테고리</label>
-          <select
-            className="form-input"
-            value={newTask.category}
-            onChange={(e) =>
-              setNewTask((prev) => ({ ...prev, category: e.target.value }))
-            }
-          >
-            <option value="업무">업무</option>
-            <option value="공부">공부</option>
-            <option value="건강">건강</option>
-            <option value="개인">개인</option>
-            <option value="기타">기타</option>
-          </select>
-        </div>
-      </Modal>
+      )}
     </div>
   );
-};
-
-export default TaskListScreen;
+}
