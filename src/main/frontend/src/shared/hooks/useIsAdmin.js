@@ -20,7 +20,7 @@ export function notifySessionChanged() {
 }
 
 export function getIsAdminSync() {
-  const role = safeStorage.getItem(KEY, "USER");
+  const role = safeStorage.get(KEY, "USER");
   return role === "ADMIN";
 }
 

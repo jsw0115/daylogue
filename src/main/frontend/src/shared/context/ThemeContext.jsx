@@ -18,7 +18,7 @@ function safeGetTheme() {
     const ls = window.localStorage;
     if (!ls) return "light";
 
-    const saved = ls.getItem(STORAGE_KEY);
+    const saved = ls.get(STORAGE_KEY);
     return saved || "light";
   } catch (e) {
     // SecurityError 등 모든 에러 무시하고 기본값 사용
@@ -32,7 +32,7 @@ function safeSetTheme(theme) {
   try {
     const ls = window.localStorage;
     if (!ls) return;
-    ls.setItem(STORAGE_KEY, theme);
+    ls.set(STORAGE_KEY, theme);
   } catch (e) {
     // 저장 실패해도 앱 동작에는 영향 없도록 그냥 무시
   }

@@ -16,7 +16,7 @@ export default function MainSidebar() {
       <div className="lnb__section">
         <div className="lnb__title">DAYLOGUE</div>
         <Item to="/home">홈 대시보드</Item>
-        <Item to="/action/diary">데일리 다이어리</Item>
+        <Item to="/diary/daily">데일리 다이어리</Item>
       </div>
 
       <div className="lnb__section">

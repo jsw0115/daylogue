@@ -8,9 +8,9 @@ export default function DataManagementScreen() {
     const keys = storage.keys();
     const payload = {
       exportedAt: new Date().toISOString(),
-      persistentAvailable: storage.isAvailable(),
+      persistentAvailable: storage.isPersistentAvailable(),
       storage: keys.reduce((acc, k) => {
-        acc[k] = storage.getItem(k);
+        acc[k] = storage.get(k);
         return acc;
       }, {}),
     };
@@ -26,7 +26,7 @@ export default function DataManagementScreen() {
         return;
       }
       Object.keys(obj).forEach((k) => {
-        if (typeof obj[k] === "string") storage.setItem(k, obj[k]);
+        if (typeof obj[k] === "string") storage.set(k, obj[k]);
       });
       alert("가져오기 완료. (localStorage가 차단된 환경이면 새로고침 후 유지되지 않을 수 있습니다)");
     } catch (e) {
@@ -47,7 +47,7 @@ export default function DataManagementScreen() {
           <div className="screen-title">데이터 관리</div>
           <div className="screen-subtitle">
             내보내기/가져오기/로컬 설정 초기화
-            {!storage.isAvailable() && (
+            {!storage.isPersistentAvailable() && (
               <span className="muted" style={{ marginLeft: 8 }}>
                 (현재 환경은 localStorage 차단 상태일 수 있어요)
               </span>

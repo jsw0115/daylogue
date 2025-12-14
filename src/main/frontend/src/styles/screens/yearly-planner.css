@@ -1,0 +1,63 @@
+/* FILE: src/styles/screens/yearly-planner.css */
+.yearly-planner-screen {
+  padding: 16px;
+}
+
+.yearly-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 10px 0 14px;
+  flex-wrap: wrap;
+}
+
+.yearly-topbar__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.yearly-topbar__label {
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.yearly-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 960px) {
+  .yearly-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .yearly-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.yearly-card {
+  text-align: left;
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: var(--color-card, #fff);
+  border-radius: 16px;
+  padding: 14px;
+  cursor: pointer;
+  display: grid;
+  gap: 8px;
+}
+
+.yearly-card__title {
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.yearly-card__cta {
+  font-size: 13px;
+  font-weight: 650;
+  color: rgba(99, 102, 241, 1);
+}

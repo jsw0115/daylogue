@@ -462,3 +462,280 @@
     display: none;
   }
 }
+
+/* FILE: src/styles/screens/daily-planner.css */
+
+.daily-planner-screen {
+  padding: 18px 18px 24px;
+}
+
+.daily-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 10px 0 16px;
+}
+
+.daily-topbar__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.daily-topbar__label {
+  font-weight: 700;
+}
+
+.daily-date-input {
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid rgba(226, 232, 240, 1);
+  padding: 0 10px;
+}
+
+.daily-topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.daily-topbar__group {
+  display: flex;
+  gap: 8px;
+}
+
+.daily-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 14px;
+}
+
+.daily-left {
+  min-height: 280px;
+}
+
+.daily-right {
+  min-height: 280px;
+}
+
+.daily-bottom {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 980px) {
+  .daily-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.daily-cardHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.daily-cardTitle {
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.daily-eventList,
+.daily-routineList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.daily-eventRow,
+.daily-routineRow {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(226, 232, 240, 1);
+  background: rgba(248, 250, 252, 1);
+  cursor: pointer;
+}
+
+.daily-eventTitle,
+.daily-routineTitle {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.daily-eventMeta,
+.daily-routineMeta {
+  font-size: 12px;
+  color: rgba(100, 116, 139, 1);
+}
+
+.daily-memo {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(226, 232, 240, 1);
+  padding: 10px 12px;
+  resize: vertical;
+  min-height: 180px;
+}
+
+.daily-memoActions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* FILE: src/styles/screens/daily-planner.css */
+.daily-planner-screen {
+  padding: 16px;
+}
+
+.daily-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 10px 0 14px;
+  flex-wrap: wrap;
+}
+
+.daily-topbar__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.daily-topbar__label {
+  font-weight: 650;
+}
+
+.daily-date-input {
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 12px;
+  padding: 8px 10px;
+  font-size: 13px;
+  background: var(--color-card, #fff);
+}
+
+.daily-topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.daily-layout {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 960px) {
+  .daily-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.daily-left, .daily-right {
+  min-height: 240px;
+}
+
+.daily-bottom {
+  grid-column: 1 / -1;
+}
+
+.daily-cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.daily-cardTitle {
+  font-weight: 650;
+}
+
+.daily-eventList {
+  display: grid;
+  gap: 8px;
+}
+
+.daily-eventRow {
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: var(--color-card, #fff);
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.daily-eventTitle {
+  font-weight: 650;
+  font-size: 13px;
+}
+
+.daily-eventMeta {
+  margin-top: 4px;
+}
+
+.daily-memoActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.daily-memo {
+  width: 100%;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 13px;
+  background: var(--color-card, #fff);
+}
+
+.daily-routineList {
+  display: grid;
+  gap: 8px;
+}
+
+.daily-routineRow {
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: var(--color-card, #fff);
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.daily-routineLeft {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.daily-routineIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: var(--color-bg-soft, #f8fafc);
+}
+
+.daily-routineName {
+  font-weight: 650;
+  font-size: 13px;
+}

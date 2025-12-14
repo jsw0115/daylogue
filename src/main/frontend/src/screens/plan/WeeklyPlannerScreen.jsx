@@ -1,4 +1,4 @@
-// src/screens/plan/WeeklyPlannerScreen.jsx
+// FILE: src/screens/plan/WeeklyPlannerScreen.jsx
 import React, { useMemo, useState } from "react";
 import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
@@ -7,20 +7,11 @@ import moment from "moment";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../styles/screens/weekly-planner.css";
 
-import { safeStorage } from "../../shared/utils/safeStorage";
+import { getEventsForDate, toDateKey } from "../../shared/utils/plannerStore";
 import ScheduleFormModal from "../../components/schedule/ScheduleFormModal";
 
 moment.locale("ko");
-
-// 일요일 시작으로 고정(기존 UI: 일~토 기준)
 moment.updateLocale("ko", { week: { dow: 0, doy: 1 } });
-
-const toDateKey = (d) => moment(d).format("YYYY-MM-DD");
-
-function loadEvents(dateKey) {
-  const list = safeStorage.getJSON(`planner.events.${dateKey}`, []);
-  return Array.isArray(list) ? list : [];
-}
 
 export default function WeeklyPlannerScreen() {
   const nav = useNavigate();
@@ -38,25 +29,28 @@ export default function WeeklyPlannerScreen() {
   const weekStart = useMemo(() => moment(selectedDate).startOf("week"), [selectedDate]);
   const weekDays = useMemo(
     () => Array.from({ length: 7 }).map((_, i) => weekStart.clone().add(i, "day")),
-    [weekStart],
+    [weekStart]
   );
-
-  const [tick, setTick] = useState(0);
-  const reload = () => setTick((v) => v + 1);
-
-  const selectedEvents = useMemo(() => {
-    void tick;
-    return loadEvents(dateKey);
-  }, [dateKey, tick]);
-
-  const moveWeek = (deltaWeeks) => setSelectedDate(weekStart.clone().add(deltaWeeks, "week").toDate());
-  const goToday = () => setSelectedDate(new Date());
 
   // 모달
   const [openQuick, setOpenQuick] = useState(false);
   const [openDetail, setOpenDetail] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [editing, setEditing] = useState(null);
+
+  const selectedEvents = useMemo(() => getEventsForDate(dateKey), [dateKey]);
+
+  const countByDate = useMemo(() => {
+    const map = {};
+    for (const m of weekDays) {
+      const k = m.format("YYYY-MM-DD");
+      map[k] = getEventsForDate(k).length;
+    }
+    return map;
+  }, [weekDays]);
+
+  const moveWeek = (deltaWeeks) => setSelectedDate(weekStart.clone().add(deltaWeeks, "week").toDate());
+  const goToday = () => setSelectedDate(new Date());
 
   const openEditModal = (ev) => {
     setEditing(ev);
@@ -65,7 +59,6 @@ export default function WeeklyPlannerScreen() {
 
   return (
     <div className="weekly-planner-screen">
-      {/* 월간 플래너와 동일한 헤더 구조 */}
       <div className="screen-header">
         <div className="screen-header__title">주간 플래너</div>
         <div className="tabbar tabbar--sm">
@@ -76,7 +69,6 @@ export default function WeeklyPlannerScreen() {
         </div>
       </div>
 
-      {/* 주간 네비게이션 */}
       <div className="weekly-topbar">
         <div className="weekly-topbar__left">
           <button type="button" className="btn btn--sm btn--ghost" onClick={() => moveWeek(-1)}>←</button>
@@ -106,13 +98,13 @@ export default function WeeklyPlannerScreen() {
         </div>
       </div>
 
-      {/* 본문: 좌(주간 날짜 선택) / 우(선택 날짜 일정 리스트) */}
       <div className="weekly-layout">
         <div className="card weekly-left">
           <div className="weekly-dayStrip">
             {weekDays.map((m) => {
               const k = m.format("YYYY-MM-DD");
               const isActive = k === dateKey;
+              const cnt = countByDate[k] || 0;
               return (
                 <button
                   key={k}
@@ -122,13 +114,14 @@ export default function WeeklyPlannerScreen() {
                 >
                   <div className="weekly-dayBtn__dow">{m.format("ddd")}</div>
                   <div className="weekly-dayBtn__date">{m.format("D")}</div>
+                  {cnt ? <div className="weekly-dayBtn__badge">{cnt}</div> : null}
                 </button>
               );
             })}
           </div>
 
           <div className="weekly-hint text-muted font-small">
-            날짜를 클릭하면 우측에 해당 날짜 일정이 표시됩니다.
+            날짜를 클릭하면 우측에 해당 날짜 일정이 표시됩니다(반복 일정 포함).
           </div>
         </div>
 
@@ -156,6 +149,7 @@ export default function WeeklyPlannerScreen() {
                     <div className="text-muted font-small">
                       {e.start}~{e.end}
                       {e.sharedUserIds?.length ? ` · 공유 ${e.sharedUserIds.length}` : ""}
+                      {e.isOccurrence ? " · 반복" : ""}
                     </div>
                   </button>
                   <button type="button" className="btn btn--sm btn--ghost" onClick={() => openEditModal(e)}>
@@ -170,10 +164,16 @@ export default function WeeklyPlannerScreen() {
         </div>
       </div>
 
-      {/* 모달 */}
-      <ScheduleFormModal open={openQuick} onClose={() => setOpenQuick(false)} date={selectedDate} mode="quick" onSaved={reload} />
-      <ScheduleFormModal open={openDetail} onClose={() => setOpenDetail(false)} date={selectedDate} mode="detail" onSaved={reload} />
-      <ScheduleFormModal open={openEdit} onClose={() => setOpenEdit(false)} date={selectedDate} initialEvent={editing} mode="detail" onSaved={() => { setOpenEdit(false); setEditing(null); reload(); }} />
+      <ScheduleFormModal open={openQuick} onClose={() => setOpenQuick(false)} date={selectedDate} mode="quick" onSaved={() => {}} />
+      <ScheduleFormModal open={openDetail} onClose={() => setOpenDetail(false)} date={selectedDate} mode="detail" onSaved={() => {}} />
+      <ScheduleFormModal
+        open={openEdit}
+        onClose={() => { setOpenEdit(false); setEditing(null); }}
+        date={selectedDate}
+        initialEvent={editing}
+        mode="detail"
+        onSaved={() => { setOpenEdit(false); setEditing(null); }}
+      />
     </div>
   );
 }

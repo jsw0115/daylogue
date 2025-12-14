@@ -1,43 +1,86 @@
-import React from 'react';
+// FILE: src/screens/plan/YearlyPlannerScreen.jsx
+import React, { useMemo, useState } from "react";
+import { NavLink, useSearchParams, useNavigate } from "react-router-dom";
+import moment from "moment";
+import "../../styles/screens/yearly-planner.css";
+import { getEventsForDate } from "../../shared/utils/plannerStore";
 
-const YearlyPlannerScreen = () => {
-    const yearData = [
-        { quarter: '1분기 (1월-3월)', goal: '프로젝트 기획 완료', status: '70% 달성' },
-        { quarter: '2분기 (4월-6월)', goal: '중간고사 우수 성적 획득', status: '완료' },
-        { quarter: '3분기 (7월-9월)', goal: 'SQLD 자격증 취득', status: '계획 중' },
-        { quarter: '4분기 (10월-12월)', goal: '포트폴리오 완성', status: '진행 중' },
-    ];
+moment.locale("ko");
 
-    return (
-        <div>
-            <div className="screen-header">
-                <div className="screen-header__title">연간 플래너</div>
-                <div className="tabbar tabbar--sm">
-                    <div className="tabbar__item">일간</div>
-                    <div className="tabbar__item">주간</div>
-                    <div className="tabbar__item">월간</div>
-                    <div className="tabbar__item tabbar__item--active">연간</div>
-                </div>
-            </div>
-            
-            <h3 className="text-primary mb-5">2025년 목표 대시보드</h3>
+export default function YearlyPlannerScreen() {
+  const [sp] = useSearchParams();
+  const nav = useNavigate();
 
-            <div className="grid grid-2-cols gap-4">
-                {yearData.map((data, index) => (
-                    <div key={index} className="card p-4 flex-col">
-                        <h4 className="font-bold text-secondary mb-2">{data.quarter}</h4>
-                        <p className="font-large mb-3">{data.goal}</p>
-                        <div className={`badge badge--${data.status.includes('완료') ? 'success' : 'warning'}`}>{data.status}</div>
-                    </div>
-                ))}
-            </div>
+  const baseDate = useMemo(() => {
+    const q = sp.get("date");
+    const m = q ? moment(q, "YYYY-MM-DD", true) : null;
+    return m && m.isValid() ? m.toDate() : new Date();
+  }, [sp]);
 
-            <div className="card mt-4 p-4">
-                <h4 className="dashboard-card__title">연간 회고 및 다음 연도 계획</h4>
-                <p className="text-muted">올해의 성과와 실패를 기록하여 내년 계획에 반영하세요.</p>
-            </div>
+  const [year, setYear] = useState(moment(baseDate).year());
+  const dateKey = useMemo(() => moment(baseDate).format("YYYY-MM-DD"), [baseDate]);
+
+  const months = useMemo(() => Array.from({ length: 12 }).map((_, i) => moment().year(year).month(i).date(1)), [year]);
+
+  // 가볍게: “일정 있는 날짜 수”만 표시(성능/UX 타협)
+  const monthStats = useMemo(() => {
+    const map = {};
+    for (const m of months) {
+      const start = m.clone().startOf("month");
+      const days = m.daysInMonth();
+      let dayWithEvent = 0;
+      for (let i = 0; i < days; i++) {
+        const k = start.clone().add(i, "day").format("YYYY-MM-DD");
+        if (getEventsForDate(k).length) dayWithEvent += 1;
+      }
+      map[m.month()] = dayWithEvent;
+    }
+    return map;
+  }, [months]);
+
+  return (
+    <div className="yearly-planner-screen">
+      <div className="screen-header">
+        <div className="screen-header__title">연간 플래너</div>
+        <div className="tabbar tabbar--sm">
+          <NavLink to={`/planner/daily?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>일간</NavLink>
+          <NavLink to={`/planner/weekly?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>주간</NavLink>
+          <NavLink to={`/planner/monthly?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>월간</NavLink>
+          <NavLink to={`/planner/yearly?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>연간</NavLink>
         </div>
-    );
-}
+      </div>
 
-export default YearlyPlannerScreen;
+      <div className="yearly-topbar">
+        <div className="yearly-topbar__left">
+          <button type="button" className="btn btn--sm btn--ghost" onClick={() => setYear((y) => y - 1)}>←</button>
+          <div className="yearly-topbar__label text-primary">{year}년</div>
+          <button type="button" className="btn btn--sm btn--ghost" onClick={() => setYear((y) => y + 1)}>→</button>
+        </div>
+        <div className="text-muted font-small">월을 클릭하면 월간 플래너로 이동합니다.</div>
+      </div>
+
+      <div className="yearly-grid">
+        {months.map((m) => {
+          const idx = m.month();
+          const monthLabel = m.format("M월");
+          const daysWithEvent = monthStats[idx] || 0;
+
+          return (
+            <button
+              key={idx}
+              type="button"
+              className="yearly-card"
+              onClick={() => nav(`/planner/monthly?date=${m.format("YYYY-MM-DD")}`)}
+            >
+              <div className="yearly-card__title">{monthLabel}</div>
+              <div className="yearly-card__meta text-muted font-small">
+                일정 있는 날짜: {daysWithEvent}일
+              </div>
+              <div className="yearly-card__cta">월간으로 보기 →</div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

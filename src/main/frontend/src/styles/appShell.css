@@ -1,0 +1,37 @@
+/* src/main/frontend/src/styles/appShell.css */
+
+.app-shell {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Header 아래 영역(좌: LNB / 우: 본문)을 flex로 고정 */
+.app-shell__body {
+  flex: 1;
+  min-height: 0; /* ✅ 이게 없으면 내부 overflow/100% 높이가 깨지면서 아래로 밀릴 수 있음 */
+  display: flex;
+}
+
+/* 본문 */
+.app-shell__main {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto; /* ✅ 본문만 스크롤 */
+  padding: 24px;
+  background: var(--color-bg, #f6f7fb);
+}
+
+/* 혹시 페이지들이 height:100%를 전제로 짜여있다면 안전장치 */
+.app-shell__main > * {
+  min-width: 0;
+}
+
+/* 모바일에서는 본문 패딩을 조금 줄임 */
+@media (max-width: 960px) {
+  .app-shell__main {
+    padding: 16px;
+  }
+}

@@ -1,154 +1,516 @@
-// src/components/schedule/ScheduleFormModal.jsx
+// FILE: src/components/schedule/ScheduleFormModal.jsx
 import React, { useEffect, useMemo, useState } from "react";
+import moment from "moment";
+
 import Modal from "../common/Modal";
-import { safeStorage } from "../../shared/utils/safeStorage";
-import ShareUserPicker from "../common/ShareUserPicker";
+import UserChipsInput from "../common/UserChipsInput";
 
-function toDateKey(d) {
-  const dt = d instanceof Date ? d : new Date(d);
-  const yyyy = dt.getFullYear();
-  const mm = String(dt.getMonth() + 1).padStart(2, "0");
-  const dd = String(dt.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
+import "../../styles/components/schedule-form-modal.css";
+import { DEFAULT_CATEGORIES } from "../../shared/constants/categories";
+import { addUserToDirectory, loadUserDirectory } from "../../shared/utils/userDirectory";
+import {
+  createSeries,
+  deleteEvent,
+  endSeriesFromDate,
+  getEventsForDate,
+  toDateKey,
+  updateSeriesFuture,
+  upsertOneOffEvent,
+} from "../../shared/utils/plannerStore";
+
+function pad2(n) {
+  return String(n).padStart(2, "0");
 }
 
-function loadCategories() {
-  const shared = safeStorage.getJSON("categories.shared", []);
-  const personal = safeStorage.getJSON("categories.personal", []);
-  return [
-    ...(Array.isArray(shared) ? shared : []),
-    ...(Array.isArray(personal) ? personal : []),
-  ];
+function defaultAllDay() {
+  return { start: "00:00", end: "23:59" };
 }
 
-function loadEvents(dateKey) {
-  const list = safeStorage.getJSON(`planner.events.${dateKey}`, []);
-  return Array.isArray(list) ? list : [];
-}
-function saveEvents(dateKey, list) {
-  safeStorage.setJSON(`planner.events.${dateKey}`, list);
+function dayKeyOfDate(date) {
+  const d = moment(date).day(); // 0..6
+  return ["sun", "mon", "tue", "wed", "thu", "fri", "sat"][d];
 }
 
 export default function ScheduleFormModal({
   open,
   onClose,
-  date = new Date(),
+  date,
+  mode = "quick", // quick | detail
   initialEvent = null,
-  mode = "detail", // quick | detail
   onSaved,
 }) {
-  const dateKey = useMemo(() => toDateKey(date), [date]);
-  const categories = useMemo(() => loadCategories(), []);
+  const dateKey = useMemo(() => toDateKey(date || new Date()), [date]);
 
+  const isEdit = !!initialEvent;
+  const isOccurrence = !!initialEvent?.isOccurrence && !!initialEvent?.seriesId && !!initialEvent?.occurrenceKey;
+
+  // “클릭 즉시 수정 모달 + 저장은 Dirty일 때만”
+  const [dirty, setDirty] = useState(false);
+
+  // 편집 범위(반복 발생분만)
+  const [editScope, setEditScope] = useState("one"); // one | future
+
+  // 기본 필드
   const [title, setTitle] = useState("");
-  const [start, setStart] = useState("09:00");
-  const [end, setEnd] = useState("10:00");
-  const [categoryId, setCategoryId] = useState(categories[0]?.id || "");
-  const [memo, setMemo] = useState("");
+  const [start, setStart] = useState(defaultAllDay().start);
+  const [end, setEnd] = useState(defaultAllDay().end);
+  const [categoryId, setCategoryId] = useState("");
   const [sharedUserIds, setSharedUserIds] = useState([]);
 
-  // open/initialEvent/dateKey 변경 시 폼 동기화 (수정 안정화)
+  // 반복(상세 모드)
+  const [repeatEnabled, setRepeatEnabled] = useState(false);
+  const [repeatFreq, setRepeatFreq] = useState("weekly"); // daily|weekly|monthly|yearly
+  const [repeatInterval, setRepeatInterval] = useState(1);
+  const [repeatWeekdays, setRepeatWeekdays] = useState([]);
+  const [repeatEndType, setRepeatEndType] = useState("none"); // none|until
+  const [repeatEndUntil, setRepeatEndUntil] = useState(dateKey);
+
+  // 임시 사용자 디렉토리
+  const [userDir, setUserDir] = useState(() => loadUserDirectory());
+
+  const categoryOptions = useMemo(
+    () => [{ id: "", name: "선택 없음" }, ...DEFAULT_CATEGORIES],
+    []
+  );
+
+  const resetFrom = () => {
+    setDirty(false);
+    setEditScope("one");
+
+    if (initialEvent) {
+      setTitle(initialEvent.title || "");
+      setStart(initialEvent.start || defaultAllDay().start);
+      setEnd(initialEvent.end || defaultAllDay().end);
+      setCategoryId(initialEvent.categoryId || "");
+      setSharedUserIds(Array.isArray(initialEvent.sharedUserIds) ? initialEvent.sharedUserIds : []);
+
+      // 시리즈 occurrence 편집이면 repeatRule 표시만(기본 값)
+      const rr = initialEvent.repeatRule;
+      if (mode === "detail") {
+        if (rr?.enabled) {
+          setRepeatEnabled(true);
+          setRepeatFreq(rr.freq || "weekly");
+          setRepeatInterval(Number(rr.interval || 1));
+          setRepeatWeekdays(Array.isArray(rr.byWeekdays) ? rr.byWeekdays : []);
+          const endObj = rr.end || { type: "none" };
+          setRepeatEndType(endObj.type || "none");
+          setRepeatEndUntil(endObj.until || dateKey);
+        } else {
+          setRepeatEnabled(false);
+          setRepeatFreq("weekly");
+          setRepeatInterval(1);
+          setRepeatWeekdays([]);
+          setRepeatEndType("none");
+          setRepeatEndUntil(dateKey);
+        }
+      }
+    } else {
+      setTitle("");
+      if (mode === "quick") {
+        const ad = defaultAllDay();
+        setStart(ad.start);
+        setEnd(ad.end);
+        setCategoryId("");
+        setSharedUserIds([]);
+        setRepeatEnabled(false);
+      } else {
+        // 상세 신규: “오늘 클릭한 날짜 기준” UX
+        const ad = defaultAllDay();
+        setStart(ad.start);
+        setEnd(ad.end);
+        setCategoryId("");
+        setSharedUserIds([]);
+
+        setRepeatEnabled(false);
+        setRepeatFreq("weekly");
+        setRepeatInterval(1);
+        setRepeatWeekdays([dayKeyOfDate(date)]);
+        setRepeatEndType("none");
+        setRepeatEndUntil(dateKey);
+      }
+    }
+  };
+
   useEffect(() => {
     if (!open) return;
+    resetFrom();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, dateKey, mode, isEdit]);
 
-    setTitle(initialEvent?.title || "");
-    setStart(initialEvent?.start || "09:00");
-    setEnd(initialEvent?.end || "10:00");
-    setCategoryId(initialEvent?.categoryId || categories[0]?.id || "");
-    setMemo(initialEvent?.memo || "");
-    setSharedUserIds(Array.isArray(initialEvent?.sharedUserIds) ? initialEvent.sharedUserIds : []);
-  }, [open, initialEvent, dateKey, categories]);
+  const setDirtyWrap = (setter) => (v) => {
+    setDirty(true);
+    setter(v);
+  };
 
-  const close = () => onClose?.();
+  const canSave = useMemo(() => {
+    const hasTitle = !!title.trim();
+    if (!hasTitle) return false;
+    if (isEdit) return dirty; // 수정: dirty일 때만 활성화
+    return true; // 생성: 제목 있으면 OK
+  }, [title, isEdit, dirty]);
 
-  const save = () => {
+  const buildRepeatRule = () => {
+    if (mode !== "detail" || !repeatEnabled) return { enabled: false };
+    const rr = {
+      enabled: true,
+      freq: repeatFreq,
+      interval: Math.max(1, Number(repeatInterval || 1)),
+      byWeekdays: repeatFreq === "weekly" ? repeatWeekdays : [],
+      end: repeatEndType === "until" ? { type: "until", until: repeatEndUntil } : { type: "none" },
+    };
+    return rr;
+  };
+
+  const handleSave = () => {
     const t = title.trim();
     if (!t) return;
 
-    const list = loadEvents(dateKey);
-    const next = [...list];
-
-    const payload = {
+    const rr = buildRepeatRule();
+    const base = {
       title: t,
       start,
       end,
-      categoryId,
-      memo: mode === "quick" ? "" : memo,
-      sharedUserIds,
+      categoryId: categoryId || "",
+      sharedUserIds: Array.isArray(sharedUserIds) ? sharedUserIds : [],
       updatedAt: Date.now(),
     };
 
-    if (initialEvent?.id) {
-      const idx = next.findIndex((e) => e.id === initialEvent.id);
-      const updated = { ...initialEvent, ...payload };
-      if (idx >= 0) next[idx] = updated;
-      else next.unshift(updated);
-    } else {
-      next.unshift({
-        id: `ev-${Date.now()}`,
-        createdAt: Date.now(),
-        ...payload,
+    // EDIT
+    if (initialEvent) {
+      // occurrence + “앞으로 모두”
+      if (isOccurrence && editScope === "future") {
+        if (rr?.enabled) {
+          // 반복 유지: split + 새 시리즈 생성
+          updateSeriesFuture(initialEvent.seriesId, dateKey, {
+            title: base.title,
+            startTime: base.start,
+            endTime: base.end,
+            categoryId: base.categoryId,
+            sharedUserIds: base.sharedUserIds,
+            repeatRule: rr,
+          });
+        } else {
+          // 반복 해제(앞으로 모두): 기존 시리즈 종료 + 기준일에 단건 생성
+          endSeriesFromDate(initialEvent.seriesId, dateKey);
+          upsertOneOffEvent(dateKey, {
+            ...base,
+            id: undefined,
+          });
+        }
+        onSaved?.(getEventsForDate(dateKey));
+        onClose?.();
+        return;
+      }
+
+      // occurrence + “이번만”
+      if (isOccurrence) {
+        upsertOneOffEvent(dateKey, {
+          id: undefined,
+          ...base,
+          isException: true,
+          seriesId: initialEvent.seriesId,
+          occurrenceKey: initialEvent.occurrenceKey,
+          isDeleted: false,
+        });
+        onSaved?.(getEventsForDate(dateKey));
+        onClose?.();
+        return;
+      }
+
+      // one-off 수정
+      upsertOneOffEvent(dateKey, {
+        ...initialEvent,
+        ...base,
       });
+      onSaved?.(getEventsForDate(dateKey));
+      onClose?.();
+      return;
     }
 
-    saveEvents(dateKey, next);
-    onSaved?.();
-    close();
+    // CREATE
+    if (mode === "detail" && rr?.enabled) {
+      createSeries({
+        title: base.title,
+        startTime: base.start,
+        endTime: base.end,
+        categoryId: base.categoryId,
+        sharedUserIds: base.sharedUserIds,
+        startDate: dateKey,
+        repeatRule: rr,
+      });
+      onSaved?.(getEventsForDate(dateKey));
+      onClose?.();
+      return;
+    }
+
+    upsertOneOffEvent(dateKey, {
+      ...base,
+      id: undefined,
+      repeatRule: { enabled: false },
+    });
+    onSaved?.(getEventsForDate(dateKey));
+    onClose?.();
   };
 
+  const handleDelete = () => {
+    if (!initialEvent) return;
+
+    if (isOccurrence && editScope === "future") {
+      endSeriesFromDate(initialEvent.seriesId, dateKey);
+      onSaved?.(getEventsForDate(dateKey));
+      onClose?.();
+      return;
+    }
+
+    deleteEvent(dateKey, initialEvent);
+    onSaved?.(getEventsForDate(dateKey));
+    onClose?.();
+  };
+
+  const toggleWeekday = (wk) => {
+    setDirty(true);
+    setRepeatWeekdays((prev) => (prev.includes(wk) ? prev.filter((x) => x !== wk) : [...prev, wk]));
+  };
+
+  const modalTitle = useMemo(() => {
+    if (initialEvent) return "일정 수정";
+    return mode === "quick" ? "새 일정 추가(간단)" : "새 일정 추가(상세)";
+  }, [initialEvent, mode]);
+
+  const footer = (
+    <>
+      {initialEvent ? (
+        <button type="button" className="btn btn--sm btn--ghost" onClick={handleDelete}>
+          삭제
+        </button>
+      ) : null}
+      <button type="button" className="btn btn--sm btn--ghost" onClick={onClose}>
+        취소
+      </button>
+      <button
+        type="button"
+        className={"btn btn--sm btn--primary" + (!canSave ? " is-disabled" : "")}
+        onClick={handleSave}
+        disabled={!canSave}
+      >
+        저장
+      </button>
+    </>
+  );
+
   return (
-    <Modal
-      open={open}
-      title={initialEvent ? "일정 수정" : "일정 등록"}
-      onClose={close}
-      width={mode === "quick" ? 560 : 760}
-      footer={
-        <div className="tb-modal__actions">
-          <button type="button" className="btn btn--sm btn--ghost" onClick={close}>
-            취소
-          </button>
-          <button type="button" className="btn btn--sm btn--primary" onClick={save}>
-            저장
-          </button>
-        </div>
-      }
-    >
-      <div className="tb-form">
-        <label className="tb-label">제목</label>
-        <input
-          className="field-input"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="예) 프로젝트 회의"
-        />
-
-        <div className="tb-grid2">
-          <div>
-            <label className="tb-label">시작</label>
-            <input className="field-input" value={start} onChange={(e) => setStart(e.target.value)} />
+    <Modal open={open} onClose={onClose} title={modalTitle} footer={footer}>
+      <div className="sfm">
+        {isEdit && isOccurrence ? (
+          <div className="sfm__section">
+            <div className="sfm__label">편집 범위</div>
+            <div className="sfm__scope">
+              <label className="sfm__radio">
+                <input
+                  type="radio"
+                  name="editScope"
+                  checked={editScope === "one"}
+                  onChange={() => setEditScope("one")}
+                />
+                이번 일정만
+              </label>
+              <label className="sfm__radio">
+                <input
+                  type="radio"
+                  name="editScope"
+                  checked={editScope === "future"}
+                  onChange={() => setEditScope("future")}
+                />
+                앞으로 모두
+              </label>
+            </div>
+            <div className="sfm__hint">
+              “앞으로 모두”는 기준일부터 반복 규칙/내용이 적용됩니다(시리즈 분할).
+            </div>
           </div>
-          <div>
-            <label className="tb-label">종료</label>
-            <input className="field-input" value={end} onChange={(e) => setEnd(e.target.value)} />
-          </div>
-        </div>
-
-        <label className="tb-label">카테고리</label>
-        <select className="field-input" value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
-        </select>
-
-        <label className="tb-label">공유 대상 사용자</label>
-        <ShareUserPicker value={sharedUserIds} onChange={setSharedUserIds} />
-
-        {mode !== "quick" ? (
-          <>
-            <label className="tb-label">메모</label>
-            <textarea className="field-input" rows={5} value={memo} onChange={(e) => setMemo(e.target.value)} />
-          </>
         ) : null}
+
+        <div className="sfm__grid">
+          <div className="sfm__field">
+            <div className="sfm__label">제목</div>
+            <input
+              className="sfm__input"
+              value={title}
+              placeholder="예) 프로젝트 회의"
+              onChange={(e) => setDirtyWrap(setTitle)(e.target.value)}
+            />
+          </div>
+
+          <div className="sfm__row2">
+            <div className="sfm__field">
+              <div className="sfm__label">시작</div>
+              <input
+                type="time"
+                className="sfm__input"
+                value={start}
+                onChange={(e) => setDirtyWrap(setStart)(e.target.value)}
+              />
+            </div>
+            <div className="sfm__field">
+              <div className="sfm__label">종료</div>
+              <input
+                type="time"
+                className="sfm__input"
+                value={end}
+                onChange={(e) => setDirtyWrap(setEnd)(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {mode === "detail" ? (
+            <>
+              <div className="sfm__field">
+                <div className="sfm__label">카테고리</div>
+                <select
+                  className="sfm__input"
+                  value={categoryId}
+                  onChange={(e) => setDirtyWrap(setCategoryId)(e.target.value)}
+                >
+                  {categoryOptions.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="sfm__field">
+                <div className="sfm__label">공유 사용자</div>
+                <UserChipsInput
+                  value={sharedUserIds}
+                  onChange={(v) => {
+                    setDirty(true);
+                    setSharedUserIds(v);
+                  }}
+                  suggestions={userDir}
+                  onAddNewSuggestion={(v) => {
+                    const next = addUserToDirectory(v);
+                    setUserDir(next);
+                  }}
+                  placeholder="사용자 입력 후 Enter (검색/자동완성)"
+                />
+                <div className="sfm__hint">
+                  서버 연결 전 임시 UX입니다. Enter/콤마로 추가, 방향키로 선택 가능합니다.
+                </div>
+              </div>
+
+              <div className="sfm__section">
+                <div className="sfm__sectionHead">
+                  <span>반복</span>
+                  <label className="sfm__switch">
+                    <input
+                      type="checkbox"
+                      checked={repeatEnabled}
+                      onChange={(e) => {
+                        setDirty(true);
+                        setRepeatEnabled(e.target.checked);
+                      }}
+                    />
+                    <span>반복 사용</span>
+                  </label>
+                </div>
+
+                {repeatEnabled ? (
+                  <div className="sfm__repeatBox">
+                    <div className="sfm__row2">
+                      <div className="sfm__field">
+                        <div className="sfm__label">주기</div>
+                        <select
+                          className="sfm__input"
+                          value={repeatFreq}
+                          onChange={(e) => {
+                            setDirty(true);
+                            setRepeatFreq(e.target.value);
+                          }}
+                        >
+                          <option value="daily">매일</option>
+                          <option value="weekly">매주</option>
+                          <option value="monthly">매월</option>
+                          <option value="yearly">매년</option>
+                        </select>
+                      </div>
+
+                      <div className="sfm__field">
+                        <div className="sfm__label">간격</div>
+                        <input
+                          className="sfm__input"
+                          type="number"
+                          min={1}
+                          value={repeatInterval}
+                          onChange={(e) => {
+                            setDirty(true);
+                            setRepeatInterval(Number(e.target.value || 1));
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    {repeatFreq === "weekly" ? (
+                      <div className="sfm__field">
+                        <div className="sfm__label">요일</div>
+                        <div className="sfm__weekdays">
+                          {[
+                            ["mon", "월"],
+                            ["tue", "화"],
+                            ["wed", "수"],
+                            ["thu", "목"],
+                            ["fri", "금"],
+                            ["sat", "토"],
+                            ["sun", "일"],
+                          ].map(([k, label]) => (
+                            <button
+                              key={k}
+                              type="button"
+                              className={"sfm__wkBtn " + (repeatWeekdays.includes(k) ? "is-on" : "")}
+                              onClick={() => toggleWeekday(k)}
+                            >
+                              {label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+
+                    <div className="sfm__field">
+                      <div className="sfm__label">종료 방식</div>
+                      <select
+                        className="sfm__input"
+                        value={repeatEndType}
+                        onChange={(e) => {
+                          setDirty(true);
+                          setRepeatEndType(e.target.value);
+                        }}
+                      >
+                        <option value="none">없음</option>
+                        <option value="until">날짜까지</option>
+                      </select>
+                    </div>
+
+                    {repeatEndType === "until" ? (
+                      <div className="sfm__field">
+                        <div className="sfm__label">종료 날짜</div>
+                        <input
+                          type="date"
+                          className="sfm__input"
+                          value={repeatEndUntil}
+                          onChange={(e) => {
+                            setDirty(true);
+                            setRepeatEndUntil(e.target.value);
+                          }}
+                        />
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
+              </div>
+            </>
+          ) : null}
+        </div>
       </div>
     </Modal>
   );

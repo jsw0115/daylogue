@@ -10,7 +10,7 @@ function safeParse(raw, fallback) {
 
 function loadState(key, fallback) {
   try {
-    const raw = localStorage.getItem(key);
+    const raw = localStorage.get(key);
     if (!raw) return fallback;
     return safeParse(raw, fallback);
   } catch {
@@ -20,7 +20,7 @@ function loadState(key, fallback) {
 
 function saveState(key, value) {
   try {
-    localStorage.setItem(key, JSON.stringify(value));
+    localStorage.set(key, JSON.stringify(value));
   } catch {
     // ignore
   }

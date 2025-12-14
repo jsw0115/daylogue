@@ -1,0 +1,73 @@
+/* FILE: src/styles/components/routine-form-modal.css */
+.rfm__grid {
+  display: grid;
+  gap: 12px;
+}
+
+.rfm__field {
+  display: grid;
+  gap: 6px;
+}
+
+.rfm__label {
+  font-size: 12px;
+  color: var(--color-muted, #6b7280);
+  font-weight: 600;
+}
+
+.rfm__input {
+  width: 100%;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 13px;
+  background: var(--color-card, #fff);
+}
+
+.rfm__row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 560px) {
+  .rfm__row2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rfm__weekdays {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rfm__wkBtn {
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: var(--color-card, #fff);
+  border-radius: 999px;
+  padding: 7px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.rfm__wkBtn.is-on {
+  background: rgba(99, 102, 241, 0.14);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.rfm__detailBox {
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 14px;
+  padding: 12px;
+  background: var(--color-bg-soft, #f8fafc);
+  display: grid;
+  gap: 12px;
+}
+
+.rfm__check {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+}

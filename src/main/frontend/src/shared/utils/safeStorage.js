@@ -1,6 +1,8 @@
 // src/shared/utils/safeStorage.js
-// localStorage 접근이 막히는(SecurityError) 환경에서도 죽지 않도록
-// 모든 접근을 함수 내부 try/catch로 처리 + 메모리 fallback 제공
+// - localStorage가 막힌 환경에서도 앱이 죽지 않도록 안전 래퍼 제공
+// - 기존 코드 호환: default export + named export(safeStorage) 둘 다 제공
+// - 기존 코드 호환: get/set/keys/removeItem/isPersistentAvailable 유지
+// - 신규 코드 호환: getItem/setItem/getJSON/setJSON 제공
 
 const memoryStore = new Map();
 
@@ -8,26 +10,16 @@ function hasWindow() {
   return typeof window !== "undefined";
 }
 
-function getLocalStorageSafely() {
-  if (!hasWindow()) return null;
-  try {
-    // 어떤 환경에서는 window.localStorage "프로퍼티 읽기" 자체가 SecurityError를 던짐
-    return window.localStorage;
-  } catch (e) {
-    return null;
-  }
-}
-
 function canUseLocalStorage() {
-  const ls = getLocalStorageSafely();
-  if (!ls) return false;
-
+  if (!hasWindow()) return false;
   try {
-    const k = "__safe_storage_test__";
+    const ls = window.localStorage;
+    if (!ls) return false;
+    const k = "__ls_test__";
     ls.setItem(k, "1");
     ls.removeItem(k);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -35,24 +27,21 @@ function canUseLocalStorage() {
 function readRaw(key) {
   if (canUseLocalStorage()) {
     try {
-      const ls = getLocalStorageSafely();
-      return ls ? ls.getItem(key) : null;
-    } catch (e) {
+      return window.localStorage.getItem(key);
+    } catch {
       return null;
     }
   }
-  return memoryStore.has(key) ? String(memoryStore.get(key)) : null;
+  return memoryStore.has(key) ? memoryStore.get(key) : null;
 }
 
 function writeRaw(key, value) {
   const v = value == null ? "" : String(value);
-
   if (canUseLocalStorage()) {
     try {
-      const ls = getLocalStorageSafely();
-      if (ls) ls.setItem(key, v);
+      window.localStorage.setItem(key, v);
       return;
-    } catch (e) {
+    } catch {
       // fallthrough
     }
   }
@@ -62,92 +51,67 @@ function writeRaw(key, value) {
 function removeRaw(key) {
   if (canUseLocalStorage()) {
     try {
-      const ls = getLocalStorageSafely();
-      if (ls) ls.removeItem(key);
-      return;
-    } catch (e) {
-      // fallthrough
+      window.localStorage.removeItem(key);
+    } catch {
+      // ignore
     }
   }
   memoryStore.delete(key);
 }
 
-function listKeys(prefix = "") {
-  const keys = [];
-
+function allKeys() {
+  const out = new Set();
   if (canUseLocalStorage()) {
     try {
-      const ls = getLocalStorageSafely();
-      if (!ls) return keys;
-
-      for (let i = 0; i < ls.length; i += 1) {
-        const k = ls.key(i);
-        if (!k) continue;
-        if (!prefix || k.startsWith(prefix)) keys.push(k);
-      }
-      return keys;
-    } catch (e) {
-      // fallthrough
+      const ls = window.localStorage;
+      for (let i = 0; i < ls.length; i++) out.add(ls.key(i));
+    } catch {
+      // ignore
     }
   }
-
-  for (const k of memoryStore.keys()) {
-    if (!prefix || String(k).startsWith(prefix)) keys.push(String(k));
-  }
-  return keys;
+  for (const k of memoryStore.keys()) out.add(k);
+  return Array.from(out).filter(Boolean);
 }
 
-const safeStorage = {
-  isAvailable() {
-    return canUseLocalStorage();
-  },
-
-  getItem(key, fallback = null) {
+export const safeStorage = {
+  // 신규 API
+  getItem(key, fallback = "") {
     const v = readRaw(key);
     return v == null ? fallback : v;
   },
-
   setItem(key, value) {
     writeRaw(key, value);
   },
-
   removeItem(key) {
     removeRaw(key);
   },
-
-  // ✅ 여기 때문에 지금 에러가 난다: getJSON / setJSON 제공
-  getJSON(key, fallback = null) {
+  getJSON(key, fallback) {
     const raw = readRaw(key);
     if (raw == null || raw === "") return fallback;
-
     try {
-      return JSON.parse(raw);
-    } catch (e) {
-      // 저장된 값이 깨졌으면 fallback으로 처리
+      const parsed = JSON.parse(raw);
+      return parsed ?? fallback;
+    } catch {
       return fallback;
     }
   },
-
   setJSON(key, obj) {
-    try {
-      const raw = JSON.stringify(obj);
-      writeRaw(key, raw);
-    } catch (e) {
-      // stringify 실패(순환 참조 등)면 저장 안 함
-    }
+    writeRaw(key, JSON.stringify(obj ?? null));
+  },
+  keys() {
+    return allKeys();
+  },
+  isPersistentAvailable() {
+    return canUseLocalStorage();
   },
 
-  updateJSON(key, updater, fallback = null) {
-    const current = safeStorage.getJSON(key, fallback);
-    const next = typeof updater === "function" ? updater(current) : current;
-    safeStorage.setJSON(key, next);
-    return next;
+  // 구형 코드 호환 API (HomeDashboardScreen 등)
+  get(key, fallback = "") {
+    return safeStorage.getItem(key, fallback);
   },
-
-  keys(prefix = "") {
-    return listKeys(prefix);
+  set(key, value) {
+    safeStorage.setItem(key, value);
   },
 };
 
-export { safeStorage };
 export default safeStorage;

@@ -30,12 +30,12 @@ export default function HomeDashboardScreen() {
 
   // ✅ localStorage가 막혀도 여기서 크래시 나면 안 됨 → storage 래퍼 사용
   const [layouts, setLayouts] = useState(() => {
-    const saved = safeJsonParse(storage.getItem(STORAGE_LAYOUTS), null);
+    const saved = safeJsonParse(storage.get(STORAGE_LAYOUTS), null);
     return saved || DEFAULT_LAYOUTS;
   });
 
   const [visible, setVisible] = useState(() => {
-    const saved = safeJsonParse(storage.getItem(STORAGE_VISIBLE), null);
+    const saved = safeJsonParse(storage.get(STORAGE_VISIBLE), null);
     return saved || DEFAULT_VISIBLE;
   });
 
@@ -45,11 +45,11 @@ export default function HomeDashboardScreen() {
   );
 
   useEffect(() => {
-    storage.setItem(STORAGE_LAYOUTS, JSON.stringify(layouts));
+    storage.set(STORAGE_LAYOUTS, JSON.stringify(layouts));
   }, [layouts]);
 
   useEffect(() => {
-    storage.setItem(STORAGE_VISIBLE, JSON.stringify(visible));
+    storage.set(STORAGE_VISIBLE, JSON.stringify(visible));
   }, [visible]);
 
   const onLayoutChange = (_, allLayouts) => {
@@ -72,7 +72,7 @@ export default function HomeDashboardScreen() {
           <div className="screen-title">대시보드</div>
           <div className="screen-subtitle">
             진행 상황과 일정/메모를 한눈에 확인하세요.
-            {!storage.isAvailable() && (
+            {!storage.isPersistentAvailable() && (
               <span className="muted" style={{ marginLeft: 8 }}>
                 (현재 환경에서 localStorage가 차단되어 새로고침 시 저장이 유지되지 않을 수 있어요)
               </span>

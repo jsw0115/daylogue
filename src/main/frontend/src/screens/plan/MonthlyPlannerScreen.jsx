@@ -1,4 +1,4 @@
-// src/screens/plan/MonthlyPlannerScreen.jsx
+// FILE: src/screens/plan/MonthlyPlannerScreen.jsx
 import React, { useMemo, useState } from "react";
 import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
@@ -9,18 +9,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import "react-calendar/dist/Calendar.css";
 import "../../styles/screens/monthly-planner.css";
 
-import { safeStorage } from "../../shared/utils/safeStorage";
+import { getEventsForDate, toDateKey } from "../../shared/utils/plannerStore";
 import ScheduleFormModal from "../../components/schedule/ScheduleFormModal";
 
 moment.locale("ko");
 moment.updateLocale("ko", { week: { dow: 0, doy: 1 } });
-
-const toDateKey = (d) => moment(d).format("YYYY-MM-DD");
-
-function loadEvents(dateKey) {
-  const list = safeStorage.getJSON(`planner.events.${dateKey}`, []);
-  return Array.isArray(list) ? list : [];
-}
 
 export default function MonthlyPlannerScreen() {
   const nav = useNavigate();
@@ -35,28 +28,20 @@ export default function MonthlyPlannerScreen() {
   const [selectedDate, setSelectedDate] = useState(initialDate);
   const dateKey = useMemo(() => toDateKey(selectedDate), [selectedDate]);
 
-  const [tick, setTick] = useState(0);
-  const reload = () => setTick((v) => v + 1);
+  const selectedEvents = useMemo(() => getEventsForDate(dateKey), [dateKey]);
 
-  const selectedEvents = useMemo(() => {
-    void tick;
-    return loadEvents(dateKey);
-  }, [dateKey, tick]);
-
-  // 선택 월의 이벤트 존재 여부(점 표시)
   const eventCountByDate = useMemo(() => {
-    void tick;
     const m = moment(selectedDate);
     const start = m.clone().startOf("month");
     const days = m.daysInMonth();
     const map = {};
     for (let i = 0; i < days; i++) {
       const key = start.clone().add(i, "day").format("YYYY-MM-DD");
-      const list = loadEvents(key);
-      if (list.length) map[key] = list.length;
+      const cnt = getEventsForDate(key).length;
+      if (cnt) map[key] = cnt;
     }
     return map;
-  }, [selectedDate, tick]);
+  }, [selectedDate]);
 
   const goToday = () => setSelectedDate(new Date());
   const moveMonth = (delta) => setSelectedDate(moment(selectedDate).add(delta, "month").toDate());
@@ -74,7 +59,6 @@ export default function MonthlyPlannerScreen() {
 
   return (
     <div className="monthly-planner-screen">
-      {/* 헤더(월간 스타일) */}
       <div className="screen-header">
         <div className="screen-header__title">월간 플래너</div>
         <div className="tabbar tabbar--sm">
@@ -113,7 +97,6 @@ export default function MonthlyPlannerScreen() {
       </div>
 
       <div className="monthly-layout">
-        {/* 달력 */}
         <div className="card monthly-left">
           <Calendar
             value={selectedDate}
@@ -133,11 +116,10 @@ export default function MonthlyPlannerScreen() {
             }}
           />
           <div className="text-muted font-small monthly-hint">
-            작성/등록된 일정이 있는 날짜에 점이 표시됩니다.
+            일정이 있는 날짜에 점이 표시됩니다(반복 일정 포함).
           </div>
         </div>
 
-        {/* 우측 리스트 */}
         <div className="card monthly-right">
           <div className="monthly-right__head">
             <div>
@@ -162,6 +144,7 @@ export default function MonthlyPlannerScreen() {
                     <div className="text-muted font-small">
                       {e.start}~{e.end}
                       {e.sharedUserIds?.length ? ` · 공유 ${e.sharedUserIds.length}` : ""}
+                      {e.isOccurrence ? " · 반복" : ""}
                     </div>
                   </button>
                   <button type="button" className="btn btn--sm btn--ghost" onClick={() => openEditModal(e)}>
@@ -176,10 +159,16 @@ export default function MonthlyPlannerScreen() {
         </div>
       </div>
 
-      {/* 모달 */}
-      <ScheduleFormModal open={openQuick} onClose={() => setOpenQuick(false)} date={selectedDate} mode="quick" onSaved={reload} />
-      <ScheduleFormModal open={openDetail} onClose={() => setOpenDetail(false)} date={selectedDate} mode="detail" onSaved={reload} />
-      <ScheduleFormModal open={openEdit} onClose={() => setOpenEdit(false)} date={selectedDate} initialEvent={editing} mode="detail" onSaved={() => { setOpenEdit(false); setEditing(null); reload(); }} />
+      <ScheduleFormModal open={openQuick} onClose={() => setOpenQuick(false)} date={selectedDate} mode="quick" onSaved={() => {}} />
+      <ScheduleFormModal open={openDetail} onClose={() => setOpenDetail(false)} date={selectedDate} mode="detail" onSaved={() => {}} />
+      <ScheduleFormModal
+        open={openEdit}
+        onClose={() => { setOpenEdit(false); setEditing(null); }}
+        date={selectedDate}
+        initialEvent={editing}
+        mode="detail"
+        onSaved={() => { setOpenEdit(false); setEditing(null); }}
+      />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 // src/screens/diary/DailyDiaryScreen.jsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import Calendar from "react-calendar";
 import moment from "moment";
@@ -25,7 +25,6 @@ const toDateKey = (d) => moment(d).format("YYYY-MM-DD");
 function loadDiaryMap() {
   return safeStorage.getJSON("diary.entries", {});
 }
-
 function saveDiaryMap(map) {
   safeStorage.setJSON("diary.entries", map);
 }
@@ -51,6 +50,15 @@ function getPlannerSummary(dateKey) {
   };
 }
 
+function snapDiary(mood, summary, detail, gratitude) {
+  return JSON.stringify({
+    mood,
+    summary: (summary ?? "").trim(),
+    detail: (detail ?? "").trim(),
+    gratitude: (gratitude ?? "").trim(),
+  });
+}
+
 export default function DailyDiaryScreen() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const dateKey = useMemo(() => toDateKey(selectedDate), [selectedDate]);
@@ -73,6 +81,10 @@ export default function DailyDiaryScreen() {
   const [detail, setDetail] = useState(current.detail);
   const [gratitude, setGratitude] = useState(current.gratitude);
 
+  // 저장 상태(버튼 disabled 처리)
+  const savedSnapRef = useRef(snapDiary(current.mood, current.summary, current.detail, current.gratitude));
+  const [lastSavedAt, setLastSavedAt] = useState(current.updatedAt);
+
   // 날짜 변경 시 로드
   useEffect(() => {
     const map = loadDiaryMap();
@@ -90,26 +102,34 @@ export default function DailyDiaryScreen() {
     setSummary(cur.summary);
     setDetail(cur.detail);
     setGratitude(cur.gratitude);
+
+    savedSnapRef.current = snapDiary(cur.mood, cur.summary, cur.detail, cur.gratitude);
+    setLastSavedAt(cur.updatedAt);
   }, [dateKey]);
 
-  // 자동 저장(디바운스) - diaryMap dependency 경고 제거(함수형 업데이트로 해결)
-  useEffect(() => {
-    const t = setTimeout(() => {
-      setDiaryMap((prev) => {
-        const next = { ...prev };
-        next[dateKey] = {
-          mood,
-          summary,
-          detail,
-          gratitude,
-          updatedAt: Date.now(),
-        };
-        saveDiaryMap(next);
-        return next;
-      });
-    }, 400);
-    return () => clearTimeout(t);
-  }, [dateKey, mood, summary, detail, gratitude]);
+  const isDirty = useMemo(() => {
+    const cur = snapDiary(mood, summary, detail, gratitude);
+    return cur !== savedSnapRef.current;
+  }, [mood, summary, detail, gratitude]);
+
+  // ✅ 명시 저장 버튼
+  const saveNow = () => {
+    setDiaryMap((prev) => {
+      const next = { ...prev };
+      const now = Date.now();
+      next[dateKey] = {
+        mood,
+        summary,
+        detail,
+        gratitude,
+        updatedAt: now,
+      };
+      saveDiaryMap(next);
+      savedSnapRef.current = snapDiary(mood, summary, detail, gratitude);
+      setLastSavedAt(now);
+      return next;
+    });
+  };
 
   const moveDay = (delta) => setSelectedDate(moment(selectedDate).add(delta, "day").toDate());
   const goToday = () => setSelectedDate(new Date());
@@ -193,6 +213,21 @@ export default function DailyDiaryScreen() {
             >
               월간
             </button>
+          </div>
+
+          {/* ✅ 저장 버튼 추가 (dirty 전까지 비활성화) */}
+          <button
+            type="button"
+            className={"btn btn--sm " + (isDirty ? "btn--primary" : "btn--secondary")}
+            onClick={saveNow}
+            disabled={!isDirty}
+            title={!isDirty ? "변경 사항이 없습니다." : ""}
+          >
+            저장
+          </button>
+
+          <div className="text-muted font-small" style={{ marginLeft: 8 }}>
+            {lastSavedAt ? `마지막 저장: ${moment(lastSavedAt).format("MM/DD HH:mm")}` : "저장 기록 없음"}
           </div>
         </div>
       </div>

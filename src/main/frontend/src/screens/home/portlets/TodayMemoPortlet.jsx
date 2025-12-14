@@ -1,48 +1,31 @@
+// src/screens/home/portlets/TodayMemoPortlet.jsx
 import React, { useEffect, useState } from "react";
-import storage from "../../../shared/utils/safeStorage";
-
-const KEY_MEMO = "timebar.memo.today.v1";
-const KEY_QUOTE = "timebar.quote.today.v1";
+import safeStorage from "../../../shared/utils/safeStorage";
 
 export default function TodayMemoPortlet() {
-  const [memo, setMemo] = useState("");
-  const [quote, setQuote] = useState("");
+  const [memo, setMemo] = useState(() => safeStorage.get("tbd.todayMemo", ""));
 
   useEffect(() => {
-    const m = storage.getItem(KEY_MEMO);
-    const q = storage.getItem(KEY_QUOTE);
-    if (m) setMemo(m);
-    if (q) setQuote(q);
+    // ✅ useEffect는 "함수" 또는 "아무것도"만 return 해야 함.
+    // ❌ return false; 같은 패턴은 StrictMode에서 언마운트 시 cleanup 호출하면서 터짐.
+    // 여기서는 cleanup이 딱히 없으니 return 자체를 하지 않음.
+    return undefined;
   }, []);
 
   useEffect(() => {
-    storage.setItem(KEY_MEMO, memo);
+    safeStorage.set("tbd.todayMemo", memo ?? "");
   }, [memo]);
 
-  useEffect(() => {
-    storage.setItem(KEY_QUOTE, quote);
-  }, [quote]);
-
   return (
-    <div className="today-memo">
-      <div className="field">
-        <div className="label">오늘 나의 메모</div>
-        <textarea
-          value={memo}
-          onChange={(e) => setMemo(e.target.value)}
-          placeholder="오늘의 생각/배운 점을 적어보세요."
-          rows={6}
-        />
-      </div>
-
-      <div className="field">
-        <div className="label">오늘 나의 좌우명</div>
-        <input
-          value={quote}
-          onChange={(e) => setQuote(e.target.value)}
-          placeholder="예) 꾸준함은 재능을 이긴다."
-        />
-      </div>
+    <div className="portlet">
+      <div className="portlet-subtitle">오늘의 메모</div>
+      <textarea
+        className="portlet-textarea"
+        rows={6}
+        value={memo}
+        onChange={(e) => setMemo(e.target.value)}
+        placeholder="오늘의 기록/메모를 남겨보세요."
+      />
     </div>
   );
 }

@@ -27,11 +27,11 @@ export default function HomeDashboardScreen() {
 
   const [editMode, setEditMode] = useState(false);
   const [layouts, setLayouts] = useState(() => {
-    const saved = safeJsonParse(localStorage.getItem(STORAGE_LAYOUTS), null);
+    const saved = safeJsonParse(localStorage.get(STORAGE_LAYOUTS), null);
     return saved || DEFAULT_LAYOUTS;
   });
   const [visible, setVisible] = useState(() => {
-    const saved = safeJsonParse(localStorage.getItem(STORAGE_VISIBLE), null);
+    const saved = safeJsonParse(localStorage.get(STORAGE_VISIBLE), null);
     return saved || DEFAULT_VISIBLE;
   });
 
@@ -41,11 +41,11 @@ export default function HomeDashboardScreen() {
   );
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_LAYOUTS, JSON.stringify(layouts));
+    localStorage.set(STORAGE_LAYOUTS, JSON.stringify(layouts));
   }, [layouts]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_VISIBLE, JSON.stringify(visible));
+    localStorage.set(STORAGE_VISIBLE, JSON.stringify(visible));
   }, [visible]);
 
   const onLayoutChange = (_, allLayouts) => {

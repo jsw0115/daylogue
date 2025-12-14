@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 
 function safeLoad(key, fallback) {
   try {
-    const raw = localStorage.getItem(key);
+    const raw = localStorage.get(key);
     if (!raw) return fallback;
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return fallback;
@@ -14,7 +14,7 @@ function safeLoad(key, fallback) {
 
 function safeSave(key, value) {
   try {
-    localStorage.setItem(key, JSON.stringify(value));
+    localStorage.set(key, JSON.stringify(value));
   } catch {
     // ignore
   }

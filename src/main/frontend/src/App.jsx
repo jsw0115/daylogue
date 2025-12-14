@@ -1,5 +1,6 @@
+// FILE: src/App.jsx
 import React from "react";
-import AppRoutes from "./routes";
+import AppRoutes from "./routes/AppRoutes"; // ✅ 이렇게 명시
 
 import { ThemeProvider } from "./shared/context/ThemeContext";
 import { AppModeProvider } from "./shared/context/AppModeContext";

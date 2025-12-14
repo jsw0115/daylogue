@@ -9,7 +9,7 @@ import WeeklyPlannerScreen from "./screens/plan/WeeklyPlannerScreen";
 import MonthlyPlannerScreen from "./screens/plan/MonthlyPlannerScreen";
 import YearlyOverviewScreen from "./screens/plan/YearlyOverviewScreen";
 
-import TaskListScreen from "./screens/task/TaskListScreen";
+import TaskListScreen from "./screens/TaskListScreen";
 import RoutineListScreen from "./screens/routine/RoutineListScreen";
 import DailyDiaryScreen from "./screens/diary/DailyDiaryScreen";
 
