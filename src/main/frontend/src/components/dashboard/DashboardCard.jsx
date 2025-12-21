@@ -1,3 +1,4 @@
+// FILE: src/components/dashboard/DashboardCard.jsx
 import React from "react";
 
 function DashboardCard({ title, subtitle, right, children, className }) {

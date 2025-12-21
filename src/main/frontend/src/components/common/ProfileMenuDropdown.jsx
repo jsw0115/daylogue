@@ -1,3 +1,4 @@
+// src/components/common/ProfileMenuDropdown.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { safeStorage } from "../../shared/utils/safeStorage";

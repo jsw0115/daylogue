@@ -1,3 +1,4 @@
+// FILE: src/main/frontend/src/components/dashboard/useDashboardGridLayout.jsx
 import { useEffect, useMemo, useState } from "react";
 
 function safeParse(raw, fallback) {

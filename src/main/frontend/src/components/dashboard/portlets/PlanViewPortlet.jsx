@@ -1,3 +1,4 @@
+// FILE: src/components/dashboard/portlets/PlanViewPortlet.jsx
 import React from "react";
 
 export default function PlanViewPortlet({ planViewMode, setPlanViewMode }) {
