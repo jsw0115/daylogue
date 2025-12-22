@@ -1,0 +1,124 @@
+spring:
+  application:
+    name: daylogue
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3307/timeflow?sslMode=DISABLED&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: timeflow
+    password: timeflow9661
+  jpa:
+    show-sql: true
+    generate-ddl: false
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+
+  # 어떤 프로파일을 기본으로 사용할지(로컬 개발 기본값)
+  # - 운영에서는 보통 환경변수/실행 옵션으로 덮어씀:
+  #   예) -Dspring.profiles.active=prod
+  profiles:
+    active: local
+
+  jackson:
+    # 날짜/시간을 타임스탬프(숫자) 대신 ISO 8601 문자열로 직렬화 권장
+    serialization:
+      write-dates-as-timestamps: false
+
+    # 응답 JSON의 기본 타임존을 UTC로 맞추는 용도(권장)
+    # - 서버 저장 UTC 정책과 맞춤
+    time-zone: UTC
+
+  mvc:
+    # Spring 3.x에서 Problem Details(RFC7807) 응답을 활성화할 수 있음
+    # - 다만 너는 공통 응답 래퍼(ApiResponse)를 쓸 계획이므로,
+    #   최종적으로는 GlobalExceptionHandler에서 통일하는 쪽이 더 깔끔함
+    problemdetails:
+      enabled: true
+
+# FILE: src/main/resources/application.yml
+# -----------------------------------------------------------------------------
+# 공통(모든 환경) 기본 설정
+# - 환경별(local/dev/prod)로 달라지는 값은 application-*.yml에서 오버라이드
+# - Spring Boot는 기본적으로 "application.yml" + "application-{profile}.yml"을 합쳐서 로드함
+# -----------------------------------------------------------------------------
+
+server:
+  port: 8080
+  # 서버가 정상 종료(graceful shutdown)되도록 함(요청 처리 중이면 잠시 대기 후 종료)
+  shutdown: graceful
+
+  # 리버스 프록시(nginx/ALB) 뒤에서 X-Forwarded-* 헤더를 처리할 때 유용
+  # - Spring Boot 2.6+ / 3.x에서 주로 사용
+  # - 만약 Boot 2.5 이하라면 이 옵션이 동작이 다를 수 있음(그땐 server.use-forward-headers=true 고려)
+  forward-headers-strategy: framework
+
+logging:
+  level:
+    root: INFO
+    # 웹 요청 로그(필요시 DEBUG로 올림)
+    org.springframework.web: INFO
+    # Security 디버깅할 때 DEBUG로 올림(운영에서는 INFO 권장)
+    org.springframework.security: INFO
+
+management:
+  endpoints:
+    web:
+      # actuator 노출 엔드포인트 지정
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      # health 상세정보 노출 범위(운영은 when_authorized 권장)
+      show-details: never
+
+# -----------------------------------------------------------------------------
+# 커스텀 앱 설정(prefix를 app로 통일)
+# -----------------------------------------------------------------------------
+app:
+  api:
+    # 프론트/백 통신에서 /api 베이스를 강제하고 싶을 때 사용(컨트롤러/필터/리버스프록시에서 활용)
+    base-path: /api
+
+  cors:
+    # 프론트 개발 서버(React) 기본 허용
+    # - 여러 도메인을 허용하려면 배열로 추가
+    allowed-origins:
+      - http://localhost:3000
+    # 허용 메서드
+    allowed-methods: [GET, POST, PUT, PATCH, DELETE, OPTIONS]
+    # 허용 헤더(개발 단계에서는 * 허용이 편함)
+    allowed-headers: ["*"]
+    # 쿠키/인증정보 포함 요청 허용 여부
+    allow-credentials: true
+
+  security:
+    jwt:
+      # 토큰 발급자(issuer). 검증 시 일치 체크에 활용 가능
+      issuer: timeflow
+      # accessToken 만료(초) - 예: 1시간
+      access-token-ttl-seconds: 3600
+      # refreshToken 만료(초) - 예: 14일
+      refresh-token-ttl-seconds: 1209600
+      # 운영에서는 반드시 환경변수로 주입 권장
+      # - 예) JWT_SECRET=매우긴랜덤문자열
+      secret: "CHANGE_ME_TO_A_LONG_RANDOM_SECRET_32BYTES_MINIMUM"
+      access-ttl-seconds: 900
+      refresh-ttl-seconds: 1209600
+    cors:
+      allowed-origins: "http://localhost:3000"
+springdoc:
+  version: V.0.0.1  # 버전 기록용
+  # Swagger UI 기본 경로
+  swagger-ui:
+    path: /swagger-ui   # String, Swagger-ui HTML 문서의 사용자 정의 경로
+    tags-sorter: alpha  # API 태그 목록에 정렬을 적용(alpha -> 영숫자순으로 경로별로 정렬)
+    operations-sorter: alpha  # API 작업 목록에 정렬을 적용(alpha -> 영숫자 경로 기준 정렬)
+  api-docs:
+    path: /v3/api-docs  # API 작업 목록에 정렬을 적용(alpha -> 영숫자 경로 기준 정렬)
+  # 기본값 : 미디어 유형
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8

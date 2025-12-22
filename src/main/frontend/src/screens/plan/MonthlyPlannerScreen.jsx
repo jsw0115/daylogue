@@ -1,6 +1,6 @@
 // FILE: src/screens/plan/MonthlyPlannerScreen.jsx
 import React, { useMemo, useState } from "react";
-import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
+import { data, NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import Calendar from "react-calendar";
 import moment from "moment";
@@ -99,6 +99,7 @@ export default function MonthlyPlannerScreen() {
       <div className="monthly-layout">
         <div className="card monthly-left">
           <Calendar
+            formatDay={(locale, date) => moment(date).format("D")}
             value={selectedDate}
             onChange={(d) => {
               const next = Array.isArray(d) ? d[0] : d;

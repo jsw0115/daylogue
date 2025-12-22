@@ -1,5 +1,5 @@
 // FILE: src/components/schedule/ScheduleFormModal.jsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import moment from "moment";
 
 import Modal from "../common/Modal";
@@ -18,10 +18,6 @@ import {
   upsertOneOffEvent,
 } from "../../shared/utils/plannerStore";
 
-function pad2(n) {
-  return String(n).padStart(2, "0");
-}
-
 function defaultAllDay() {
   return { start: "00:00", end: "23:59" };
 }
@@ -31,103 +27,130 @@ function dayKeyOfDate(date) {
   return ["sun", "mon", "tue", "wed", "thu", "fri", "sat"][d];
 }
 
+function clampDateKey(v) {
+  // yyyy-mm-dd 형식만 허용(대충 방어)
+  if (typeof v !== "string") return "";
+  return /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : "";
+}
+
 export default function ScheduleFormModal({
   open,
   onClose,
   date,
-  mode = "quick", // quick | detail
+  mode = "quick", // quick | detail (초기 탭)
   initialEvent = null,
   onSaved,
 }) {
-  const dateKey = useMemo(() => toDateKey(date || new Date()), [date]);
+  const viewDateKey = useMemo(() => toDateKey(date || new Date()), [date]);
 
   const isEdit = !!initialEvent;
-  const isOccurrence = !!initialEvent?.isOccurrence && !!initialEvent?.seriesId && !!initialEvent?.occurrenceKey;
+  const isOccurrence =
+    !!initialEvent?.isOccurrence && !!initialEvent?.seriesId && !!initialEvent?.occurrenceKey;
 
   // “클릭 즉시 수정 모달 + 저장은 Dirty일 때만”
   const [dirty, setDirty] = useState(false);
 
+  // 간단/상세 탭
+  const [tab, setTab] = useState(mode);
+
   // 편집 범위(반복 발생분만)
   const [editScope, setEditScope] = useState("one"); // one | future
 
-  // 기본 필드
-  const [title, setTitle] = useState("");
+  // 날짜/시간
+  const [startDate, setStartDate] = useState(viewDateKey);
+  const [endDate, setEndDate] = useState(viewDateKey);
   const [start, setStart] = useState(defaultAllDay().start);
   const [end, setEnd] = useState(defaultAllDay().end);
+
+  // 기본 필드
+  const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [sharedUserIds, setSharedUserIds] = useState([]);
 
-  // 반복(상세 모드)
+  // 반복(상세 탭에서만)
   const [repeatEnabled, setRepeatEnabled] = useState(false);
   const [repeatFreq, setRepeatFreq] = useState("weekly"); // daily|weekly|monthly|yearly
   const [repeatInterval, setRepeatInterval] = useState(1);
   const [repeatWeekdays, setRepeatWeekdays] = useState([]);
   const [repeatEndType, setRepeatEndType] = useState("none"); // none|until
-  const [repeatEndUntil, setRepeatEndUntil] = useState(dateKey);
+  const [repeatEndUntil, setRepeatEndUntil] = useState(viewDateKey);
 
   // 임시 사용자 디렉토리
   const [userDir, setUserDir] = useState(() => loadUserDirectory());
 
-  const categoryOptions = useMemo(
-    () => [{ id: "", name: "선택 없음" }, ...DEFAULT_CATEGORIES],
-    []
-  );
+  const categoryOptions = useMemo(() => [{ id: "", name: "선택 없음" }, ...DEFAULT_CATEGORIES], []);
+
+  // 수정 시, 기존 이벤트가 저장돼 있던 버킷(dateKey)을 기억해두고,
+  // 사용자가 시작일을 바꾸면 "기존 버킷에서 삭제 -> 새 버킷에 저장"을 해준다.
+  const originalBucketRef = useRef(viewDateKey);
 
   const resetFrom = () => {
     setDirty(false);
     setEditScope("one");
 
+    // 탭 초기값: 편집이면 상세를 기본으로(공유/반복 등 손쉬운 접근)
+    setTab(isEdit ? "detail" : mode);
+
     if (initialEvent) {
       setTitle(initialEvent.title || "");
+
+      // 날짜 필드(기존 데이터 호환: 없으면 viewDateKey)
+      const sdk = clampDateKey(initialEvent.startDateKey) || viewDateKey;
+      const edk = clampDateKey(initialEvent.endDateKey) || sdk;
+
+      setStartDate(sdk);
+      setEndDate(edk);
+
       setStart(initialEvent.start || defaultAllDay().start);
       setEnd(initialEvent.end || defaultAllDay().end);
       setCategoryId(initialEvent.categoryId || "");
       setSharedUserIds(Array.isArray(initialEvent.sharedUserIds) ? initialEvent.sharedUserIds : []);
 
-      // 시리즈 occurrence 편집이면 repeatRule 표시만(기본 값)
-      const rr = initialEvent.repeatRule;
-      if (mode === "detail") {
-        if (rr?.enabled) {
-          setRepeatEnabled(true);
-          setRepeatFreq(rr.freq || "weekly");
-          setRepeatInterval(Number(rr.interval || 1));
-          setRepeatWeekdays(Array.isArray(rr.byWeekdays) ? rr.byWeekdays : []);
-          const endObj = rr.end || { type: "none" };
-          setRepeatEndType(endObj.type || "none");
-          setRepeatEndUntil(endObj.until || dateKey);
-        } else {
-          setRepeatEnabled(false);
-          setRepeatFreq("weekly");
-          setRepeatInterval(1);
-          setRepeatWeekdays([]);
-          setRepeatEndType("none");
-          setRepeatEndUntil(dateKey);
-        }
-      }
-    } else {
-      setTitle("");
-      if (mode === "quick") {
-        const ad = defaultAllDay();
-        setStart(ad.start);
-        setEnd(ad.end);
-        setCategoryId("");
-        setSharedUserIds([]);
-        setRepeatEnabled(false);
-      } else {
-        // 상세 신규: “오늘 클릭한 날짜 기준” UX
-        const ad = defaultAllDay();
-        setStart(ad.start);
-        setEnd(ad.end);
-        setCategoryId("");
-        setSharedUserIds([]);
+      originalBucketRef.current =
+        clampDateKey(initialEvent.startDateKey) ||
+        clampDateKey(initialEvent.dateKey) ||
+        viewDateKey;
 
+      // 반복 규칙 로딩(상세에서만 의미)
+      const rr = initialEvent.repeatRule;
+      if (rr?.enabled) {
+        setRepeatEnabled(true);
+        setRepeatFreq(rr.freq || "weekly");
+        setRepeatInterval(Number(rr.interval || 1));
+        setRepeatWeekdays(Array.isArray(rr.byWeekdays) ? rr.byWeekdays : []);
+        const endObj = rr.end || { type: "none" };
+        setRepeatEndType(endObj.type || "none");
+        setRepeatEndUntil(endObj.until || viewDateKey);
+      } else {
         setRepeatEnabled(false);
         setRepeatFreq("weekly");
         setRepeatInterval(1);
-        setRepeatWeekdays([dayKeyOfDate(date)]);
+        setRepeatWeekdays([]);
         setRepeatEndType("none");
-        setRepeatEndUntil(dateKey);
+        setRepeatEndUntil(viewDateKey);
       }
+    } else {
+      // 신규
+      setTitle("");
+
+      const ad = defaultAllDay();
+      setStart(ad.start);
+      setEnd(ad.end);
+
+      setStartDate(viewDateKey);
+      setEndDate(viewDateKey);
+
+      setCategoryId("");
+      setSharedUserIds([]);
+
+      setRepeatEnabled(false);
+      setRepeatFreq("weekly");
+      setRepeatInterval(1);
+      setRepeatWeekdays([dayKeyOfDate(date)]);
+      setRepeatEndType("none");
+      setRepeatEndUntil(viewDateKey);
+
+      originalBucketRef.current = viewDateKey;
     }
   };
 
@@ -135,7 +158,7 @@ export default function ScheduleFormModal({
     if (!open) return;
     resetFrom();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, dateKey, mode, isEdit]);
+  }, [open, viewDateKey, mode, isEdit]);
 
   const setDirtyWrap = (setter) => (v) => {
     setDirty(true);
@@ -145,34 +168,53 @@ export default function ScheduleFormModal({
   const canSave = useMemo(() => {
     const hasTitle = !!title.trim();
     if (!hasTitle) return false;
+
+    // 날짜 유효성 + 시작<=종료(날짜 기준)
+    const s = clampDateKey(startDate);
+    const e = clampDateKey(endDate);
+    if (!s || !e) return false;
+    if (s > e) return false;
+
     if (isEdit) return dirty; // 수정: dirty일 때만 활성화
     return true; // 생성: 제목 있으면 OK
-  }, [title, isEdit, dirty]);
+  }, [title, isEdit, dirty, startDate, endDate]);
 
   const buildRepeatRule = () => {
-    if (mode !== "detail" || !repeatEnabled) return { enabled: false };
-    const rr = {
+    // 상세 탭에서만 반복 활성
+    if (tab !== "detail" || !repeatEnabled) return { enabled: false };
+
+    return {
       enabled: true,
       freq: repeatFreq,
       interval: Math.max(1, Number(repeatInterval || 1)),
       byWeekdays: repeatFreq === "weekly" ? repeatWeekdays : [],
-      end: repeatEndType === "until" ? { type: "until", until: repeatEndUntil } : { type: "none" },
+      end:
+        repeatEndType === "until"
+          ? { type: "until", until: repeatEndUntil }
+          : { type: "none" },
     };
-    return rr;
   };
 
   const handleSave = () => {
     const t = title.trim();
     if (!t) return;
 
+    const sDateKey = clampDateKey(startDate) || viewDateKey;
+    const eDateKey = clampDateKey(endDate) || sDateKey;
+    if (sDateKey > eDateKey) return;
+
     const rr = buildRepeatRule();
+
     const base = {
       title: t,
       start,
       end,
+      startDateKey: sDateKey,
+      endDateKey: eDateKey,
       categoryId: categoryId || "",
       sharedUserIds: Array.isArray(sharedUserIds) ? sharedUserIds : [],
       updatedAt: Date.now(),
+      repeatRule: rr?.enabled ? rr : { enabled: false },
     };
 
     // EDIT
@@ -180,8 +222,7 @@ export default function ScheduleFormModal({
       // occurrence + “앞으로 모두”
       if (isOccurrence && editScope === "future") {
         if (rr?.enabled) {
-          // 반복 유지: split + 새 시리즈 생성
-          updateSeriesFuture(initialEvent.seriesId, dateKey, {
+          updateSeriesFuture(initialEvent.seriesId, viewDateKey, {
             title: base.title,
             startTime: base.start,
             endTime: base.end,
@@ -191,20 +232,21 @@ export default function ScheduleFormModal({
           });
         } else {
           // 반복 해제(앞으로 모두): 기존 시리즈 종료 + 기준일에 단건 생성
-          endSeriesFromDate(initialEvent.seriesId, dateKey);
-          upsertOneOffEvent(dateKey, {
+          endSeriesFromDate(initialEvent.seriesId, viewDateKey);
+          upsertOneOffEvent(viewDateKey, {
             ...base,
             id: undefined,
+            repeatRule: { enabled: false },
           });
         }
-        onSaved?.(getEventsForDate(dateKey));
+        onSaved?.(getEventsForDate(viewDateKey));
         onClose?.();
         return;
       }
 
       // occurrence + “이번만”
       if (isOccurrence) {
-        upsertOneOffEvent(dateKey, {
+        upsertOneOffEvent(viewDateKey, {
           id: undefined,
           ...base,
           isException: true,
@@ -212,43 +254,51 @@ export default function ScheduleFormModal({
           occurrenceKey: initialEvent.occurrenceKey,
           isDeleted: false,
         });
-        onSaved?.(getEventsForDate(dateKey));
+        onSaved?.(getEventsForDate(viewDateKey));
         onClose?.();
         return;
       }
 
-      // one-off 수정
-      upsertOneOffEvent(dateKey, {
+      // one-off 수정: 시작일이 바뀌면 버킷 이동
+      const prevBucket = originalBucketRef.current || viewDateKey;
+      if (prevBucket !== sDateKey) {
+        deleteEvent(prevBucket, initialEvent);
+        originalBucketRef.current = sDateKey;
+      }
+
+      upsertOneOffEvent(sDateKey, {
         ...initialEvent,
         ...base,
       });
-      onSaved?.(getEventsForDate(dateKey));
+
+      onSaved?.(getEventsForDate(viewDateKey));
       onClose?.();
       return;
     }
 
     // CREATE
-    if (mode === "detail" && rr?.enabled) {
+    if (tab === "detail" && rr?.enabled) {
+      // 반복 시리즈는 “시작일” 기준
       createSeries({
         title: base.title,
         startTime: base.start,
         endTime: base.end,
         categoryId: base.categoryId,
         sharedUserIds: base.sharedUserIds,
-        startDate: dateKey,
+        startDate: sDateKey,
         repeatRule: rr,
       });
-      onSaved?.(getEventsForDate(dateKey));
+      onSaved?.(getEventsForDate(viewDateKey));
       onClose?.();
       return;
     }
 
-    upsertOneOffEvent(dateKey, {
+    upsertOneOffEvent(sDateKey, {
       ...base,
       id: undefined,
       repeatRule: { enabled: false },
     });
-    onSaved?.(getEventsForDate(dateKey));
+    onSaved?.(getEventsForDate(viewDateKey));
     onClose?.();
   };
 
@@ -256,14 +306,16 @@ export default function ScheduleFormModal({
     if (!initialEvent) return;
 
     if (isOccurrence && editScope === "future") {
-      endSeriesFromDate(initialEvent.seriesId, dateKey);
-      onSaved?.(getEventsForDate(dateKey));
+      endSeriesFromDate(initialEvent.seriesId, viewDateKey);
+      onSaved?.(getEventsForDate(viewDateKey));
       onClose?.();
       return;
     }
 
-    deleteEvent(dateKey, initialEvent);
-    onSaved?.(getEventsForDate(dateKey));
+    const prevBucket = originalBucketRef.current || viewDateKey;
+    deleteEvent(prevBucket, initialEvent);
+
+    onSaved?.(getEventsForDate(viewDateKey));
     onClose?.();
   };
 
@@ -274,8 +326,8 @@ export default function ScheduleFormModal({
 
   const modalTitle = useMemo(() => {
     if (initialEvent) return "일정 수정";
-    return mode === "quick" ? "새 일정 추가(간단)" : "새 일정 추가(상세)";
-  }, [initialEvent, mode]);
+    return "일정 추가";
+  }, [initialEvent]);
 
   const footer = (
     <>
@@ -301,6 +353,27 @@ export default function ScheduleFormModal({
   return (
     <Modal open={open} onClose={onClose} title={modalTitle} footer={footer}>
       <div className="sfm">
+        {/* 간단/상세 탭 */}
+        <div className="sfm__section" style={{ paddingTop: 0 }}>
+          <div className="sfm__scope" style={{ justifyContent: "flex-start", gap: 8 }}>
+            <button
+              type="button"
+              className={"btn btn--sm " + (tab === "quick" ? "btn--primary" : "btn--ghost")}
+              onClick={() => setTab("quick")}
+            >
+              간단
+            </button>
+            <button
+              type="button"
+              className={"btn btn--sm " + (tab === "detail" ? "btn--primary" : "btn--ghost")}
+              onClick={() => setTab("detail")}
+            >
+              상세
+            </button>
+          </div>
+          <div className="sfm__hint">간단은 빠른 입력, 상세는 공유/반복 등 고급 옵션을 제공합니다.</div>
+        </div>
+
         {isEdit && isOccurrence ? (
           <div className="sfm__section">
             <div className="sfm__label">편집 범위</div>
@@ -324,9 +397,7 @@ export default function ScheduleFormModal({
                 앞으로 모두
               </label>
             </div>
-            <div className="sfm__hint">
-              “앞으로 모두”는 기준일부터 반복 규칙/내용이 적용됩니다(시리즈 분할).
-            </div>
+            <div className="sfm__hint">“앞으로 모두”는 기준일부터 반복 규칙/내용이 적용됩니다(시리즈 분할).</div>
           </div>
         ) : null}
 
@@ -341,9 +412,32 @@ export default function ScheduleFormModal({
             />
           </div>
 
+          {/* 시작/종료 날짜 */}
           <div className="sfm__row2">
             <div className="sfm__field">
-              <div className="sfm__label">시작</div>
+              <div className="sfm__label">시작일</div>
+              <input
+                type="date"
+                className="sfm__input"
+                value={startDate}
+                onChange={(e) => setDirtyWrap(setStartDate)(e.target.value)}
+              />
+            </div>
+            <div className="sfm__field">
+              <div className="sfm__label">종료일</div>
+              <input
+                type="date"
+                className="sfm__input"
+                value={endDate}
+                onChange={(e) => setDirtyWrap(setEndDate)(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* 시작/종료 시간 */}
+          <div className="sfm__row2">
+            <div className="sfm__field">
+              <div className="sfm__label">시작 시간</div>
               <input
                 type="time"
                 className="sfm__input"
@@ -352,7 +446,7 @@ export default function ScheduleFormModal({
               />
             </div>
             <div className="sfm__field">
-              <div className="sfm__label">종료</div>
+              <div className="sfm__label">종료 시간</div>
               <input
                 type="time"
                 className="sfm__input"
@@ -362,7 +456,8 @@ export default function ScheduleFormModal({
             </div>
           </div>
 
-          {mode === "detail" ? (
+          {/* 상세 탭에서만 */}
+          {tab === "detail" ? (
             <>
               <div className="sfm__field">
                 <div className="sfm__label">카테고리</div>
