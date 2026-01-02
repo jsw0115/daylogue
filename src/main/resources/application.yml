@@ -2,11 +2,100 @@ spring:
   application:
     name: daylogue
 
+  main:
+    allow-bean-definition-overriding: true
+
+  # 기본 연결 DB 설정
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3307/timeflow?sslMode=DISABLED&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3307/timeflow?sslMode=DISABLED&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
     username: timeflow
     password: timeflow9661
+  # auth DB 연결 설정
+  auth-datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/auth_db?sslMode=DISABLED&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: timeflow
+    password: timeflow9661
+  # diary DB 연결 설정
+  diary-datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/diary_db?sslMode=DISABLED&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: timeflow
+    password: timeflow9661
+  # memo DB 연결 설정
+  memo-datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/memo_db?sslMode=DISABLED&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: timeflow
+    password: timeflow9661
+  # planner DB 연결 설정
+  planner-datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/planner_db?sslMode=DISABLED&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: timeflow
+    password: timeflow9661
+  # routine DB 연결 설정
+  routine-datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/routine_db?sslMode=DISABLED&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: timeflow
+    password: timeflow9661
+  # settings DB 연결 설정
+  settings-datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/settings_db?sslMode=DISABLED&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: timeflow
+    password: timeflow9661
+  # share DB 연결 설정
+  share-datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/share_db?sslMode=DISABLED&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: timeflow
+    password: timeflow9661
+  # task DB 연결 설정
+  task-datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/task_db?sslMode=DISABLED&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: timeflow
+    password: timeflow9661
+
+# mail
+#spring.mail.port=587
+#spring.mail.properties.mail.smtp.auth=true
+#spring.mail.properties.mail.smtp.starttls.enable=true
+#spring.mail.transport.protocol=smtp
+#spring.mail.debug=true
+#spring.mail.default.encoding=UTF-8
+#spring.mail.mime.charset=UTF-8
+#spring.mail.username=본인 이메일 주소
+#spring.mail.password=본인 이메일 비밀번호
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: 이메일
+    password: 아까 저장해둔 앱 비밀번호 복붙
+    properties:
+      mail:
+        debug: true
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connection-timeout: 5000
+          timeout: 5000
+          write-timeout: 5000
+
+
+  # 이메일 발송시 사용하는 html 템플릿 설정
+  ## thymeleaf default settings
+  #  spring.thymeleaf.prefix=/WEB-INF/views/pages/
+  #  spring.thymeleaf.suffix=.html
+  #  spring.thymeleaf.mode=HTML
+  #  spring.thymeleaf.encoding=UTF-8
+  #  spring.thymeleaf.cache=false
+
   jpa:
     show-sql: true
     generate-ddl: false
@@ -110,15 +199,22 @@ app:
       refresh-ttl-seconds: 1209600
     cors:
       allowed-origins: "http://localhost:3000"
+
 springdoc:
+  packages-to-scan: com.timepalette.daylogue
   version: V.0.0.1  # 버전 기록용
   # Swagger UI 기본 경로
+  cache:
+    disabled: true              # 캐시 사용 여부
   swagger-ui:
-    path: /swagger-ui   # String, Swagger-ui HTML 문서의 사용자 정의 경로
+    enabled: true       # Swagger UI 사용여부 : 접근 경로 => <http://localhost:8080/swagger-ui/index.html>
+    path: /demo-ui.html   # String, Swagger-ui HTML 문서의 사용자 정의 경로
     tags-sorter: alpha  # API 태그 목록에 정렬을 적용(alpha -> 영숫자순으로 경로별로 정렬)
     operations-sorter: alpha  # API 작업 목록에 정렬을 적용(alpha -> 영숫자 경로 기준 정렬)
   api-docs:
     path: /v3/api-docs  # API 작업 목록에 정렬을 적용(alpha -> 영숫자 경로 기준 정렬)
+    groups:
+      enabled: true
   # 기본값 : 미디어 유형
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8

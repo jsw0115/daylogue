@@ -1,238 +1,173 @@
-# TimeFlow - 시간관리 앱
+# Timebar Diary (TimeFlow)
+시간을 “색(타임바)”으로 관리하는 올인원 생산성 앱 프로토타입
 
-타임바 다이어리로 시간을 색으로 관리하는 올인원 생산성 툴
+- 플래너(일/주/월/연) + 데일리 다이어리 + 할 일 + 루틴 + 포커스(포모도로) + 통계 + 설정/관리자 기능을 하나의 앱에서 운영하는 구조입니다.
+- 이 README는 **현재 제공된 `src/routes/AppRoutes.jsx` 라우팅**과 **화면 캡처** 기준으로 정리했습니다.
 
-## 프로젝트 개요
+---
 
-TimeFlow는 하루를 텍스트 목록이 아니라 색 블록(타임바)로 시각화하는 혁신적인 시간관리 앱입니다.
+## 핵심 정책(현재 결정사항)
+- **Auth 화면은 AppShell 없이 단독 화면(standalone)**
+- **App 화면은 AppShell(사이드바/헤더/모바일 하단탭) 기반**
+- **반복 일정(Recurring Event)은 주간/월간에서 여러 날짜 자동 표시까지 MVP 포함**
+- **일정(상세) 공유 UX(서버 전 임시 UX)**: 입력칩 + 입력 중 검색/자동완성 + 엔터로 추가
+- **루틴 상세**: 알림(몇 분 전), 아이콘/카테고리 포함(MVP)
 
-### 핵심 기능
+---
 
-- **타임바 다이어리**: 시간을 색 블록으로 시각화
-- **플래너**: 일/주/월/연간 계획 관리
-- **집중 모드**: 포모도로 타이머 기반 집중 세션
-- **할 일 관리**: 우선순위 기반 태스크 관리
-- **루틴 관리**: 반복 습관 추적
-- **다이어리**: 감정과 함께하는 회고
-- **메모**: 빠른 메모 및 할 일 변환
-- **통계**: Plan vs Actual 비교 및 인사이트
+## 주요 화면(현재 내비게이션 기준)
+### DAYLOGUE
+- 홈 대시보드
+- 데일리 다이어리
 
-### 사용자 유형
+### PLAN
+- 일간 / 주간 / 월간 / 연간 플래너
 
-- **J형 (계획형)**: 사전 계획을 선호하는 사용자
-- **P형 (즉흥형)**: 실시간 기록을 선호하는 사용자
+### ACTION
+- 할 일
+- 루틴
+- 포커스
 
-## 기술 스택
+### INSIGHT
+- 통계
 
-- **프론트엔드**: React 18
-- **라우팅**: React Router v6
-- **스타일링**: Tailwind CSS v4
-- **상태관리**: Zustand
-- **차트**: Recharts
-- **아이콘**: Lucide React
-- **날짜**: date-fns
-- **빌드 도구**: Vite
+### DATA
+- 데이터 관리
 
-## 프로젝트 구조
+### ADMIN
+- 관리자 설정
 
-```
-├─ public/                   # 정적 파일
-│  ├─ manifest.webmanifest  # PWA 매니페스트
-│  └─ robots.txt
-│
-├─ src/
-│  ├─ main.jsx              # 엔트리 포인트
-│  ├─ App.jsx               # 메인 앱 컴포넌트
-│  ├─ routes.jsx            # 라우팅 설정
-│  │
-│  ├─ layout/               # 레이아웃 컴포넌트
-│  │  ├─ AppShell.jsx       # 메인 레이아웃
-│  │  ├─ Sidebar.jsx        # 사이드바 네비게이션
-│  │  ├─ Header.jsx         # 헤더
-│  │  ├─ MobileBottomNav.jsx # 모바일 하단 네비
-│  │  └─ PageContainer.jsx  # 페이지 컨테이너
-│  │
-│  ├─ components/           # 재사용 가능한 컴포넌트
-│  │  ├─ common/            # 공통 컴포넌트
-│  │  │  ├─ Button.jsx
-│  │  │  ├─ Modal.jsx
-│  │  │  └─ TextInput.jsx
-│  │  │
-│  │  └─ planner/           # 플래너 전용 컴포넌트
-│  │     ├─ TimebarTimeline.jsx       # 일간 타임바
-│  │     ├─ WeeklyTimeBricks.jsx      # 주간 타임 브릭
-│  │     └─ MonthlyCategoryDots.jsx   # 월간 카테고리 표시
-│  │
-│  ├─ screens/              # 화면 컴포넌트
-│  │  ├─ home/              # 홈 대시보드
-│  │  ├─ plan/              # 플래너 (일/주/월)
-│  │  ├─ focus/             # 집중 모드
-│  │  ├─ task/              # 할 일
-│  │  ├─ diary/             # 다이어리
-│  │  └─ stat/              # 통계
-│  │
-│  ├─ shared/               # 공유 리소스
-│  │  ├─ constants/         # 상수
-│  │  │  ├─ routes.js       # 라우트 경로
-│  │  │  ├─ categories.js   # 기본 카테고리
-│  │  │  └─ breakpoints.js  # 반응형 브레이크포인트
-│  │  │
-│  │  ├─ hooks/             # 커스텀 훅
-│  │  │  ├─ useResponsiveLayout.js
-│  │  │  ├─ useModal.js
-│  │  │  └─ useTimeRange.js
-│  │  │
-│  │  ├─ store/             # Zustand 스토어
-│  │  │  ├─ authStore.js
-│  │  │  ├─ settingsStore.js
-│  │  │  └─ timebarStore.js
-│  │  │
-│  │  └─ utils/             # 유틸리티 함수
-│  │     ├─ dateUtils.js
-│  │     ├─ timeUtils.js
-│  │     └─ formatUtils.js
-│  │
-│  └─ styles/               # 스타일 파일
-│     ├─ index.css          # 메인 스타일
-│     ├─ layout.css         # 레이아웃 스타일
-│     └─ components.css     # 컴포넌트 스타일
-│
-├─ package.json
-├─ vite.config.js
-└─ index.html
-```
+---
 
-## 시작하기
+## 라우트 요약 (src/routes/AppRoutes.jsx 기준)
 
-### 설치
+### Auth (AppShell 없음)
+- `/login` 로그인
+- `/register` 회원가입
+- `/reset-password` 비밀번호 재설정
+- `/find-id` 아이디 찾기
+- `/social-link` 소셜 연동
+- `/onboarding` 온보딩
+- (호환) `/auth/login` → `/login`
+- (호환) `/auth/register` → `/register`
+- (호환) `/auth/reset-password` → `/reset-password`
+- (호환) `/auth/find-id` → `/find-id`
+
+### App (AppShell 포함)
+- `/` → `/home`
+- `/home` 홈 대시보드
+- `/inbox` 알림 인박스
+
+#### Planner
+- `/planner/daily` 일간 플래너
+- `/planner/weekly` 주간 플래너
+- `/planner/monthly` 월간 플래너
+- `/planner/yearly` 연간 플래너
+
+#### Diary / Data
+- `/diary/daily` 데일리 다이어리
+- `/data` 데이터 관리
+
+#### Routine
+- `/routine` 루틴 목록
+- `/action/routine` → `/routine`
+- `/action/routine/list` → `/routine`
+- `/routines` 루틴 목록(별칭)
+- `/routines/new` 루틴 생성/편집
+- `/routines/:routineId/edit` 루틴 편집
+- `/routines/history` 루틴 히스토리
+
+#### Task
+- `/tasks` 할 일 목록 (`ROUTES.TASKS`)
+- `/tasks/:taskId` 할 일 상세
+- `/action/task` 할 일 목록(별칭)
+
+#### Memo
+- `/memos` 메모 인박스
+- `/memos/new` 메모 작성
+- `/memos/:memoId` 메모 편집
+- `/memos/to-task` 메모 → 할 일 변환
+
+#### Stat
+- `/insight/stat` 통계 대시보드(별칭)
+- `ROUTES.STAT_DASHBOARD` 통계 대시보드
+- `/stat/categories` 카테고리 통계
+- `/stat/plan-actual` 계획 vs 실행
+- `/stat/focus-report` 포커스 리포트
+
+#### Settings
+- `/settings` 통합 설정
+- `ROUTES.SETTINGS_PROFILE` 프로필
+- `/settings/general` 일반 설정
+- `/settings/theme` 테마/스티커
+- `/settings/notifications` 알림 설정
+- `/settings/security` 보안 설정
+- `/settings/categories` 카테고리 설정
+
+#### Focus
+- `/focus` 집중 모드
+
+#### Admin
+- `/admin` 관리자 허브
+- `/admin/users` 사용자 관리
+- `/admin/logs` 시스템 로그
+- `/admin/notices` 공지/배너
+- `/admin/stats` 서비스 통계
+
+---
+
+## 기술 스택(현재 확인 가능한 범위)
+- **Frontend**: React 18
+- **Routing**: React Router v6
+- **Styling**: 커스텀 CSS(className 기반)
+
+> 참고: Tailwind/Zustand/Recharts/date-fns 등은 “README에만 있던 정보”로는 실제 사용 여부를 확정할 근거가 부족해 제외했습니다.
+> (원하면 package.json 기준으로 재정리해서 반영)
+
+---
+
+## 프로젝트 구조(요약)
+레포가 “Spring Boot 내부 프론트 포함” 형태라면 보통 아래 구조를 사용합니다.
+(실제 폴더명이 다르면, 트리 기준으로 README 구조 섹션을 맞춰 수정해야 합니다.)
+
+## 실행 방법(프론트)
+
+프론트 프로젝트 폴더에서:
 
 ```bash
 npm install
+npm start
 ```
+접속: http://localhost:3000
 
-### 개발 서버 실행
+- 참고: `npm run dev`(Vite)인지 `npm start`(CRA)인지는 현재 대화에 “명시된 실행 스크립트”가 없어, 위는 가장 보수적인 형태로만 표기했습니다.  
+  (근거 부족: 실제 프로젝트의 `package.json`의 `scripts`를 확인하지 못해 실행 스크립트는 달라질 수 있습니다.)
 
-```bash
-npm run dev
-```
+---
 
-브라우저에서 http://localhost:3000 접속
+## 백엔드 API 설계 규칙(요약)
 
-### 프로덕션 빌드
+- Base: `/api`
+- Auth: `Authorization: Bearer <accessToken>`
+- 응답(권장): `success(boolean)`, `data(any)`, `message?(string)`, `errorCode?(string)`
 
-```bash
-npm run build
-```
+### 시간
+- 서버 저장: UTC
+- 요청/응답 날짜시간: ISO 8601 (예: `2025-12-14T09:30:00Z`)
+- `Event.timeZone`은 필수
 
-### 프리뷰
+### 반복 인스턴스 식별
+- `occurrenceStart` = `YYYY-MM-DDTHH:mm` (로컬 기준 문자열, 예: `2025-12-14T09:30`)
 
-```bash
-npm run preview
-```
+---
 
-## 주요 화면
+## 개발 메모
 
-### 1. 홈 대시보드 (/)
-- 오늘의 통계 요약
-- 빠른 실행 버튼
-- 오늘의 타임바 미리보기
+- 개발 중 환경에서는 localStorage 접근 제한(브라우저/정책)에 따라 “새로고침 시 저장 유지”가 깨질 수 있습니다.
+- 반복 일정/공유 권한(editScope/deleteScope 등) 로직은 서버 검증 규칙을 강하게 적용하는 전제를 둡니다.
 
-### 2. 일간 플래너 (/planner/daily)
-- 세로 타임라인 타임바
-- 드래그로 일정 생성
-- Plan/Actual 토글
-- 카테고리별 색상 구분
+---
 
-### 3. 주간 플래너 (/planner/weekly)
-- 7일간 타임 브릭 뷰
-- 일별 비교
-- 주간 통계
+## 라이선스
 
-### 4. 월간 플래너 (/planner/monthly)
-- 캘린더 뷰
-- 일별 카테고리 닷 표시
-- 월간 통계
-
-### 5. 집중 모드 (/focus)
-- 포모도로 타이머
-- 카테고리별 집중 기록
-- 집중 시간 통계
-
-### 6. 할 일 (/tasks)
-- 우선순위 관리
-- 필터링 (전체/진행중/완료)
-- 체크리스트
-
-### 7. 다이어리 (/diary)
-- 월별 캘린더 뷰
-- 감정 이모지
-- 작성률 통계
-
-### 8. 통계 (/stats)
-- Plan vs Actual 차트
-- 카테고리별 시간 분포
-- 주간 달성률
-- AI 인사이트
-
-## 반응형 디자인
-
-- **모바일** (< 768px): 하단 탭 네비게이션
-- **태블릿** (768px - 1024px): 오버레이 사이드바
-- **데스크톱** (> 1024px): 고정 사이드바
-
-## 상태 관리
-
-### authStore
-- 사용자 인증 상태
-- 사용자 모드 (J/P형)
-
-### settingsStore
-- 테마 설정
-- 카테고리 관리
-- 시간대 설정
-- 알림 설정
-
-### timebarStore
-- 타임블록 관리
-- 실시간 기록
-- 날짜별 필터링
-
-## 카테고리 시스템
-
-기본 제공 카테고리:
-- 📚 공부 (indigo)
-- 💼 업무 (purple)
-- 💪 건강 (green)
-- ❤️ 가족·연인 (rose)
-- 👥 친구 (amber)
-- 🎨 취미·휴식 (blue)
-- 📦 기타 (gray)
-
-사용자 정의 카테고리 추가 가능
-
-## 개발 가이드
-
-### 새 화면 추가
-
-1. `/src/screens/` 하위에 화면 컴포넌트 생성
-2. `/src/routes.jsx`에 라우트 등록
-3. 필요시 사이드바에 메뉴 추가 (`/src/layout/Sidebar.jsx`)
-
-### 새 컴포넌트 추가
-
-- 공통 컴포넌트: `/src/components/common/`
-- 기능별 컴포넌트: `/src/components/{feature}/`
-
-### 스타일링 가이드
-
-- Tailwind CSS 유틸리티 클래스 사용
-- 공통 스타일은 CSS 변수 활용
-- 컴포넌트별 클래스는 `/src/styles/components.css`
-
-## 라이센스
-
-이 프로젝트는 개발 중인 프로토타입입니다.
-
-## 문의
-
-개발 관련 문의사항이 있으시면 이슈를 등록해주세요.
+개발 중인 프로토타입(내부/개인 프로젝트)입니다.
