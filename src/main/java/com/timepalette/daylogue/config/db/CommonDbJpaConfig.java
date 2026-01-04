@@ -50,23 +50,6 @@ public class CommonDbJpaConfig {
     @Primary
     public LocalContainerEntityManagerFactoryBean commonEntityManagerFactory(EntityManagerFactoryBuilder builder, @Qualifier("commonDataSource") DataSource ds) {
 
-//        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-//
-//        em.setDataSource(commonDataSource());
-//        em.setPackagesToScan(new String[] {""});
-//
-//        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-//        vendorAdapter.setShowSql(true);
-//        vendorAdapter.setGenerateDdl(true);
-//        em.setJpaVendorAdapter(vendorAdapter);
-//
-//        HashMap<String, Object> prop = new HashMap<>();
-//        prop.put("hibernate.dialect", "org.hibernate.dialect.SQLServerDialect");
-//        prop.put("hibernate.hbm2ddl.auto", "update");
-//        prop.put("hibernate.format_sql", true);
-//        em.setJpaPropertyMap(prop);
-//
-//        return em;
         Map<String, Object> jpaProps = new HashMap<>();
         // SQLServerDialect 같은 거 절대 넣지 말 것 (MySQL/MariaDB면 자동 선택 권장)
         jpaProps.put("hibernate.hbm2ddl.auto", "none");

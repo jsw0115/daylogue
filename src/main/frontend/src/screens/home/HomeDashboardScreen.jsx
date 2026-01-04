@@ -5,9 +5,31 @@ import { Responsive, WidthProvider } from "react-grid-layout/legacy";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 
-import "./../../styles/screens/homeDashboard.css";
+import {
+  Alert,
+  Button,
+  Checkbox,
+  Drawer,
+  Input,
+  Popconfirm,
+  Segmented,
+  Space,
+  Tooltip,
+} from "antd";
+
+import {
+  LayoutDashboard,
+  Settings2,
+  RotateCcw,
+  GripVertical,
+  ArrowRight,
+  EyeOff,
+  Search,
+} from "lucide-react";
+
+import "../../styles/screens/homeDashboard.css";
 import { PORTLETS_BY_ID, DEFAULT_LAYOUTS, DEFAULT_VISIBLE } from "./portlets/portletRegistry";
-import storage from "../../shared/utils/safeStorage";
+import { safeStorage } from "../../shared/utils/safeStorage";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -26,16 +48,19 @@ function safeJsonParse(str, fallback) {
 export default function HomeDashboardScreen() {
   const navigate = useNavigate();
 
-  const [editMode, setEditMode] = useState(false);
+  const [mode, setMode] = useState("view"); // view | edit
+  const editMode = mode === "edit";
 
-  // ✅ localStorage가 막혀도 여기서 크래시 나면 안 됨 → storage 래퍼 사용
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerQuery, setPickerQuery] = useState("");
+
   const [layouts, setLayouts] = useState(() => {
-    const saved = safeJsonParse(storage.get(STORAGE_LAYOUTS), null);
+    const saved = safeJsonParse(safeStorage.get(STORAGE_LAYOUTS), null);
     return saved || DEFAULT_LAYOUTS;
   });
 
   const [visible, setVisible] = useState(() => {
-    const saved = safeJsonParse(storage.get(STORAGE_VISIBLE), null);
+    const saved = safeJsonParse(safeStorage.get(STORAGE_VISIBLE), null);
     return saved || DEFAULT_VISIBLE;
   });
 
@@ -45,11 +70,11 @@ export default function HomeDashboardScreen() {
   );
 
   useEffect(() => {
-    storage.set(STORAGE_LAYOUTS, JSON.stringify(layouts));
+    safeStorage.set(STORAGE_LAYOUTS, JSON.stringify(layouts));
   }, [layouts]);
 
   useEffect(() => {
-    storage.set(STORAGE_VISIBLE, JSON.stringify(visible));
+    safeStorage.set(STORAGE_VISIBLE, JSON.stringify(visible));
   }, [visible]);
 
   const onLayoutChange = (_, allLayouts) => {
@@ -65,58 +90,122 @@ export default function HomeDashboardScreen() {
     setVisible((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const allPortletList = useMemo(() => {
+    const list = Object.keys(PORTLETS_BY_ID).map((id) => PORTLETS_BY_ID[id]);
+    const q = pickerQuery.trim().toLowerCase();
+    if (!q) return list;
+    return list.filter((p) => {
+      const t = (p.title || "").toLowerCase();
+      const s = (p.subtitle || "").toLowerCase();
+      return p.id.toLowerCase().includes(q) || t.includes(q) || s.includes(q);
+    });
+  }, [pickerQuery]);
+
+  const storageBlocked = safeStorage.isPersistentAvailable?.() === false;
+
   return (
     <div className="home-dashboard">
-      <div className="screen-head">
-        <div>
-          <div className="screen-title">대시보드</div>
-          <div className="screen-subtitle">
+      {/* Top Header */}
+      <div className="hd-head">
+        <div className="hd-title">
+          <div className="hd-titleRow">
+            <LayoutDashboard className="hd-titleIcon" />
+            <div className="hd-titleText">대시보드</div>
+          </div>
+          <div className="hd-subtitle">
             진행 상황과 일정/메모를 한눈에 확인하세요.
-            {!storage.isPersistentAvailable() && (
-              <span className="muted" style={{ marginLeft: 8 }}>
-                (현재 환경에서 localStorage가 차단되어 새로고침 시 저장이 유지되지 않을 수 있어요)
-              </span>
-            )}
           </div>
         </div>
 
-        <div className="screen-actions">
-          <button className="btn" onClick={() => navigate("/planner/daily")} type="button">
-            오늘 일간 플래너
-          </button>
-          <button className="btn primary" onClick={() => setEditMode((v) => !v)} type="button">
-            편집 모드 {editMode ? "ON" : "OFF"}
-          </button>
-          <button className="btn" onClick={resetLayout} type="button">
-            레이아웃 초기화
-          </button>
+        <div className="hd-actions">
+          <Space wrap>
+            <Button onClick={() => navigate("/planner/daily")} type="default">
+              오늘 일간 플래너
+            </Button>
+
+            <Segmented
+              value={mode}
+              onChange={setMode}
+              options={[
+                { label: "보기", value: "view" },
+                { label: "편집", value: "edit" },
+              ]}
+            />
+
+            <Button
+              icon={<Settings2 size={16} />}
+              onClick={() => setPickerOpen(true)}
+              type="default"
+            >
+              포틀릿 관리
+            </Button>
+
+            <Popconfirm
+              title="레이아웃을 초기화할까요?"
+              description="배치/숨김 설정이 기본값으로 돌아갑니다."
+              okText="초기화"
+              cancelText="취소"
+              onConfirm={resetLayout}
+            >
+              <Button icon={<RotateCcw size={16} />} type="default">
+                초기화
+              </Button>
+            </Popconfirm>
+          </Space>
         </div>
       </div>
 
-      {editMode && (
-        <div className="portlet-picker">
-          <div className="portlet-picker__title">포틀릿 표시/숨김</div>
-          <div className="portlet-picker__grid">
-            {Object.keys(PORTLETS_BY_ID).map((id) => (
-              <label key={id} className="portlet-picker__item">
-                <input
-                  type="checkbox"
-                  checked={!!visible[id]}
-                  onChange={() => togglePortlet(id)}
-                />
-                <span>{PORTLETS_BY_ID[id].title}</span>
+      {storageBlocked ? (
+        <Alert
+          className="hd-alert"
+          type="warning"
+          showIcon
+          title="현재 환경에서 localStorage가 차단되어, 새로고침 시 대시보드 배치/표시 설정이 유지되지 않을 수 있습니다."
+        />
+      ) : null}
+
+      {/* Portlet picker Drawer */}
+      <Drawer
+        title="포틀릿 표시/숨김"
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        size={420}
+        destroyOnClose
+      >
+        <div className="hd-picker">
+          <Input
+            value={pickerQuery}
+            onChange={(e) => setPickerQuery(e.target.value)}
+            placeholder="검색(제목/설명/ID)"
+            allowClear
+            prefix={<Search size={16} />}
+          />
+
+          <div className="hd-pickerGrid">
+            {allPortletList.map((p) => (
+              <label key={p.id} className="hd-pickerItem">
+                <Checkbox checked={!!visible[p.id]} onChange={() => togglePortlet(p.id)} />
+                <div className="hd-pickerText">
+                  <div className="hd-pickerTitle">{p.title}</div>
+                  {p.subtitle ? <div className="hd-pickerSub">{p.subtitle}</div> : null}
+                </div>
               </label>
             ))}
           </div>
-        </div>
-      )}
 
+          <div className="hd-pickerHint">
+            편집 모드에서 포틀릿을 드래그/리사이즈할 수 있습니다.
+          </div>
+        </div>
+      </Drawer>
+
+      {/* Grid */}
       <ResponsiveGridLayout
         className="layout"
         layouts={layouts}
         breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
         cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }}
-        rowHeight={22}
+        rowHeight={24}
         margin={[14, 14]}
         containerPadding={[6, 6]}
         isDraggable={editMode}
@@ -129,36 +218,51 @@ export default function HomeDashboardScreen() {
         {portletIds.map((id) => {
           const def = PORTLETS_BY_ID[id];
           const Comp = def.component;
+
           return (
             <div key={id} className="portlet">
               <div className="portlet__head">
                 <div className="portlet__head-left">
-                  {editMode && (
-                    <div className="portlet__drag" title="드래그로 이동">
-                      ⋮⋮
-                    </div>
-                  )}
+                  {editMode ? (
+                    <Tooltip title="드래그로 이동">
+                      <div className="portlet__drag">
+                        <GripVertical size={16} />
+                      </div>
+                    </Tooltip>
+                  ) : null}
+
                   <div className="portlet__titles">
                     <div className="portlet__title">{def.title}</div>
-                    {def.subtitle && <div className="portlet__subtitle">{def.subtitle}</div>}
+                    {def.subtitle ? (
+                      <div className="portlet__subtitle">{def.subtitle}</div>
+                    ) : null}
                   </div>
                 </div>
 
                 <div className="portlet__head-right">
-                  {def.route && (
-                    <button className="btn xs" onClick={() => navigate(def.route)} type="button">
-                      이동
-                    </button>
-                  )}
-                  {editMode && (
-                    <button
-                      className="btn xs danger"
-                      onClick={() => setVisible((p) => ({ ...p, [id]: false }))}
-                      type="button"
-                    >
-                      숨김
-                    </button>
-                  )}
+                  <Space size={6}>
+                    {def.route ? (
+                      <Button
+                        size="small"
+                        type="default"
+                        icon={<ArrowRight size={16} />}
+                        onClick={() => navigate(def.route)}
+                      >
+                        이동
+                      </Button>
+                    ) : null}
+
+                    {editMode ? (
+                      <Button
+                        size="small"
+                        danger
+                        icon={<EyeOff size={16} />}
+                        onClick={() => setVisible((p) => ({ ...p, [id]: false }))}
+                      >
+                        숨김
+                      </Button>
+                    ) : null}
+                  </Space>
                 </div>
               </div>
 

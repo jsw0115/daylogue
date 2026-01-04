@@ -1,58 +1,88 @@
 // FILE: src/main/frontend/src/screens/admin/AdminLogScreen.jsx
-import React from "react";
-import PageContainer from "../../layout/PageContainer";
-import Select from "../../components/common/Select";
-import DatePicker from "../../components/common/DatePicker";
-import TextInput from "../../components/common/TextInput";
-import Button from "../../components/common/Button";
+import React, { useMemo, useState } from "react";
+import { Card, DatePicker, Input, Select, Space, Table, Tag, Typography, Button } from "antd";
+import dayjs from "dayjs";
+import { Search, RefreshCw, Bug, ShieldAlert } from "lucide-react";
+
+const { Title, Text } = Typography;
+const { RangePicker } = DatePicker;
 
 const MOCK_LOGS = [
-  {
-    id: 1,
-    time: "2025-12-06 10:15:23",
-    level: "ERROR",
-    source: "PlannerApi",
-    message: "일간 플래너 조회 중 예외 발생",
-  },
-  {
-    id: 2,
-    time: "2025-12-06 10:12:01",
-    level: "WARN",
-    source: "AuthApi",
-    message: "만료 임박 토큰 자동 재발급",
-  },
-  {
-    id: 3,
-    time: "2025-12-06 09:58:44",
-    level: "INFO",
-    source: "FocusService",
-    message: "포커스 세션 종료 · 25분",
-  },
+  { id: 1, time: "2026-01-01 13:10:23", level: "ERROR", source: "PlannerApi", message: "일간 플래너 조회 중 예외 발생", traceId: "TRC-AAA" },
+  { id: 2, time: "2026-01-01 13:02:01", level: "WARN", source: "AuthApi", message: "만료 임박 토큰 자동 재발급", traceId: "TRC-BBB" },
+  { id: 3, time: "2026-01-01 12:58:44", level: "INFO", source: "FocusService", message: "포커스 세션 종료 · 25분", traceId: "TRC-CCC" },
+  { id: 4, time: "2026-01-01 12:31:18", level: "ERROR", source: "AdminApi", message: "권한 정책 로딩 실패(데모)", traceId: "TRC-DDD" },
 ];
 
-function AdminLogScreen() {
-  return (
-    <PageContainer
-      screenId="ADM-002"
-      title="로그 / 에러 모니터링"
-      subtitle="시스템 로그와 에러를 조회·필터링합니다."
-    >
-      <div className="screen admin-screen">
-        <div className="admin-grid">
-          {/* 왼쪽: 필터 */}
-          <section className="admin-panel admin-panel--secondary">
-            <header className="admin-panel__header">
-              <h3 className="admin-panel__title">검색 조건</h3>
-              <p className="admin-panel__subtitle">
-                기간, 로그 레벨, 서비스명을 기준으로 필터링합니다.
-              </p>
-            </header>
+function levelTag(level) {
+  if (level === "ERROR") return <Tag color="error">ERROR</Tag>;
+  if (level === "WARN") return <Tag color="warning">WARN</Tag>;
+  return <Tag>INFO</Tag>;
+}
 
-            <form className="admin-filter-column">
-              <DatePicker label="시작일" />
-              <DatePicker label="종료일" />
+export default function AdminLogScreen() {
+  const [range, setRange] = useState([dayjs().add(-7, "day"), dayjs()]);
+  const [level, setLevel] = useState("");
+  const [source, setSource] = useState("");
+  const [keyword, setKeyword] = useState("");
+
+  const data = useMemo(() => {
+    const [s, e] = range || [];
+    return MOCK_LOGS.filter((l) => {
+      const t = dayjs(l.time, "YYYY-MM-DD HH:mm:ss");
+      const hitRange = !s || !e ? true : (t.isAfter(s.startOf("day")) && t.isBefore(e.endOf("day")));
+      const hitLevel = !level || l.level === level;
+      const hitSource = !source.trim() || l.source.toLowerCase().includes(source.trim().toLowerCase());
+      const hitKeyword = !keyword.trim() || l.message.toLowerCase().includes(keyword.trim().toLowerCase());
+      return hitRange && hitLevel && hitSource && hitKeyword;
+    });
+  }, [range, level, source, keyword]);
+
+  const columns = [
+    { title: "시간", dataIndex: "time", key: "time", width: 180 },
+    { title: "레벨", dataIndex: "level", key: "level", width: 100, render: (v) => levelTag(v) },
+    { title: "서비스", dataIndex: "source", key: "source", width: 140 },
+    { title: "메시지", dataIndex: "message", key: "message" },
+    { title: "traceId", dataIndex: "traceId", key: "traceId", width: 120 },
+  ];
+
+  const reset = () => {
+    setRange([dayjs().add(-7, "day"), dayjs()]);
+    setLevel("");
+    setSource("");
+    setKeyword("");
+  };
+
+  return (
+    <div className="admin-page">
+      <div className="admin-page__head">
+        <div>
+          <Title level={3} style={{ margin: 0 }}>로그/감사</Title>
+          <Text type="secondary">목업 데이터 · 실제 구현: /api/admin/logs (기간/레벨/traceId/사용자 필터)</Text>
+        </div>
+      </div>
+
+      <div className="admin-two-col">
+        <Card
+          title={
+            <Space size={8}>
+              <ShieldAlert size={18} />
+              <span>검색 조건</span>
+            </Space>
+          }
+        >
+          <Space orientation="vertical" size={10} style={{ width: "100%" }}>
+            <div>
+              <Text type="secondary">기간</Text>
+              <RangePicker value={range} onChange={(v) => setRange(v)} style={{ width: "100%" }} />
+            </div>
+
+            <div>
+              <Text type="secondary">레벨</Text>
               <Select
-                label="레벨"
+                value={level}
+                onChange={setLevel}
+                style={{ width: "100%" }}
                 options={[
                   { value: "", label: "전체" },
                   { value: "ERROR", label: "ERROR" },
@@ -60,50 +90,42 @@ function AdminLogScreen() {
                   { value: "INFO", label: "INFO" },
                 ]}
               />
-              <TextInput label="서비스 / 소스" placeholder="예) PlannerApi" />
-              <TextInput label="메시지 검색어" placeholder="키워드 검색" />
-              <Button type="button" variant="primary">
+            </div>
+
+            <div>
+              <Text type="secondary">서비스/소스</Text>
+              <Input value={source} onChange={(e) => setSource(e.target.value)} placeholder="예) PlannerApi" />
+            </div>
+
+            <div>
+              <Text type="secondary">메시지 키워드</Text>
+              <Input
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                placeholder="키워드 검색"
+                prefix={<Search size={16} />}
+                allowClear
+              />
+            </div>
+
+            <Space wrap>
+              <Button onClick={reset} icon={<RefreshCw size={16} />}>초기화</Button>
+              <Button type="primary" icon={<Bug size={16} />} onClick={() => alert("데모: 검색은 이미 실시간 필터링으로 반영됨")}>
                 검색
               </Button>
-            </form>
-          </section>
+            </Space>
+          </Space>
+        </Card>
 
-          {/* 오른쪽: 로그 테이블 */}
-          <section className="admin-panel">
-            <header className="admin-panel__header">
-              <h3 className="admin-panel__title">최근 로그</h3>
-              <p className="admin-panel__subtitle">
-                최근 발생한 로그를 시간 역순으로 보여줍니다.
-              </p>
-            </header>
-
-            <div className="admin-table-wrapper">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>시간</th>
-                    <th>레벨</th>
-                    <th>서비스</th>
-                    <th>메시지</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {MOCK_LOGS.map((log) => (
-                    <tr key={log.id}>
-                      <td>{log.time}</td>
-                      <td>{log.level}</td>
-                      <td>{log.source}</td>
-                      <td>{log.message}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        </div>
+        <Card title="로그 목록">
+          <Table
+            rowKey="id"
+            columns={columns}
+            dataSource={data}
+            pagination={{ pageSize: 8 }}
+          />
+        </Card>
       </div>
-    </PageContainer>
+    </div>
   );
 }
-
-export default AdminLogScreen;

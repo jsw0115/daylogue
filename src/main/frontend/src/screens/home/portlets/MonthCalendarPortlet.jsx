@@ -1,97 +1,121 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Button, Space, Tag } from "antd";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { getEvents, seedIfEmpty } from "./eventMockStore";
 
-function startOfMonth(d) {
-  return new Date(d.getFullYear(), d.getMonth(), 1);
-}
-function endOfMonth(d) {
-  return new Date(d.getFullYear(), d.getMonth() + 1, 0);
-}
-function addMonths(d, n) {
-  return new Date(d.getFullYear(), d.getMonth() + n, 1);
-}
-function fmt(d) {
+function ymd(d) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
 }
 
+function startOfMonth(cursor) {
+  const d = new Date(cursor);
+  d.setDate(1);
+  return d;
+}
+
+function addMonths(cursor, n) {
+  const d = new Date(cursor);
+  d.setMonth(d.getMonth() + n);
+  d.setDate(1);
+  return d;
+}
+
 export default function MonthCalendarPortlet() {
-  const [base, setBase] = useState(() => new Date());
-  const [selected, setSelected] = useState(() => new Date());
+  const [cursor, setCursor] = useState(() => startOfMonth(new Date()));
+  const [selectedKey, setSelectedKey] = useState(() => ymd(new Date()));
+  const [ver, setVer] = useState(0);
 
-  const grid = useMemo(() => {
-    const s = startOfMonth(base);
-    const e = endOfMonth(base);
-    const startWeekDay = s.getDay(); // 0 Sun
-    const days = e.getDate();
+  useEffect(() => {
+    seedIfEmpty();
+  }, []);
 
-    const cells = [];
-    for (let i = 0; i < startWeekDay; i++) cells.push(null);
-    for (let d = 1; d <= days; d++) cells.push(new Date(base.getFullYear(), base.getMonth(), d));
-    while (cells.length % 7 !== 0) cells.push(null);
+  const eventsByDate = useMemo(() => {
+    const all = getEvents().filter((e) => !e.deletedAt);
+    const map = {};
+    for (const e of all) {
+      map[e.dateKey] = map[e.dateKey] || [];
+      map[e.dateKey].push(e);
+    }
+    return map;
+  }, [ver]);
 
-    const rows = [];
-    for (let i = 0; i < cells.length; i += 7) rows.push(cells.slice(i, i + 7));
-    return rows;
-  }, [base]);
+  const days = useMemo(() => {
+    const first = startOfMonth(cursor);
+    const startDay = first.getDay(); // 0 Sun
+    const gridStart = new Date(first);
+    gridStart.setDate(first.getDate() - startDay);
 
-  // TODO: API 붙이면 이 값들을 서버에서 가져오면 됨
-  const mockEvents = [
-    { date: fmt(new Date()), title: "프로젝트 회의", time: "09:00" },
-    { date: fmt(addMonths(new Date(), 0)), title: "운동", time: "19:00" },
-  ];
-  const selectedEvents = mockEvents.filter((e) => e.date === fmt(selected));
+    const arr = [];
+    for (let i = 0; i < 42; i++) {
+      const d = new Date(gridStart);
+      d.setDate(gridStart.getDate() + i);
+      arr.push(d);
+    }
+    return arr;
+  }, [cursor]);
+
+  const monthLabel = `${cursor.getFullYear()}.${String(cursor.getMonth() + 1).padStart(2, "0")}`;
+  const curMonth = cursor.getMonth();
+
+  const selectedEvents = (eventsByDate[selectedKey] || []).slice(0, 5);
 
   return (
-    <div className="month-cal">
-      <div className="month-cal__top">
-        <button className="btn xs" onClick={() => setBase(addMonths(base, -1))} type="button">←</button>
-        <div className="month-cal__title">
-          {base.getFullYear()}년 {base.getMonth() + 1}월
-        </div>
-        <button className="btn xs" onClick={() => setBase(addMonths(base, 1))} type="button">→</button>
+    <div className="mcal">
+      <div className="mcalHead">
+        <Button size="small" icon={<ChevronLeft size={16} />} onClick={() => setCursor(addMonths(cursor, -1))} />
+        <div className="mcalLabel">{monthLabel}</div>
+        <Button size="small" icon={<ChevronRight size={16} />} onClick={() => setCursor(addMonths(cursor, 1))} />
       </div>
 
-      <div className="month-cal__dow">
-        {["일", "월", "화", "수", "목", "금", "토"].map((d) => (
-          <div key={d} className="month-cal__dow-item">{d}</div>
+      <div className="mcalDow">
+        {["일","월","화","수","목","금","토"].map((x) => (
+          <div key={x} className="mcalDowItem">{x}</div>
         ))}
       </div>
 
-      <div className="month-cal__grid">
-        {grid.map((row, ri) => (
-          <React.Fragment key={ri}>
-            {row.map((cell, ci) => {
-              const isSel = cell && fmt(cell) === fmt(selected);
-              const isToday = cell && fmt(cell) === fmt(new Date());
-              return (
-                <button
-                  key={`${ri}-${ci}`}
-                  className={`month-cal__cell ${isSel ? "is-sel" : ""} ${isToday ? "is-today" : ""}`}
-                  onClick={() => cell && setSelected(cell)}
-                  type="button"
-                >
-                  {cell ? cell.getDate() : ""}
-                </button>
-              );
-            })}
-          </React.Fragment>
-        ))}
+      <div className="mcalGrid">
+        {days.map((d) => {
+          const key = ymd(d);
+          const inMonth = d.getMonth() === curMonth;
+          const cnt = (eventsByDate[key]?.length || 0);
+          const isSel = key === selectedKey;
+          const isToday = key === ymd(new Date());
+
+          return (
+            <button
+              key={key}
+              className={[
+                "mcalCell",
+                inMonth ? "" : "is-dim",
+                isSel ? "is-sel" : "",
+                isToday ? "is-today" : "",
+              ].join(" ")}
+              type="button"
+              onClick={() => setSelectedKey(key)}
+            >
+              <div className="mcalDate">{d.getDate()}</div>
+              {cnt ? <div className="mcalDot">{cnt}</div> : null}
+            </button>
+          );
+        })}
       </div>
 
-      <div className="month-cal__bottom">
-        <div className="month-cal__picked">
-          선택 날짜: <b>{fmt(selected)}</b>
+      <div className="mcalBottom">
+        <div className="mcalPicked">
+          선택: <b>{selectedKey}</b>
         </div>
+
         {selectedEvents.length === 0 ? (
-          <div className="muted">등록된 일정이 없습니다.</div>
+          <div className="hd-empty">선택 날짜에 일정이 없습니다.</div>
         ) : (
-          <div className="eventlist">
-            {selectedEvents.map((e, idx) => (
-              <div className="eventrow" key={idx}>
-                <div className="eventrow__time">{e.time}</div>
-                <div className="eventrow__title">{e.title}</div>
+          <div className="mcalList">
+            {selectedEvents.map((e) => (
+              <div className="mcalRow" key={e.id}>
+                <Tag>{e.start}</Tag>
+                <div className="mcalRowTitle">{e.title}</div>
               </div>
             ))}
           </div>

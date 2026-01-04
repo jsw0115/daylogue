@@ -1,4 +1,5 @@
 /* 일간 플래너 */
+/* FILE : src/main/frontend/src/styles/screens/planner.css */
 
 .daily-planner-screen .planner-layout {
   display: grid;
@@ -1530,7 +1531,8 @@
 /* ========================= */
 
 .daily-planner-screen .screen-header {
-  flex-direction: column;
+  /* flex-direction: column; */
+  flex-direction: inherit;
   align-items: flex-start;
   gap: 8px;
 }
@@ -1885,4 +1887,25 @@
   justify-content: flex-end;
   gap: 6px;
   margin-top: 12px;
+}
+
+/* 2026.01.03 planner css 추가 */
+a.tabbar__item {
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    border-color: rgba(99, 102, 241, 0.45);
+    margin-left: 8px;
+    color: inherit;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--color-border, #e5e7eb);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.tabbar.tabbar--sm {
+    display: flex;
 }

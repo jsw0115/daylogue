@@ -1,86 +1,102 @@
+
 // FILE: src/main/frontend/src/screens/admin/AdminStatsScreen.jsx
 import React from "react";
-import PageContainer from "../../layout/PageContainer";
-import DashboardCard from "../../components/dashboard/DashboardCard";
-import StatValue from "../../components/dashboard/StatValue";
+import { Card, Col, Progress, Row, Statistic, Typography, Button, Space } from "antd";
+import { Download, BarChart3 } from "lucide-react";
 
-function AdminStatsScreen() {
+const { Title, Text } = Typography;
+
+export default function AdminStatsScreen() {
   return (
-    <PageContainer
-      screenId="ADM-004"
-      title="관리자 통계 리포트"
-      subtitle="전체 사용자 기준 서비스 이용 통계와 모드별 사용 패턴을 확인합니다."
-    >
-      <div className="screen admin-screen">
-        <div className="stat-dashboard-grid">
-          <DashboardCard
-            title="전체 사용자 현황"
-            subtitle="가입자, 활성 사용자, 유지율"
-          >
-            <div className="stat-dashboard-row">
-              <StatValue label="총 가입자" value="12,340" unit="명" />
-              <StatValue label="월간 활성 사용자(MAU)" value="3,210" unit="명" />
-              <StatValue
-                label="30일 유지율"
-                value="68"
-                unit="%"
-                trend={{ direction: "up", text: "지난 달 대비 +4%p" }}
-              />
-            </div>
-          </DashboardCard>
+    <div className="admin-page">
+      <div className="admin-page__head">
+        <div>
+          <Title level={3} style={{ margin: 0 }}>통계 리포트</Title>
+          <Text type="secondary">목업 데이터 · 실제 구현: /api/admin/stats (기간/모드/플랫폼/세그먼트)</Text>
+        </div>
 
-          <DashboardCard
-            title="모드별(J/P/B) 사용 비중"
-            subtitle="최근 30일 기준 세션 수/시간 비중"
+        <Space>
+          <Button
+            type="primary"
+            icon={<Download size={16} />}
+            onClick={() => alert("데모: CSV 내보내기(추후 API)")}
           >
-            <div className="stat-dashboard-row">
-              <StatValue label="J 모드" value="42" unit="%" />
-              <StatValue label="P 모드" value="31" unit="%" />
-              <StatValue label="B 모드" value="27" unit="%" />
-            </div>
-          </DashboardCard>
+            CSV 내보내기
+          </Button>
+        </Space>
+      </div>
 
-          <DashboardCard
-            title="타임바 / 포커스 사용량"
-            subtitle="플래너 타임바·포커스 세션 기반 활동량 지표"
-          >
-            <div className="stat-dashboard-row">
-              <StatValue
-                label="일간 평균 타임블록"
-                value="18"
-                unit="개"
-                trend={{ direction: "up", text: "지난 주 대비 +2개" }}
-              />
-              <StatValue
-                label="일간 평균 포커스 시간"
-                value="3.1"
-                unit="h"
-                trend={{ direction: "up", text: "지난 주 대비 +0.4h" }}
-              />
-            </div>
-          </DashboardCard>
+      <Row gutter={[12, 12]}>
+        <Col xs={24} md={12} lg={6}>
+          <Card><Statistic title="총 가입자" value={12340} suffix="명" /></Card>
+        </Col>
+        <Col xs={24} md={12} lg={6}>
+          <Card><Statistic title="MAU" value={3210} suffix="명" /></Card>
+        </Col>
+        <Col xs={24} md={12} lg={6}>
+          <Card><Statistic title="DAU" value={712} suffix="명" /></Card>
+        </Col>
+        <Col xs={24} md={12} lg={6}>
+          <Card><Statistic title="30일 유지율" value={68} suffix="%" /></Card>
+        </Col>
+      </Row>
 
-          <DashboardCard
-            title="리포트 다운로드"
-            subtitle="CSV / Excel로 내보내기"
-            right={
-              <button
-                type="button"
-                className="btn btn--primary btn--sm admin-export-button"
-              >
-                CSV 내보내기
-              </button>
+      <Row gutter={[12, 12]} style={{ marginTop: 12 }}>
+        <Col xs={24} lg={12}>
+          <Card
+            title={
+              <Space size={8}>
+                <BarChart3 size={18} />
+                <span>모드별(J/P/B) 사용 비중(최근 30일)</span>
+              </Space>
             }
           >
-            <p className="admin-stats-description">
-              실제 서비스에서는 기간/모드/플랫폼별 필터를 적용하여
-              다운로드할 수 있습니다.
-            </p>
-          </DashboardCard>
-        </div>
-      </div>
-    </PageContainer>
+            <div className="admin-ui__progressRow">
+              <div className="admin-ui__progressLabel">J 모드</div>
+              <Progress percent={42} />
+            </div>
+            <div className="admin-ui__progressRow">
+              <div className="admin-ui__progressLabel">P 모드</div>
+              <Progress percent={31} />
+            </div>
+            <div className="admin-ui__progressRow">
+              <div className="admin-ui__progressLabel">B 모드</div>
+              <Progress percent={27} />
+            </div>
+
+            <Text type="secondary">
+              실제 서비스에서는 세션 수/시간/완료율 기준으로 집계 옵션 제공
+            </Text>
+          </Card>
+        </Col>
+
+        <Col xs={24} lg={12}>
+          <Card title="타임바/포커스 사용량(요약)">
+            <Row gutter={[12, 12]}>
+              <Col xs={24} md={12}>
+                <Card bordered={false} className="admin-ui__miniCard">
+                  <Statistic title="일간 평균 타임블록" value={18} suffix="개" />
+                </Card>
+              </Col>
+              <Col xs={24} md={12}>
+                <Card bordered={false} className="admin-ui__miniCard">
+                  <Statistic title="일간 평균 포커스" value={3.1} suffix="h" />
+                </Card>
+              </Col>
+              <Col xs={24} md={12}>
+                <Card bordered={false} className="admin-ui__miniCard">
+                  <Statistic title="평균 Todo 완료율" value={64} suffix="%" />
+                </Card>
+              </Col>
+              <Col xs={24} md={12}>
+                <Card bordered={false} className="admin-ui__miniCard">
+                  <Statistic title="루틴 달성율" value={58} suffix="%" />
+                </Card>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
+      </Row>
+    </div>
   );
 }
-
-export default AdminStatsScreen;

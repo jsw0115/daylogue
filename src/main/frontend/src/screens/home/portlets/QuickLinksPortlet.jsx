@@ -1,3 +1,5 @@
+
+// FILE: src/main/frontend/src/screens/portlets/QuickLinksPortlet.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
 

@@ -1,4 +1,3 @@
-// FILE: src/screens/plan/DailyPlannerScreen.jsx
 import React, { useMemo, useState } from "react";
 import { NavLink, useSearchParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
@@ -14,6 +13,14 @@ import { getRoutinesForDate } from "../../shared/utils/routineStore";
 import ScheduleFormModal from "../../components/schedule/ScheduleFormModal";
 import RoutineFormModal from "../../components/routine/RoutineFormModal";
 
+import PlannerViewTabs from "./_components/PlannerViewTabs";
+import EventQueryBar from "./_components/EventQueryBar";
+import EventList from "./_components/EventList";
+import { applyEventQuery } from "./plannerUiUtils";
+
+import { Button, ButtonGroup } from "@mui/material";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+
 moment.locale("ko");
 
 export default function DailyPlannerScreen() {
@@ -28,16 +35,11 @@ export default function DailyPlannerScreen() {
   const [selectedDate, setSelectedDate] = useState(initialDate);
   const dateKey = useMemo(() => toDateKey(selectedDate), [selectedDate]);
 
-  const goToday = () => setSelectedDate(new Date());
-  const moveDay = (delta) => setSelectedDate(moment(selectedDate).add(delta, "day").toDate());
-
-  // 날짜 변경 시 query 반영(요청한 동작)
   const syncQuery = (d) => setSp({ date: toDateKey(d) });
 
   const [memo, setMemo] = useState(() => safeStorage.getItem(`planner.memo.${dateKey}`, ""));
   const [memoSavedAt, setMemoSavedAt] = useState(null);
 
-  // dateKey 바뀌면 memo도 로드
   React.useEffect(() => {
     setMemo(safeStorage.getItem(`planner.memo.${dateKey}`, ""));
     setMemoSavedAt(null);
@@ -48,9 +50,22 @@ export default function DailyPlannerScreen() {
     setMemoSavedAt(Date.now());
   };
 
-  // 일정/루틴 데이터
-  const events = useMemo(() => getEventsForDate(dateKey), [dateKey]);
+  // 일정/루틴
+  const rawEvents = useMemo(() => getEventsForDate(dateKey), [dateKey]);
   const routines = useMemo(() => getRoutinesForDate(selectedDate), [selectedDate]);
+
+  // EVT-001: 검색/필터/정렬
+  const [eventQuery, setEventQuery] = useState(() => ({
+    keyword: "",
+    sortKey: "priority",
+    categoryId: "all",
+    visibility: "all",
+    onlyDday: false,
+    onlyBookmarked: false,
+    onlyShared: false,
+  }));
+
+  const events = useMemo(() => applyEventQuery(rawEvents, eventQuery, dateKey), [rawEvents, eventQuery, dateKey]);
 
   // 모달 상태
   const [openSchQuick, setOpenSchQuick] = useState(false);
@@ -70,38 +85,41 @@ export default function DailyPlannerScreen() {
 
   const openEditRoutine = (rt) => {
     setEditingRoutine(rt);
-    setOpenRtEdit(true);
+    setOpenRtEdit(true); // ✅ 기존 코드에서 누락되어 “클릭해도 편집 모달 안 열림” 버그 발생
+  };
+
+  const moveDay = (delta) => {
+    const d = moment(selectedDate).add(delta, "day").toDate();
+    setSelectedDate(d);
+    syncQuery(d);
+  };
+
+  const goToday = () => {
+    const d = new Date();
+    setSelectedDate(d);
+    syncQuery(d);
   };
 
   return (
     <div className="daily-planner-screen">
       <div className="screen-header">
         <div className="screen-header__title">일간 플래너</div>
-        <div className="tabbar tabbar--sm">
-          <NavLink to={`/planner/daily?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>일간</NavLink>
-          <NavLink to={`/planner/weekly?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>주간</NavLink>
-          <NavLink to={`/planner/monthly?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>월간</NavLink>
-          <NavLink to={`/planner/yearly?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>연간</NavLink>
-        </div>
+        <PlannerViewTabs dateKey={dateKey} />
       </div>
 
       <div className="daily-topbar">
         <div className="daily-topbar__left">
-          <button type="button" className="btn btn--sm btn--ghost" onClick={() => { const d = moment(selectedDate).add(-1, "day").toDate(); setSelectedDate(d); syncQuery(d); }}>
-            ←
+          <button type="button" className="btn btn--sm btn--ghost" onClick={() => moveDay(-1)}>
+            <ChevronLeft size={16} />
           </button>
 
-          <div className="daily-topbar__label text-primary">
-            {moment(selectedDate).format("YYYY. MM. D (ddd)")}
-          </div>
+          <div className="daily-topbar__label text-primary">{moment(selectedDate).format("YYYY. MM. D (ddd)")}</div>
 
-          <button type="button" className="btn btn--sm btn--ghost" onClick={() => { const d = moment(selectedDate).add(1, "day").toDate(); setSelectedDate(d); syncQuery(d); }}>
-            →
+          <button type="button" className="btn btn--sm btn--ghost" onClick={() => moveDay(1)}>
+            <ChevronRight size={16} />
           </button>
 
-          <button type="button" className="btn btn--sm btn--secondary" onClick={() => { const d = new Date(); setSelectedDate(d); syncQuery(d); }}>
-            오늘
-          </button>
+          <button type="button" className="btn btn--sm btn--secondary" onClick={goToday}>오늘</button>
 
           <DatePicker
             selected={selectedDate}
@@ -117,55 +135,44 @@ export default function DailyPlannerScreen() {
         </div>
 
         <div className="daily-topbar__right">
-          <button type="button" className="btn btn--sm btn--primary" onClick={() => setOpenSchQuick(true)}>
-            + 일정(간단)
-          </button>
-          <button type="button" className="btn btn--sm btn--secondary" onClick={() => setOpenSchDetail(true)}>
-            + 일정(상세)
-          </button>
-          <button type="button" className="btn btn--sm btn--primary" onClick={() => setOpenRtQuick(true)}>
-            + 루틴(간단)
-          </button>
-          <button type="button" className="btn btn--sm btn--secondary" onClick={() => setOpenRtDetail(true)}>
-            + 루틴(상세)
-          </button>
+          <ButtonGroup variant="outlined" size="small">
+            <Button startIcon={<Plus size={16} />} onClick={() => setOpenSchQuick(true)}>일정(간단)</Button>
+            <Button onClick={() => setOpenSchDetail(true)}>일정(상세)</Button>
+          </ButtonGroup>
+
+          <ButtonGroup variant="outlined" size="small">
+            <Button startIcon={<Plus size={16} />} onClick={() => setOpenRtQuick(true)}>루틴(간단)</Button>
+            <Button onClick={() => setOpenRtDetail(true)}>루틴(상세)</Button>
+          </ButtonGroup>
         </div>
       </div>
 
       <div className="daily-layout">
         <div className="card daily-left">
-          <div className="daily-cardHead">
+          <div className="daily-cardHead" style={{ alignItems: "flex-start" }}>
             <div>
               <div className="daily-cardTitle">오늘 일정</div>
-              <div className="text-muted font-small">{dateKey}</div>
+              <div className="text-muted font-small">{dateKey} · {rawEvents.length}개</div>
             </div>
           </div>
 
-          {events.length ? (
-            <div className="daily-eventList">
-              {events.map((e) => (
-                <button key={e.id} type="button" className="daily-eventRow" onClick={() => openEditEvent(e)}>
-                  <div className="daily-eventTitle">{e.title}</div>
-                  <div className="daily-eventMeta text-muted font-small">
-                    {e.start}~{e.end}
-                    {e.sharedUserIds?.length ? ` · 공유 ${e.sharedUserIds.length}` : ""}
-                    {e.isOccurrence ? " · 반복" : ""}
-                  </div>
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div className="text-muted font-small">등록된 일정이 없습니다.</div>
-          )}
+          <EventQueryBar eventsSource={rawEvents} value={eventQuery} onChange={setEventQuery} dense />
+
+          <div style={{ marginTop: 10 }}>
+            <EventList
+              events={events}
+              dateKey={dateKey}
+              onClickEvent={openEditEvent}
+              emptyText="조건에 맞는 일정이 없습니다."
+            />
+          </div>
         </div>
 
         <div className="card daily-right">
           <div className="daily-cardHead">
             <div className="daily-cardTitle">Daily Memo</div>
             <div className="daily-memoActions">
-              <button type="button" className="btn btn--sm btn--primary" onClick={saveMemo}>
-                메모 저장
-              </button>
+              <button type="button" className="btn btn--sm btn--primary" onClick={saveMemo}>메모 저장</button>
               <span className="text-muted font-small">
                 {memoSavedAt ? `저장됨 ${moment(memoSavedAt).format("HH:mm")}` : "아직 저장하지 않음"}
               </span>

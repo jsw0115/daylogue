@@ -1,7 +1,9 @@
 import React, { useMemo } from "react";
+import { Checkbox, Space, Tag, Typography } from "antd";
+
+const { Text } = Typography;
 
 export default function TaskSummaryPortlet() {
-  // TODO: /api/tasks?date=YYYY-MM-DD 로 변경
   const tasks = useMemo(
     () => [
       { id: 1, title: "SQLD 1일 1문제", done: true, durationMin: 30 },
@@ -11,14 +13,22 @@ export default function TaskSummaryPortlet() {
   );
 
   return (
-    <div className="task-mini">
+    <Space orientation="vertical" size={10} style={{ width: "100%" }}>
       {tasks.map((t) => (
-        <div className="task-mini__row" key={t.id}>
-          <div className={`chk ${t.done ? "is-done" : ""}`}>{t.done ? "✓" : ""}</div>
-          <div className="task-mini__title">{t.title}</div>
-          <div className="task-mini__meta">{t.durationMin}분</div>
+        <div key={t.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <Checkbox checked={t.done} />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 700 }}>{t.title}</div>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              예상 {t.durationMin}분
+            </Text>
+          </div>
+          <Tag>{t.done ? "완료" : "진행"}</Tag>
         </div>
       ))}
-    </div>
+      <Text type="secondary" style={{ fontSize: 12 }}>
+        실제 연동 시: 오늘 날짜 기준 /api/tasks?date=YYYY-MM-DD
+      </Text>
+    </Space>
   );
 }

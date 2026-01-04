@@ -1,31 +1,27 @@
-// src/screens/home/portlets/TodayMemoPortlet.jsx
 import React, { useEffect, useState } from "react";
-import safeStorage from "../../../shared/utils/safeStorage";
+import { Input, Space, Typography } from "antd";
+import { safeStorage } from "../../../shared/utils/safeStorage";
+
+const { Text } = Typography;
 
 export default function TodayMemoPortlet() {
   const [memo, setMemo] = useState(() => safeStorage.get("tbd.todayMemo", ""));
-
-  useEffect(() => {
-    // ✅ useEffect는 "함수" 또는 "아무것도"만 return 해야 함.
-    // ❌ return false; 같은 패턴은 StrictMode에서 언마운트 시 cleanup 호출하면서 터짐.
-    // 여기서는 cleanup이 딱히 없으니 return 자체를 하지 않음.
-    return undefined;
-  }, []);
 
   useEffect(() => {
     safeStorage.set("tbd.todayMemo", memo ?? "");
   }, [memo]);
 
   return (
-    <div className="portlet">
-      <div className="portlet-subtitle">오늘의 메모</div>
-      <textarea
-        className="portlet-textarea"
-        rows={6}
+    <Space orientation="vertical" size={8} style={{ width: "100%" }}>
+      <Input.TextArea
         value={memo}
         onChange={(e) => setMemo(e.target.value)}
+        autoSize={{ minRows: 6, maxRows: 10 }}
         placeholder="오늘의 기록/메모를 남겨보세요."
       />
-    </div>
+      <Text type="secondary" style={{ fontSize: 12 }}>
+        입력 내용은 로컬에 자동 저장됩니다.
+      </Text>
+    </Space>
   );
 }

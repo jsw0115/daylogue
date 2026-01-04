@@ -1,10 +1,11 @@
 // FILE: src/App.jsx
 import React from "react";
-import AppRoutes from "./routes/AppRoutes"; // ✅ 이렇게 명시
+import AppRoutes from "./routes/AppRoutes";
 
 import { ThemeProvider } from "./shared/context/ThemeContext";
 import { AppModeProvider } from "./shared/context/AppModeContext";
 import { ModeProvider } from "./context/ModeContext";
+import "antd/dist/reset.css";
 
 function App() {
   return (

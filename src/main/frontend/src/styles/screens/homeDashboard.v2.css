@@ -1,0 +1,253 @@
+.home-dashboard-v2 {
+  padding: 14px;
+}
+
+.dash-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.dash-title__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dash-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.dash-editSwitch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: rgba(0,0,0,0.02);
+}
+
+.dash-editSwitch__label {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.dash-editSwitch__on,
+.dash-editSwitch__off {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dash-alert {
+  margin-bottom: 12px;
+}
+
+.dash-grid {
+  min-height: 300px;
+}
+
+/* react-grid-layout item wrapper */
+.dash-gridItem {
+  height: 100%;
+}
+
+/* 포틀릿 카드 */
+.portletCard {
+  height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+}
+
+.portletCard.is-edit {
+  outline: 2px dashed rgba(0,0,0,0.12);
+  outline-offset: -8px;
+}
+
+.portletHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.portletHead__left {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.portlet-dragHandle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 10px;
+  cursor: grab;
+  background: rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+.portlet-dragHandle:active {
+  cursor: grabbing;
+}
+
+.portletHead__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.portletHead__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+}
+
+.portletHead__icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.portletHead__sub {
+  font-size: 12px;
+  color: rgba(0,0,0,0.55);
+}
+
+.portletBody {
+  height: 100%;
+}
+
+/* Drawer picker */
+.dash-pickerHint {
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.02);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+.dash-pickerGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dash-pickerItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 10px;
+  border-radius: 14px;
+  cursor: pointer;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: rgba(255,255,255,0.9);
+}
+
+.dash-pickerItem:hover {
+  background: rgba(0,0,0,0.02);
+}
+
+.dash-pickerItem__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dash-pickerItem__title {
+  font-weight: 800;
+}
+
+.dash-pickerItem__sub {
+  font-size: 12px;
+  color: rgba(0,0,0,0.6);
+}
+
+/* react-grid-layout placeholder 개선 */
+.react-grid-placeholder {
+  border-radius: 16px;
+  background: rgba(0,0,0,0.06) !important;
+  border: 1px dashed rgba(0,0,0,0.15) !important;
+}
+
+
+.monthCalV2__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.monthCalV2__dow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.monthCalV2__dowItem {
+  text-align: center;
+  font-size: 12px;
+  color: rgba(0,0,0,0.55);
+  font-weight: 700;
+}
+
+.monthCalV2__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.monthCalV2__cell {
+  height: 34px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: rgba(255,255,255,0.9);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.monthCalV2__cell:hover {
+  background: rgba(0,0,0,0.02);
+}
+
+.monthCalV2__cell.is-today {
+  border-color: rgba(0,0,0,0.22);
+}
+
+.monthCalV2__cell.is-sel {
+  background: rgba(0,0,0,0.06);
+  border-color: rgba(0,0,0,0.25);
+}
+
+.monthCalV2__bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.monthCalV2__picked {
+  font-weight: 800;
+}
+
+.monthCalV2__events {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.monthCalV2__event {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

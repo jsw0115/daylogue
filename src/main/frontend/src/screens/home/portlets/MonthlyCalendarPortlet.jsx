@@ -1,5 +1,7 @@
-import React, { useMemo, useState } from "react";
-import { safeStorage } from "../../../shared/utils/safeStorage";
+import React, { useEffect, useMemo, useState } from "react";
+import { Button, Space, Tag } from "antd";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { getEvents, seedIfEmpty } from "./eventMockStore";
 
 function ymd(d) {
   const y = d.getFullYear();
@@ -8,32 +10,43 @@ function ymd(d) {
   return `${y}-${m}-${day}`;
 }
 
-export default function MonthlyCalendarPortlet() {
-  const [cursor, setCursor] = useState(() => {
-    const d = new Date();
-    d.setDate(1);
-    return d;
-  });
+function startOfMonth(cursor) {
+  const d = new Date(cursor);
+  d.setDate(1);
+  return d;
+}
 
-  const eventsByDate = useMemo(() => {
-    const all = safeStorage.getJSON("events.mock", []);
-    const map = {};
-    for (const e of all) {
-      const k = e.date;
-      map[k] = map[k] || [];
-      map[k].push(e);
-    }
-    return map;
+function addMonths(cursor, n) {
+  const d = new Date(cursor);
+  d.setMonth(d.getMonth() + n);
+  d.setDate(1);
+  return d;
+}
+
+export default function MonthCalendarPortlet() {
+  const [cursor, setCursor] = useState(() => startOfMonth(new Date()));
+  const [selectedKey, setSelectedKey] = useState(() => ymd(new Date()));
+  const [ver, setVer] = useState(0);
+
+  useEffect(() => {
+    seedIfEmpty();
   }, []);
 
-  const days = useMemo(() => {
-    const first = new Date(cursor);
-    const start = new Date(first);
-    start.setDate(1);
+  const eventsByDate = useMemo(() => {
+    const all = getEvents().filter((e) => !e.deletedAt);
+    const map = {};
+    for (const e of all) {
+      map[e.dateKey] = map[e.dateKey] || [];
+      map[e.dateKey].push(e);
+    }
+    return map;
+  }, [ver]);
 
-    const startDay = start.getDay(); // 0 Sun
-    const gridStart = new Date(start);
-    gridStart.setDate(start.getDate() - startDay);
+  const days = useMemo(() => {
+    const first = startOfMonth(cursor);
+    const startDay = first.getDay(); // 0 Sun
+    const gridStart = new Date(first);
+    gridStart.setDate(first.getDate() - startDay);
 
     const arr = [];
     for (let i = 0; i < 42; i++) {
@@ -45,51 +58,68 @@ export default function MonthlyCalendarPortlet() {
   }, [cursor]);
 
   const monthLabel = `${cursor.getFullYear()}.${String(cursor.getMonth() + 1).padStart(2, "0")}`;
-
-  const prev = () => {
-    const d = new Date(cursor);
-    d.setMonth(d.getMonth() - 1);
-    setCursor(d);
-  };
-  const next = () => {
-    const d = new Date(cursor);
-    d.setMonth(d.getMonth() + 1);
-    setCursor(d);
-  };
-
   const curMonth = cursor.getMonth();
 
+  const selectedEvents = (eventsByDate[selectedKey] || []).slice(0, 5);
+
   return (
-    <div className="monthCal">
-      <div className="monthCal__head">
-        <button className="btn btn--xs" type="button" onClick={prev}>←</button>
-        <div className="monthCal__label">{monthLabel}</div>
-        <button className="btn btn--xs" type="button" onClick={next}>→</button>
+    <div className="mcal">
+      <div className="mcalHead">
+        <Button size="small" icon={<ChevronLeft size={16} />} onClick={() => setCursor(addMonths(cursor, -1))} />
+        <div className="mcalLabel">{monthLabel}</div>
+        <Button size="small" icon={<ChevronRight size={16} />} onClick={() => setCursor(addMonths(cursor, 1))} />
       </div>
 
-      <div className="monthCal__dow">
+      <div className="mcalDow">
         {["일","월","화","수","목","금","토"].map((x) => (
-          <div key={x} className="monthCal__dowItem">{x}</div>
+          <div key={x} className="mcalDowItem">{x}</div>
         ))}
       </div>
 
-      <div className="monthCal__grid">
+      <div className="mcalGrid">
         {days.map((d) => {
           const key = ymd(d);
           const inMonth = d.getMonth() === curMonth;
-          const cnt = eventsByDate[key]?.length || 0;
+          const cnt = (eventsByDate[key]?.length || 0);
+          const isSel = key === selectedKey;
+          const isToday = key === ymd(new Date());
 
           return (
-            <div key={key} className={"monthCal__cell " + (inMonth ? "" : "is-dim")}>
-              <div className="monthCal__date">{d.getDate()}</div>
-              {cnt ? <div className="monthCal__dot">{cnt}</div> : null}
-            </div>
+            <button
+              key={key}
+              className={[
+                "mcalCell",
+                inMonth ? "" : "is-dim",
+                isSel ? "is-sel" : "",
+                isToday ? "is-today" : "",
+              ].join(" ")}
+              type="button"
+              onClick={() => setSelectedKey(key)}
+            >
+              <div className="mcalDate">{d.getDate()}</div>
+              {cnt ? <div className="mcalDot">{cnt}</div> : null}
+            </button>
           );
         })}
       </div>
 
-      <div className="text-muted font-small" style={{ marginTop: 8 }}>
-        일정 데이터는 현재 임시 저장소(events.mock) 기반입니다.
+      <div className="mcalBottom">
+        <div className="mcalPicked">
+          선택: <b>{selectedKey}</b>
+        </div>
+
+        {selectedEvents.length === 0 ? (
+          <div className="hd-empty">선택 날짜에 일정이 없습니다.</div>
+        ) : (
+          <div className="mcalList">
+            {selectedEvents.map((e) => (
+              <div className="mcalRow" key={e.id}>
+                <Tag>{e.start}</Tag>
+                <div className="mcalRowTitle">{e.title}</div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -21,12 +21,14 @@ const Header = () => {
         <div className="app-header__brand">Timebar Diary</div>
       </div>
 
+      {/* 
       <nav className="app-header__nav">
         <NavLink className="topnav__link" to="/planner/daily">일간</NavLink>
         <NavLink className="topnav__link" to="/planner/weekly">주간</NavLink>
         <NavLink className="topnav__link" to="/planner/monthly">월간</NavLink>
         <NavLink className="topnav__link" to="/planner/yearly">연간</NavLink>
       </nav>
+       */}
 
       <div className="app-header__right" ref={wrapRef}>
         <button className="profile-btn" onClick={() => setOpen((v) => !v)} type="button">

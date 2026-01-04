@@ -1,6 +1,5 @@
-// FILE: src/screens/plan/MonthlyPlannerScreen.jsx
 import React, { useMemo, useState } from "react";
-import { data, NavLink, useNavigate, useSearchParams } from "react-router-dom";
+import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import Calendar from "react-calendar";
 import moment from "moment";
@@ -11,6 +10,11 @@ import "../../styles/screens/monthly-planner.css";
 
 import { getEventsForDate, toDateKey } from "../../shared/utils/plannerStore";
 import ScheduleFormModal from "../../components/schedule/ScheduleFormModal";
+
+import PlannerViewTabs from "./_components/PlannerViewTabs";
+import EventQueryBar from "./_components/EventQueryBar";
+import EventList from "./_components/EventList";
+import { applyEventQuery } from "./plannerUiUtils";
 
 moment.locale("ko");
 moment.updateLocale("ko", { week: { dow: 0, doy: 1 } });
@@ -28,7 +32,23 @@ export default function MonthlyPlannerScreen() {
   const [selectedDate, setSelectedDate] = useState(initialDate);
   const dateKey = useMemo(() => toDateKey(selectedDate), [selectedDate]);
 
-  const selectedEvents = useMemo(() => getEventsForDate(dateKey), [dateKey]);
+  const rawSelectedEvents = useMemo(() => getEventsForDate(dateKey), [dateKey]);
+
+  // EVT-001: 검색/필터/정렬
+  const [eventQuery, setEventQuery] = useState(() => ({
+    keyword: "",
+    sortKey: "priority",
+    categoryId: "all",
+    visibility: "all",
+    onlyDday: false,
+    onlyBookmarked: false,
+    onlyShared: false,
+  }));
+
+  const selectedEvents = useMemo(
+    () => applyEventQuery(rawSelectedEvents, eventQuery, dateKey),
+    [rawSelectedEvents, eventQuery, dateKey]
+  );
 
   const eventCountByDate = useMemo(() => {
     const m = moment(selectedDate);
@@ -61,12 +81,7 @@ export default function MonthlyPlannerScreen() {
     <div className="monthly-planner-screen">
       <div className="screen-header">
         <div className="screen-header__title">월간 플래너</div>
-        <div className="tabbar tabbar--sm">
-          <NavLink to={`/planner/daily?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>일간</NavLink>
-          <NavLink to={`/planner/weekly?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>주간</NavLink>
-          <NavLink to={`/planner/monthly?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>월간</NavLink>
-          <NavLink to={`/planner/yearly?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>연간</NavLink>
-        </div>
+        <PlannerViewTabs dateKey={dateKey} />
       </div>
 
       <div className="monthly-topbar">
@@ -113,11 +128,17 @@ export default function MonthlyPlannerScreen() {
               const k = toDateKey(date);
               const count = eventCountByDate[k] || 0;
               if (!count) return null;
-              return <div className="monthly-calDot" title={`일정 ${count}개`} />;
+              // 점 + 개수(너무 과한 렌더링 피하고 가볍게)
+              return (
+                <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: 6, alignItems: "center" }}>
+                  <div className="monthly-calDot" title={`일정 ${count}개`} />
+                  <span className="text-muted font-small">{count}</span>
+                </div>
+              );
             }}
           />
           <div className="text-muted font-small monthly-hint">
-            일정이 있는 날짜에 점이 표시됩니다(반복 일정 포함).
+            일정이 있는 날짜에 표시됩니다(반복 포함).
           </div>
         </div>
 
@@ -125,38 +146,25 @@ export default function MonthlyPlannerScreen() {
           <div className="monthly-right__head">
             <div>
               <div className="monthly-right__title">선택 날짜</div>
-              <div className="text-muted font-small">{dateKey}</div>
+              <div className="text-muted font-small">{dateKey} · {rawSelectedEvents.length}개</div>
             </div>
             <div className="monthly-right__actions">
-              <button type="button" className="btn btn--sm btn--primary" onClick={() => setOpenQuick(true)}>+ 간단</button>
-              <button type="button" className="btn btn--sm btn--secondary" onClick={() => setOpenDetail(true)}>+ 상세</button>
               <button type="button" className="btn btn--sm btn--secondary" onClick={() => nav(`/planner/daily?date=${dateKey}`)}>
                 일간으로
               </button>
             </div>
           </div>
 
-          {selectedEvents.length ? (
-            <div className="monthly-eventList">
-              {selectedEvents.map((e) => (
-                <div key={e.id} className="monthly-eventRow">
-                  <button type="button" className="monthly-eventMain" onClick={() => openEditModal(e)}>
-                    <div className="monthly-eventTitle">{e.title}</div>
-                    <div className="text-muted font-small">
-                      {e.start}~{e.end}
-                      {e.sharedUserIds?.length ? ` · 공유 ${e.sharedUserIds.length}` : ""}
-                      {e.isOccurrence ? " · 반복" : ""}
-                    </div>
-                  </button>
-                  <button type="button" className="btn btn--sm btn--ghost" onClick={() => openEditModal(e)}>
-                    수정
-                  </button>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-muted font-small">등록된 일정이 없습니다.</div>
-          )}
+          <EventQueryBar eventsSource={rawSelectedEvents} value={eventQuery} onChange={setEventQuery} dense />
+
+          <div style={{ marginTop: 10 }}>
+            <EventList
+              events={selectedEvents}
+              dateKey={dateKey}
+              onClickEvent={openEditModal}
+              emptyText="조건에 맞는 일정이 없습니다."
+            />
+          </div>
         </div>
       </div>
 

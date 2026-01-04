@@ -1,7 +1,5 @@
 /* src/styles/screens/daily-planner.css */
 
-.daily-planner-screen {}
-
 /* 월간 플래너처럼 헤더 한 줄 */
 .daily-planner-screen .daily-header {
   display: flex;
@@ -465,9 +463,9 @@
 
 /* FILE: src/styles/screens/daily-planner.css */
 
-.daily-planner-screen {
+/* .daily-planner-screen {
   padding: 18px 18px 24px;
-}
+} */
 
 .daily-topbar {
   display: flex;
@@ -590,9 +588,9 @@
 }
 
 /* FILE: src/styles/screens/daily-planner.css */
-.daily-planner-screen {
+/* .daily-planner-screen {
   padding: 16px;
-}
+} */
 
 .daily-topbar {
   display: flex;

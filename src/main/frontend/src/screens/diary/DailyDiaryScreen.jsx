@@ -1,26 +1,57 @@
 // src/screens/diary/DailyDiaryScreen.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import DatePicker from "react-datepicker";
-import Calendar from "react-calendar";
-import moment from "moment";
+import * as Tabs from "@radix-ui/react-tabs";
+import clsx from "clsx";
 
-import "react-datepicker/dist/react-datepicker.css";
-import "react-calendar/dist/Calendar.css";
+import {
+  Button,
+  Card,
+  Calendar as AntCalendar,
+  DatePicker,
+  Input,
+  List,
+  Tag,
+  Typography,
+  Divider,
+  Tooltip,
+  Progress,
+} from "antd";
+
+import dayjs from "dayjs";
+import "dayjs/locale/ko";
+import localizedFormat from "dayjs/plugin/localizedFormat";
+
+import {
+  ChevronLeft,
+  ChevronRight,
+  Save,
+  List as ListIcon,
+  Calendar as CalendarIcon,
+  Search,
+  SmilePlus,
+  Smile,
+  Meh,
+  Frown,
+  Angry,
+} from "lucide-react";
+
 import "../../styles/screens/diary.css";
-
 import { safeStorage } from "../../shared/utils/safeStorage";
 
-moment.locale("ko");
+dayjs.extend(localizedFormat);
+dayjs.locale("ko");
+
+const { Title, Text } = Typography;
 
 const MOODS = [
-  { id: "great", label: "최고", icon: "😄" },
-  { id: "good", label: "좋음", icon: "🙂" },
-  { id: "soso", label: "보통", icon: "😐" },
-  { id: "bad", label: "나쁨", icon: "🙁" },
-  { id: "terrible", label: "최악", icon: "😫" },
+  { id: "great", label: "최고", Icon: SmilePlus },
+  { id: "good", label: "좋음", Icon: Smile },
+  { id: "soso", label: "보통", Icon: Meh },
+  { id: "bad", label: "나쁨", Icon: Frown },
+  { id: "terrible", label: "최악", Icon: Angry },
 ];
 
-const toDateKey = (d) => moment(d).format("YYYY-MM-DD");
+const toDateKey = (d) => dayjs(d).format("YYYY-MM-DD");
 
 function loadDiaryMap() {
   return safeStorage.getJSON("diary.entries", {});
@@ -81,11 +112,11 @@ export default function DailyDiaryScreen() {
   const [detail, setDetail] = useState(current.detail);
   const [gratitude, setGratitude] = useState(current.gratitude);
 
-  // 저장 상태(버튼 disabled 처리)
-  const savedSnapRef = useRef(snapDiary(current.mood, current.summary, current.detail, current.gratitude));
+  const savedSnapRef = useRef(
+    snapDiary(current.mood, current.summary, current.detail, current.gratitude)
+  );
   const [lastSavedAt, setLastSavedAt] = useState(current.updatedAt);
 
-  // 날짜 변경 시 로드
   useEffect(() => {
     const map = loadDiaryMap();
     setDiaryMap(map);
@@ -108,22 +139,15 @@ export default function DailyDiaryScreen() {
   }, [dateKey]);
 
   const isDirty = useMemo(() => {
-    const cur = snapDiary(mood, summary, detail, gratitude);
-    return cur !== savedSnapRef.current;
+    const curSnap = snapDiary(mood, summary, detail, gratitude);
+    return curSnap !== savedSnapRef.current;
   }, [mood, summary, detail, gratitude]);
 
-  // ✅ 명시 저장 버튼
   const saveNow = () => {
     setDiaryMap((prev) => {
       const next = { ...prev };
       const now = Date.now();
-      next[dateKey] = {
-        mood,
-        summary,
-        detail,
-        gratitude,
-        updatedAt: now,
-      };
+      next[dateKey] = { mood, summary, detail, gratitude, updatedAt: now };
       saveDiaryMap(next);
       savedSnapRef.current = snapDiary(mood, summary, detail, gratitude);
       setLastSavedAt(now);
@@ -131,7 +155,7 @@ export default function DailyDiaryScreen() {
     });
   };
 
-  const moveDay = (delta) => setSelectedDate(moment(selectedDate).add(delta, "day").toDate());
+  const moveDay = (delta) => setSelectedDate(dayjs(selectedDate).add(delta, "day").toDate());
   const goToday = () => setSelectedDate(new Date());
 
   const plannerSummary = useMemo(() => getPlannerSummary(dateKey), [dateKey]);
@@ -156,239 +180,292 @@ export default function DailyDiaryScreen() {
     });
   }, [diaryMap, query]);
 
-  const moodIconByDate = (date) => {
+  const moodByDate = (date) => {
     const key = toDateKey(date);
     const entry = diaryMap[key];
     if (!entry) return null;
-    const m = MOODS.find((x) => x.id === entry.mood);
-    return m ? m.icon : "•";
+    return MOODS.find((x) => x.id === entry.mood) || null;
   };
 
+  const moodMeta = MOODS.find((m) => m.id === mood) || MOODS[1];
+
   return (
-    <div className="screen daily-diary-screen">
-      <div className="diary-top">
-        <div className="diary-top__title">
-          <h1 className="screen-header__title">데일리 다이어리</h1>
-          <p className="text-muted font-small">오늘의 기분과 하루를 정리하는 공간입니다.</p>
+    <div className="screen daily-diary-screen daily-diary-screen--ui">
+      {/* Header */}
+      <div className="diary-ui__header">
+        <div className="diary-ui__title">
+          <Title level={3} style={{ margin: 0 }}>
+            데일리 다이어리
+          </Title>
+          <Text type="secondary">오늘의 기분과 하루를 정리하는 공간</Text>
         </div>
 
-        <div className="diary-top__nav">
-          <button type="button" className="btn btn--sm btn--ghost" onClick={() => moveDay(-1)}>
-            ←
-          </button>
+        <div className="diary-ui__actions">
+          <Tooltip title="이전 날짜">
+            <Button icon={<ChevronLeft size={18} />} onClick={() => moveDay(-1)} />
+          </Tooltip>
 
-          <div className="diary-top__date">
-            <div className="diary-top__dateText text-primary">
-              {moment(selectedDate).format("YYYY. MM. D (ddd)")}
+          <div className="diary-ui__dateBlock">
+            <div className="diary-ui__dateText">{dayjs(selectedDate).format("YYYY. MM. D (ddd)")}</div>
+
+            <div className="diary-ui__dateRow">
+              <Button onClick={goToday}>오늘</Button>
+
+              <DatePicker
+                value={dayjs(selectedDate)}
+                onChange={(v) => v && setSelectedDate(v.toDate())}
+                allowClear={false}
+                format="YYYY-MM-DD"
+                placeholder="날짜 이동"
+              />
             </div>
-            <button type="button" className="btn btn--sm btn--secondary" onClick={goToday}>
-              오늘
-            </button>
           </div>
 
-          <button type="button" className="btn btn--sm btn--ghost" onClick={() => moveDay(1)}>
-            →
-          </button>
+          <Tooltip title="다음 날짜">
+            <Button icon={<ChevronRight size={18} />} onClick={() => moveDay(1)} />
+          </Tooltip>
 
-          <DatePicker
-            selected={selectedDate}
-            onChange={(d) => d && setSelectedDate(d)}
-            dateFormat="yyyy-MM-dd"
-            className="diary-date-input"
-            placeholderText="해당 일자로 이동"
-          />
+          <Divider type="vertical" />
 
-          <div className="diary-viewTabs">
-            <button
-              type="button"
-              className={"diary-viewTab " + (viewMode === "list" ? "is-active" : "")}
-              onClick={() => setViewMode("list")}
-            >
-              목록
-            </button>
-            <button
-              type="button"
-              className={"diary-viewTab " + (viewMode === "calendar" ? "is-active" : "")}
-              onClick={() => setViewMode("calendar")}
-            >
-              월간
-            </button>
-          </div>
+          <Tabs.Root value={viewMode} onValueChange={setViewMode}>
+            <Tabs.List className="diary-ui__tabs" aria-label="뷰 모드">
+              <Tabs.Trigger className="diary-ui__tab" value="list">
+                <ListIcon size={16} />
+                <span>목록</span>
+              </Tabs.Trigger>
+              <Tabs.Trigger className="diary-ui__tab" value="calendar">
+                <CalendarIcon size={16} />
+                <span>월간</span>
+              </Tabs.Trigger>
+            </Tabs.List>
+          </Tabs.Root>
 
-          {/* ✅ 저장 버튼 추가 (dirty 전까지 비활성화) */}
-          <button
-            type="button"
-            className={"btn btn--sm " + (isDirty ? "btn--primary" : "btn--secondary")}
+          <Divider orientation="vertical" />
+
+          <Button
+            type={isDirty ? "primary" : "default"}
+            icon={<Save size={16} />}
             onClick={saveNow}
             disabled={!isDirty}
-            title={!isDirty ? "변경 사항이 없습니다." : ""}
           >
             저장
-          </button>
+          </Button>
 
-          <div className="text-muted font-small" style={{ marginLeft: 8 }}>
-            {lastSavedAt ? `마지막 저장: ${moment(lastSavedAt).format("MM/DD HH:mm")}` : "저장 기록 없음"}
-          </div>
+          <Text type="secondary" className="diary-ui__savedAt">
+            {lastSavedAt ? `마지막 저장: ${dayjs(lastSavedAt).format("MM/DD HH:mm")}` : "저장 기록 없음"}
+          </Text>
         </div>
       </div>
 
-      <div className="diary-layout">
-        <div className="diary-editor">
-          <section className="card">
-            <h2 className="dashboard-card__title">오늘의 기분</h2>
-            <p className="text-muted font-small mb-2">오늘 하루를 대표하는 기분을 선택하세요.</p>
-
-            <div className="diary-mood-list">
-              {MOODS.map((m) => (
-                <button
-                  key={m.id}
-                  type="button"
-                  className={"diary-mood-item" + (mood === m.id ? " diary-mood-item--active" : "")}
-                  onClick={() => setMood(m.id)}
-                >
-                  <span className="diary-mood-icon">{m.icon}</span>
-                  <span className="diary-mood-label">{m.label}</span>
-                </button>
-              ))}
+      {/* Layout */}
+      <div className="diary-ui__layout">
+        {/* Editor */}
+        <div className="diary-ui__editor">
+          <Card className="diary-ui__card" title="오늘의 기분" size="small">
+            <div className="diary-ui__moods">
+              {MOODS.map((m) => {
+                const ActiveIcon = m.Icon;
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    className={clsx("diary-ui__moodBtn", mood === m.id && "is-active")}
+                    onClick={() => setMood(m.id)}
+                  >
+                    <span className="diary-ui__moodIcon" aria-hidden="true">
+                      <ActiveIcon size={18} />
+                    </span>
+                    <span className="diary-ui__moodLabel">{m.label}</span>
+                  </button>
+                );
+              })}
             </div>
-          </section>
 
-          <section className="card">
-            <h2 className="dashboard-card__title">플래너 요약</h2>
-            <p className="text-muted font-small mb-2">선택 날짜의 Todo/Routine/Timeline 요약</p>
+            <div className="diary-ui__moodHint">
+              <Tag>
+                <moodMeta.Icon size={14} style={{ verticalAlign: "-2px", marginRight: 6 }} />
+                선택됨: {moodMeta.label}
+              </Tag>
+            </div>
+          </Card>
 
+          <Card className="diary-ui__card" title="플래너 요약" size="small">
             {plannerSummary ? (
-              <div className="diary-planSummary">
-                <div className="diary-planSummary__row">
-                  <div className="diary-kpi">
-                    <div className="diary-kpi__label">Todo</div>
-                    <div className="diary-kpi__value">
-                      {plannerSummary.todoDone}/{plannerSummary.todoTotal}
-                    </div>
-                  </div>
-                  <div className="diary-kpi">
-                    <div className="diary-kpi__label">Routine</div>
-                    <div className="diary-kpi__value">
-                      {plannerSummary.routineDone}/{plannerSummary.routineTotal}
-                    </div>
-                  </div>
-                  <div className="diary-kpi">
-                    <div className="diary-kpi__label">Timeline</div>
-                    <div className="diary-kpi__value">{plannerSummary.timelineCount}</div>
+              <div className="diary-ui__kpis">
+                <div className="diary-ui__kpi">
+                  <div className="diary-ui__kpiLabel">Todo</div>
+                  <Progress
+                    percent={
+                      plannerSummary.todoTotal
+                        ? Math.round((plannerSummary.todoDone / plannerSummary.todoTotal) * 100)
+                        : 0
+                    }
+                    size="small"
+                  />
+                  <div className="diary-ui__kpiValue">
+                    {plannerSummary.todoDone}/{plannerSummary.todoTotal}
                   </div>
                 </div>
 
+                <div className="diary-ui__kpi">
+                  <div className="diary-ui__kpiLabel">Routine</div>
+                  <Progress
+                    percent={
+                      plannerSummary.routineTotal
+                        ? Math.round((plannerSummary.routineDone / plannerSummary.routineTotal) * 100)
+                        : 0
+                    }
+                    size="small"
+                  />
+                  <div className="diary-ui__kpiValue">
+                    {plannerSummary.routineDone}/{plannerSummary.routineTotal}
+                  </div>
+                </div>
+
+                <div className="diary-ui__kpi">
+                  <div className="diary-ui__kpiLabel">Timeline</div>
+                  <div className="diary-ui__kpiValue">{plannerSummary.timelineCount}</div>
+                </div>
+
                 {plannerSummary.topTimeline?.length ? (
-                  <div className="diary-planSummary__list">
-                    {plannerSummary.topTimeline.map((t) => (
-                      <div key={t.id} className="diary-planItem">
-                        <div className="diary-planItem__title">{t.title}</div>
-                        <div className="text-muted font-small">
-                          {t.start}~{t.end} · {t.tag}
+                  <div className="diary-ui__topTimeline">
+                    <Divider style={{ margin: "10px 0" }} />
+                    <Text type="secondary">상위 3개 타임라인</Text>
+                    <div className="diary-ui__timelineList">
+                      {plannerSummary.topTimeline.map((t) => (
+                        <div key={t.id} className="diary-ui__timelineItem">
+                          <div className="diary-ui__timelineTitle">{t.title}</div>
+                          <div className="diary-ui__timelineMeta">
+                            {t.start}~{t.end} {t.tag ? `· ${t.tag}` : ""}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 ) : null}
               </div>
             ) : (
-              <div className="text-muted font-small">해당 날짜의 플래너 데이터가 없습니다.</div>
+              <Text type="secondary">해당 날짜의 플래너 데이터가 없습니다.</Text>
             )}
-          </section>
+          </Card>
 
-          <section className="card">
-            <h2 className="dashboard-card__title">하루 한 줄 요약</h2>
-            <textarea
-              className="diary-textarea diary-textarea--summary"
-              placeholder="오늘을 한 줄로 요약해보세요."
+          <Card className="diary-ui__card" title="하루 한 줄 요약" size="small">
+            <Input.TextArea
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
+              placeholder="오늘을 한 줄로 요약"
+              autoSize={{ minRows: 2, maxRows: 4 }}
             />
-          </section>
+          </Card>
 
-          <section className="card">
-            <h2 className="dashboard-card__title">상세 기록</h2>
-            <textarea
-              className="diary-textarea"
-              placeholder="오늘 있었던 일, 느낀 점, 배운 점 등을 자유롭게 기록해보세요."
-              rows={8}
+          <Card className="diary-ui__card" title="상세 기록" size="small">
+            <Input.TextArea
               value={detail}
               onChange={(e) => setDetail(e.target.value)}
+              placeholder="오늘 있었던 일, 느낀 점, 배운 점 등"
+              autoSize={{ minRows: 6, maxRows: 16 }}
             />
-          </section>
+          </Card>
 
-          <section className="card">
-            <h2 className="dashboard-card__title">감사/되돌아보기</h2>
-            <textarea
-              className="diary-textarea"
-              placeholder="오늘 감사했던 일이나 내일을 위한 다짐을 적어보세요."
-              rows={4}
+          <Card className="diary-ui__card" title="감사 / 되돌아보기" size="small">
+            <Input.TextArea
               value={gratitude}
               onChange={(e) => setGratitude(e.target.value)}
+              placeholder="감사한 일, 내일을 위한 다짐"
+              autoSize={{ minRows: 4, maxRows: 10 }}
             />
-          </section>
+          </Card>
         </div>
 
-        <div className="diary-side">
-          <div className="card diary-side__head">
-            <div className="diary-side__title">작성한 일기</div>
-            <input
-              className="field-input"
-              placeholder="검색(날짜/내용/기분)"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </div>
+        {/* Side */}
+        <div className="diary-ui__side">
+          <Card
+            className="diary-ui__card"
+            title="작성한 일기"
+            size="small"
+            extra={
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="검색(날짜/내용/기분)"
+                prefix={<Search size={16} />}
+                allowClear
+              />
+            }
+          >
+            {viewMode === "calendar" ? (
+              <div className="diary-ui__calendarWrap">
+                <AntCalendar
+                  value={dayjs(selectedDate)}
+                  onSelect={(v) => v && setSelectedDate(v.toDate())}
+                  // AntD v5 기준: cellRender 사용
+                  cellRender={(cur, info) => {
+                    if (info.type !== "date") return info.originNode;
 
-          {viewMode === "calendar" ? (
-            <div className="card diary-calendarCard">
-              <Calendar
-                value={selectedDate}
-                onChange={(d) => {
-                  const next = Array.isArray(d) ? d[0] : d;
-                  if (next) setSelectedDate(next);
-                }}
-                tileContent={({ date, view }) => {
-                  if (view !== "month") return null;
-                  const icon = moodIconByDate(date);
-                  if (!icon) return null;
-                  return <div className="diary-calDot">{icon}</div>;
+                    const meta = moodByDate(cur.toDate());
+                    if (!meta) return info.originNode;
+
+                    const Icon = meta.Icon;
+                    return (
+                      <div className="diary-ui__calCell">
+                        {info.originNode}
+                        <div className="diary-ui__calBadge" title={meta.label}>
+                          <Icon size={14} />
+                        </div>
+                      </div>
+                    );
+                  }}
+                />
+                <Text type="secondary" className="diary-ui__calendarHint">
+                  작성된 날짜에 기분 아이콘 표시
+                </Text>
+
+                {/* 호환성 메모:
+                    만약 antd 버전이 달라 cellRender가 동작 안 하면
+                    dateCellRender로 바꿔야 하는 케이스가 있음.
+                */}
+              </div>
+            ) : (
+              <List
+                dataSource={entries}
+                locale={{ emptyText: "아직 작성한 일기가 없습니다." }}
+                renderItem={(e) => {
+                  const meta = MOODS.find((x) => x.id === e.mood) || null;
+                  const Icon = meta?.Icon;
+
+                  return (
+                    <List.Item
+                      className={clsx("diary-ui__entryItem", e.dateKey === dateKey && "is-active")}
+                      onClick={() => setSelectedDate(dayjs(e.dateKey, "YYYY-MM-DD").toDate())}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <List.Item.Meta
+                        title={
+                          <div className="diary-ui__entryTitle">
+                            <span>{e.dateKey}</span>
+                            {meta ? (
+                              <Tag>
+                                {Icon ? <Icon size={14} style={{ verticalAlign: "-2px", marginRight: 6 }} /> : null}
+                                {meta.label}
+                              </Tag>
+                            ) : null}
+                          </div>
+                        }
+                        description={
+                          <div className="diary-ui__entryDesc">
+                            <div className="diary-ui__entrySummary">{e.summary || "(요약 없음)"}</div>
+                            <Text type="secondary">
+                              업데이트: {e.updatedAt ? dayjs(e.updatedAt).format("MM/DD HH:mm") : "-"}
+                            </Text>
+                          </div>
+                        }
+                      />
+                    </List.Item>
+                  );
                 }}
               />
-              <div className="text-muted font-small diary-calendarHint">
-                표시: 작성된 날짜에 기분 아이콘이 표시됩니다.
-              </div>
-            </div>
-          ) : (
-            <div className="card diary-listCard">
-              {entries.length ? (
-                <div className="diary-entryList">
-                  {entries.map((e) => {
-                    const m = MOODS.find((x) => x.id === e.mood);
-                    return (
-                      <button
-                        type="button"
-                        key={e.dateKey}
-                        className={"diary-entryItem " + (e.dateKey === dateKey ? "is-active" : "")}
-                        onClick={() => setSelectedDate(moment(e.dateKey, "YYYY-MM-DD").toDate())}
-                      >
-                        <div className="diary-entryItem__top">
-                          <div className="diary-entryItem__date">{e.dateKey}</div>
-                          <div className="diary-entryItem__mood">{m ? `${m.icon} ${m.label}` : ""}</div>
-                        </div>
-                        <div className="diary-entryItem__summary">{e.summary || "(요약 없음)"}</div>
-                        <div className="text-muted font-small">
-                          업데이트: {e.updatedAt ? moment(e.updatedAt).format("MM/DD HH:mm") : "-"}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-muted font-small">아직 작성한 일기가 없습니다.</div>
-              )}
-            </div>
-          )}
+            )}
+          </Card>
         </div>
       </div>
     </div>

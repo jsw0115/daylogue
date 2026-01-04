@@ -1,9 +1,10 @@
-// FILE: src/screens/plan/YearlyPlannerScreen.jsx
 import React, { useMemo, useState } from "react";
-import { NavLink, useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import moment from "moment";
 import "../../styles/screens/yearly-planner.css";
 import { getEventsForDate } from "../../shared/utils/plannerStore";
+
+import PlannerViewTabs from "./_components/PlannerViewTabs";
 
 moment.locale("ko");
 
@@ -20,9 +21,12 @@ export default function YearlyPlannerScreen() {
   const [year, setYear] = useState(moment(baseDate).year());
   const dateKey = useMemo(() => moment(baseDate).format("YYYY-MM-DD"), [baseDate]);
 
-  const months = useMemo(() => Array.from({ length: 12 }).map((_, i) => moment().year(year).month(i).date(1)), [year]);
+  const months = useMemo(
+    () => Array.from({ length: 12 }).map((_, i) => moment().year(year).month(i).date(1)),
+    [year]
+  );
 
-  // 가볍게: “일정 있는 날짜 수”만 표시(성능/UX 타협)
+  // “일정 있는 날짜 수” (가벼운 연간 인사이트)
   const monthStats = useMemo(() => {
     const map = {};
     for (const m of months) {
@@ -42,12 +46,7 @@ export default function YearlyPlannerScreen() {
     <div className="yearly-planner-screen">
       <div className="screen-header">
         <div className="screen-header__title">연간 플래너</div>
-        <div className="tabbar tabbar--sm">
-          <NavLink to={`/planner/daily?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>일간</NavLink>
-          <NavLink to={`/planner/weekly?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>주간</NavLink>
-          <NavLink to={`/planner/monthly?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>월간</NavLink>
-          <NavLink to={`/planner/yearly?date=${dateKey}`} className={({ isActive }) => `tabbar__item ${isActive ? "tabbar__item--active" : ""}`}>연간</NavLink>
-        </div>
+        <PlannerViewTabs dateKey={dateKey} />
       </div>
 
       <div className="yearly-topbar">
