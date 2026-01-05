@@ -1,3 +1,4 @@
+// FILE : src/main/frontend/src/layout/MainSidebar.jsx
 import React from "react";
 import { NavLink } from "react-router-dom";
 
@@ -37,6 +38,24 @@ export default function MainSidebar() {
       <div className="lnb__section">
         <div className="lnb__title">INSIGHT</div>
         <Item to="/insight/stat">통계</Item>
+        <Item to="/stat/compare">비교 분석(PvsA)</Item>
+        <Item to="/insight/ai-report">AI 리포트</Item>
+      </div>
+
+      <div className="lnb__section">
+        <div className="lnb__title">WORK</div>
+        <Item to="/work/report">업무 리포트</Item>
+        <Item to="/goals/year">신년목표/올해 회고</Item>
+      </div>
+
+      <div className="lnb__section">
+        <div className="lnb__title">COMMUNITY</div>
+        <Item to="/community">커뮤니티 탐색/피드</Item>
+      </div>
+
+      <div className="lnb__section">
+        <div className="lnb__title">SETTINGS</div>
+        <Item to="/settings/categories">카테고리 설정</Item>
       </div>
 
       <div className="lnb__section">
