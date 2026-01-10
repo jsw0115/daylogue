@@ -61,6 +61,146 @@ function safeJsonParse(str, fallback) {
   }
 }
 
+function parseYmdToLocalDate(ymd) {
+  const [yy, mm, dd] = String(ymd || "").slice(0, 10).split("-").map((x) => parseInt(x, 10));
+  if (!yy || !mm || !dd) return new Date();
+  return new Date(yy, mm - 1, dd, 0, 0, 0, 0);
+}
+
+function rangeByScope(scope, baseDateYmd) {
+  const d = parseYmdToLocalDate(baseDateYmd);
+  const start = new Date(d);
+  const end = new Date(d);
+
+  if (scope === "DAY") {
+    end.setDate(end.getDate() + 1);
+    return { start, end };
+  }
+  if (scope === "WEEK") {
+    // 월요일 시작
+    const dow = (start.getDay() + 6) % 7; // Mon=0
+    start.setDate(start.getDate() - dow);
+    end.setTime(start.getTime());
+    end.setDate(end.getDate() + 7);
+    return { start, end };
+  }
+  if (scope === "MONTH") {
+    start.setDate(1);
+    end.setMonth(end.getMonth() + 1, 1);
+    return { start, end };
+  }
+  // YEAR
+  start.setMonth(0, 1);
+  end.setFullYear(end.getFullYear() + 1, 0, 1);
+  return { start, end };
+}
+
+function computeWorkCompare(db, { scope, baseDate, filters }) {
+  const baseYmd = String(baseDate || "").slice(0, 10);
+  const { start, end } = rangeByScope(scope, baseYmd);
+
+  const f = filters || {};
+  const includeNonWork = !!f.includeNonWork;
+  const includeUnclassified = f.includeUnclassified !== false;
+
+  const blocks = (db.timeBlocks || []).filter((b) => {
+    const dt = new Date(b.date);
+    if (!(dt >= start && dt < end)) return false;
+
+    // 업무 외 제외
+    if (!includeNonWork && b.categoryMain !== "업무") return false;
+
+    // 하위카테고리 필터
+    if (f.subCategoryId && f.subCategoryId !== "ALL") {
+      if (b.subCategoryId !== f.subCategoryId) return false;
+    }
+
+    // 프로젝트 필터
+    if (f.projectId && f.projectId !== "ALL") {
+      if (b.projectId !== f.projectId) return false;
+    }
+
+    // 업무유형 필터
+    if (f.workType && f.workType !== "ALL") {
+      if (b.workType !== f.workType) return false;
+    }
+
+    // 미분류 제외
+    const unclassified = !b.projectId || !b.workType || !b.subCategoryId;
+    if (!includeUnclassified && unclassified) return false;
+
+    return true;
+  });
+
+  const toHours = (min) => Math.round((min / 60) * 10) / 10;
+
+  const sumPlan = blocks.reduce((a, b) => a + (b.planMinutes || 0), 0);
+  const sumActual = blocks.reduce((a, b) => a + (b.actualMinutes || 0), 0);
+
+  const planTotal = toHours(sumPlan);
+  const actualTotal = toHours(sumActual);
+  const rate = planTotal === 0 ? 0 : Math.round((actualTotal / planTotal) * 100);
+
+  const projectsMap = new Map();
+  const typesMap = new Map();
+  const subMap = new Map();
+
+  const projName = (id) => (db.workMeta?.projects || []).find((p) => p.id === id)?.name || "미지정";
+  const typeName = (code) => (db.workMeta?.workTypes || []).find((t) => t.code === code)?.label || "미지정";
+  const subName = (sid, fallback) => {
+    if (!sid) return "미분류";
+    const work = (db.categories || []).find((c) => c.name === "업무" || c.type === "업무");
+    const hit = (work?.children || []).find((x) => x.id === sid);
+    return hit?.name || fallback || "미분류";
+  };
+
+  blocks.forEach((b) => {
+    const pKey = b.projectId || "NONE";
+    const tKey = b.workType || "NONE";
+    const sKey = b.subCategoryId || "NONE";
+
+    const add = (map, key, name) => {
+      const cur = map.get(key) || { key, name, planMinutes: 0, actualMinutes: 0 };
+      cur.planMinutes += b.planMinutes || 0;
+      cur.actualMinutes += b.actualMinutes || 0;
+      map.set(key, cur);
+    };
+
+    add(projectsMap, pKey, projName(b.projectId));
+    add(typesMap, tKey, typeName(b.workType));
+    add(subMap, sKey, subName(b.subCategoryId, b.subCategoryName));
+  });
+
+  const toRows = (map) => {
+    const rows = Array.from(map.values()).map((x) => {
+      const ph = toHours(x.planMinutes);
+      const ah = toHours(x.actualMinutes);
+      return {
+        key: x.key,
+        name: x.name,
+        planHours: ph,
+        actualHours: ah,
+        rate: ph === 0 ? 0 : Math.round((ah / ph) * 100),
+      };
+    });
+    rows.sort((a, b) => (b.actualHours || 0) - (a.actualHours || 0));
+    return rows;
+  };
+
+  return {
+    scope,
+    baseDate: baseYmd,
+    summary: { planTotal, actualTotal, rate },
+    byProject: toRows(projectsMap),
+    byType: toRows(typesMap),
+    bySubCategory: toRows(subMap),
+    disclaimer:
+      "현재는 Mock timeBlocks 기반 집계입니다. 실제 서비스에서는 타임바/할일/권한/마스킹 기준으로 서버 집계가 필요합니다.",
+    _blocks: blocks, // 내부용(초안 생성에 근거 링크 수집)
+  };
+}
+
+
 /** =========================
  *  DB Load/Save
  *  ========================= */
@@ -242,6 +382,122 @@ function seedDb() {
 
   const goalsByYear = {};
 
+    /** ===== Work Meta / TimeBlocks (Mock) ===== */
+  const workMeta = {
+    projects: [
+      { id: "p1", name: "고객사 A(운영)" },
+      { id: "p2", name: "프로젝트 B(개선)" },
+      { id: "p3", name: "사내 표준/문서" },
+    ],
+    workTypes: [
+      { code: "PROJECT", label: "프로젝트" },
+      { code: "MEETING", label: "회의" },
+      { code: "STANDARD", label: "표준" },
+      { code: "VOC", label: "VOC/운영" },
+      { code: "DOC", label: "문서화" },
+    ],
+  };
+
+  // 실제론 타임바(Actual)와 Plan이 별도 엔티티일 수 있음.
+  // 여기서는 timeBlocks 한 곳에 actualMinutes/planMinutes를 함께 둔 단순 Mock.
+  const today = new Date();
+  const mkDate = (offsetDays) => {
+    const d = new Date(today);
+    d.setDate(d.getDate() - offsetDays);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+
+  const findSub = (name) => (categories.find((c) => c.name === "업무")?.children || []).find((s) => s.name === name);
+
+  const subProject = findSub("프로젝트");
+  const subMeeting = findSub("회의");
+  const subStandard = findSub("표준");
+
+  const timeBlocks = [
+    {
+      id: uid("tb"),
+      date: mkDate(0).toISOString(), // 오늘
+      categoryMain: "업무",
+      subCategoryId: subProject?.id || null,
+      subCategoryName: "프로젝트",
+      projectId: "p2",
+      workType: "PROJECT",
+      memo: "기능 개선 작업",
+      actualMinutes: 180,
+      planMinutes: 150,
+      links: ["https://example.com/pr/123"],
+    },
+    {
+      id: uid("tb"),
+      date: mkDate(0).toISOString(),
+      categoryMain: "업무",
+      subCategoryId: subMeeting?.id || null,
+      subCategoryName: "회의",
+      projectId: "p2",
+      workType: "MEETING",
+      memo: "주간 회의 / 액션아이템 정리",
+      actualMinutes: 60,
+      planMinutes: 60,
+      links: [],
+    },
+    {
+      id: uid("tb"),
+      date: mkDate(1).toISOString(), // 어제
+      categoryMain: "업무",
+      subCategoryId: subStandard?.id || null,
+      subCategoryName: "표준",
+      projectId: "p3",
+      workType: "STANDARD",
+      memo: "표준 문서 정리",
+      actualMinutes: 90,
+      planMinutes: 120,
+      links: ["https://example.com/doc/standard"],
+    },
+    {
+      id: uid("tb"),
+      date: mkDate(2).toISOString(),
+      categoryMain: "업무",
+      subCategoryId: subProject?.id || null,
+      subCategoryName: "프로젝트",
+      projectId: "p1",
+      workType: "VOC",
+      memo: "운영 이슈 대응",
+      actualMinutes: 140,
+      planMinutes: 120,
+      links: [],
+    },
+    // 미분류(필터 옵션 테스트)
+    {
+      id: uid("tb"),
+      date: mkDate(0).toISOString(),
+      categoryMain: "업무",
+      subCategoryId: null,
+      subCategoryName: null,
+      projectId: null,
+      workType: null,
+      memo: "미분류 작업(태깅 필요)",
+      actualMinutes: 45,
+      planMinutes: 0,
+      links: [],
+    },
+    // 업무 외(업무 외 포함 토글 테스트)
+    {
+      id: uid("tb"),
+      date: mkDate(0).toISOString(),
+      categoryMain: "휴식",
+      subCategoryId: null,
+      subCategoryName: null,
+      projectId: null,
+      workType: null,
+      memo: "커피/휴식",
+      actualMinutes: 30,
+      planMinutes: 0,
+      links: [],
+    },
+  ];
+
+
   return {
     me: { userId: "me", userName: "나" },
     community: { groups: [g1, g2], members, posts, chats, joinRequests },
@@ -250,6 +506,8 @@ function seedDb() {
     workReports: {},
     stats: {},
     aiReports: {},
+    workMeta,
+    timeBlocks,
   };
 }
 
@@ -730,6 +988,12 @@ export const goalsApi = {
 
 /** Work Report API */
 export const workApi = {
+  async listMeta() {
+    await delay();
+    const db = loadDb();
+    return db.workMeta || { projects: [], workTypes: [] };
+  },
+
   async getReport(key) {
     await delay();
     const db = loadDb();
@@ -740,11 +1004,105 @@ export const workApi = {
     await delay();
     const db = loadDb();
     db.workReports = db.workReports || {};
-    db.workReports[key] = { ...report, updatedAt: nowIso() };
+    const prev = db.workReports[key] || {};
+    db.workReports[key] = {
+      ...prev,
+      ...report,
+      updatedAt: nowIso(),
+    };
     saveDb(db);
     return db.workReports[key];
   },
+
+  async confirmReport(key) {
+    await delay();
+    const db = loadDb();
+    db.workReports = db.workReports || {};
+    const prev = db.workReports[key] || {};
+    db.workReports[key] = {
+      ...prev,
+      confirmedAt: nowIso(),
+      updatedAt: nowIso(),
+    };
+    saveDb(db);
+    return db.workReports[key];
+  },
+
+  async unconfirmReport(key) {
+    await delay();
+    const db = loadDb();
+    db.workReports = db.workReports || {};
+    const prev = db.workReports[key] || {};
+    db.workReports[key] = {
+      ...prev,
+      confirmedAt: null,
+      updatedAt: nowIso(),
+    };
+    saveDb(db);
+    return db.workReports[key];
+  },
+
+  async generateDraft({ scope = "DAY", baseDate = nowIso(), filters = {} } = {}) {
+    await delay(220);
+    const db = loadDb();
+
+    // Stats API와 동일한 계산 로직을 재사용 (순환 참조 피하려고 내부 헬퍼를 여기서 간단 구현)
+    const res = computeWorkCompare(db, { scope, baseDate, filters });
+
+    const topProject = (res.byProject || [])[0]?.name || "프로젝트";
+    const topType = (res.byType || [])[0]?.name || "업무";
+    const { planTotal, actualTotal, rate } = res.summary;
+
+    const summaryLines = [
+      `- 핵심: ${topProject} 중심으로 ${topType} 비중이 높았습니다.`,
+      `- 공수: Actual ${actualTotal}h / Plan ${planTotal}h (달성 ${rate}%)`,
+      `- 이슈: 편차가 큰 항목(프로젝트/유형)을 확인하고 원인/대응을 기록하세요.`,
+    ].join("\n");
+
+    const evidenceLinks = collectEvidenceFromBlocks(res._blocks || []);
+
+    const scopeTitle = scope === "DAY" ? "일간" : scope === "WEEK" ? "주간" : scope === "MONTH" ? "월간" : "연간";
+    return {
+      title: `${scopeTitle} 업무 리포트`,
+      summary: summaryLines,
+      achievements:
+        "## Top 업무(공수 기준)\n" +
+        (res.byProject || [])
+          .slice(0, 5)
+          .map((x) => `- ${x.name}: ${x.actualHours}h`)
+          .join("\n") +
+        "\n\n## 성과(Deliverables)\n- (예) PR/배포/문서 링크를 근거로 남기기",
+      issues:
+        "## 이슈/리스크\n- (예) 지연 요인/의존 이슈\n\n## 대응/지원 요청\n- (예) 필요한 지원/결정 사항",
+      nextPlan:
+        "## 다음 계획\n- (예) 미완료 항목 마무리\n- (예) 우선순위 3개 선정\n\n## 리소스/가정\n- ",
+      pvaNote:
+        `기간: ${scopeTitle} (${String(baseDate).slice(0, 10)})\n` +
+        `계획 시간: ${planTotal}h\n실행 시간: ${actualTotal}h\n달성률: ${rate}%\n` +
+        `메모: (차이 원인/방해요인/개선점을 기록)\n- `,
+      evidenceLinks,
+    };
+  },
 };
+
+function collectEvidenceFromBlocks(blocks) {
+  const list = [];
+  (blocks || []).forEach((b) => {
+    (b.links || []).forEach((u) => {
+      if (!u) return;
+      list.push({ id: `ev_${u}`, label: b.memo ? `${b.memo}` : u, url: u });
+    });
+  });
+  // 중복 제거
+  const map = new Map();
+  list.forEach((x) => {
+    const url = String(x.url || "").trim();
+    if (!url) return;
+    map.set(url, { ...x, url });
+  });
+  return Array.from(map.values());
+}
+
 
 /** Stats/Compare API */
 export const statsApi = {
@@ -774,6 +1132,12 @@ export const statsApi = {
         actualTotal: rows.reduce((a, r) => a + r.actualHours, 0),
       },
     };
+  },
+    async getWorkCompare({ scope = "WEEK", baseDate = nowIso(), filters = {} } = {}) {
+    await delay();
+    const db = loadDb();
+    const res = computeWorkCompare(db, { scope, baseDate, filters });
+    return res;
   },
 };
 

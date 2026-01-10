@@ -1,12 +1,46 @@
-
-// FILE: src/main/frontend/src/screens/admin/AdminStatsScreen.jsx
-import React from "react";
-import { Card, Col, Progress, Row, Statistic, Typography, Button, Space } from "antd";
-import { Download, BarChart3 } from "lucide-react";
+import React, { useMemo, useState } from "react";
+import {
+  Button,
+  Card,
+  Col,
+  DatePicker,
+  Progress,
+  Row,
+  Select,
+  Space,
+  Statistic,
+  Typography,
+  Tag,
+} from "antd";
+import dayjs from "dayjs";
+import { Download, BarChart3, Activity, ShieldCheck } from "lucide-react";
 
 const { Title, Text } = Typography;
+const { RangePicker } = DatePicker;
 
 export default function AdminStatsScreen() {
+  const [range, setRange] = useState([dayjs().add(-30, "day"), dayjs()]);
+  const [platform, setPlatform] = useState("ALL"); // ALL | WEB | MOBILE
+  const [mode, setMode] = useState("ALL"); // ALL | J | P | B
+  const [segment, setSegment] = useState("ALL"); // ALL | NEW_USERS | SUBSCRIBERS | SYNC_ENABLED
+
+  const stats = useMemo(() => {
+    // 데모: 필터가 바뀌어도 숫자를 살짝만 변화시키는 목업
+    const mul =
+      (platform === "ALL" ? 1 : 0.95) *
+      (mode === "ALL" ? 1 : 0.97) *
+      (segment === "ALL" ? 1 : 0.93);
+
+    return {
+      totalUsers: Math.round(12340 * mul),
+      mau: Math.round(3210 * mul),
+      dau: Math.round(712 * mul),
+      retention30: Math.round(68 * mul),
+      syncConflictRate: Math.round(4.8 * (2 - mul) * 10) / 10, // 대충
+      reportSlaHours: Math.round(6.5 * (2 - mul) * 10) / 10,
+    };
+  }, [platform, mode, segment, range]);
+
   return (
     <div className="admin-page">
       <div className="admin-page__head">
@@ -26,18 +60,81 @@ export default function AdminStatsScreen() {
         </Space>
       </div>
 
+      <Card style={{ marginBottom: 12 }}>
+        <Space wrap align="center">
+          <Tag color="processing">FILTER</Tag>
+
+          <div>
+            <Text type="secondary">기간</Text>
+            <div>
+              <RangePicker value={range} onChange={(v) => setRange(v)} />
+            </div>
+          </div>
+
+          <div>
+            <Text type="secondary">플랫폼</Text>
+            <div>
+              <Select
+                value={platform}
+                onChange={setPlatform}
+                style={{ width: 140 }}
+                options={[
+                  { value: "ALL", label: "ALL" },
+                  { value: "WEB", label: "WEB" },
+                  { value: "MOBILE", label: "MOBILE" },
+                ]}
+              />
+            </div>
+          </div>
+
+          <div>
+            <Text type="secondary">모드</Text>
+            <div>
+              <Select
+                value={mode}
+                onChange={setMode}
+                style={{ width: 120 }}
+                options={[
+                  { value: "ALL", label: "ALL" },
+                  { value: "J", label: "J" },
+                  { value: "P", label: "P" },
+                  { value: "B", label: "B" },
+                ]}
+              />
+            </div>
+          </div>
+
+          <div>
+            <Text type="secondary">세그먼트</Text>
+            <div>
+              <Select
+                value={segment}
+                onChange={setSegment}
+                style={{ width: 180 }}
+                options={[
+                  { value: "ALL", label: "ALL" },
+                  { value: "NEW_USERS", label: "NEW_USERS" },
+                  { value: "SUBSCRIBERS", label: "SUBSCRIBERS" },
+                  { value: "SYNC_ENABLED", label: "SYNC_ENABLED" },
+                ]}
+              />
+            </div>
+          </div>
+        </Space>
+      </Card>
+
       <Row gutter={[12, 12]}>
         <Col xs={24} md={12} lg={6}>
-          <Card><Statistic title="총 가입자" value={12340} suffix="명" /></Card>
+          <Card><Statistic title="총 가입자" value={stats.totalUsers} suffix="명" /></Card>
         </Col>
         <Col xs={24} md={12} lg={6}>
-          <Card><Statistic title="MAU" value={3210} suffix="명" /></Card>
+          <Card><Statistic title="MAU" value={stats.mau} suffix="명" /></Card>
         </Col>
         <Col xs={24} md={12} lg={6}>
-          <Card><Statistic title="DAU" value={712} suffix="명" /></Card>
+          <Card><Statistic title="DAU" value={stats.dau} suffix="명" /></Card>
         </Col>
         <Col xs={24} md={12} lg={6}>
-          <Card><Statistic title="30일 유지율" value={68} suffix="%" /></Card>
+          <Card><Statistic title="30일 유지율" value={stats.retention30} suffix="%" /></Card>
         </Col>
       </Row>
 
@@ -65,35 +162,51 @@ export default function AdminStatsScreen() {
             </div>
 
             <Text type="secondary">
-              실제 서비스에서는 세션 수/시간/완료율 기준으로 집계 옵션 제공
+              실제 서비스: 세션/시간/완료율 기반 집계 옵션 + 코호트 비교
             </Text>
           </Card>
         </Col>
 
         <Col xs={24} lg={12}>
-          <Card title="타임바/포커스 사용량(요약)">
+          <Card
+            title={
+              <Space size={8}>
+                <Activity size={18} />
+                <span>품질 지표(운영)</span>
+              </Space>
+            }
+          >
             <Row gutter={[12, 12]}>
               <Col xs={24} md={12}>
                 <Card bordered={false} className="admin-ui__miniCard">
-                  <Statistic title="일간 평균 타임블록" value={18} suffix="개" />
+                  <Statistic title="동기화 충돌률" value={stats.syncConflictRate} suffix="%" />
                 </Card>
               </Col>
               <Col xs={24} md={12}>
                 <Card bordered={false} className="admin-ui__miniCard">
-                  <Statistic title="일간 평균 포커스" value={3.1} suffix="h" />
+                  <Statistic title="신고 처리 SLA" value={stats.reportSlaHours} suffix="h" />
                 </Card>
               </Col>
               <Col xs={24} md={12}>
                 <Card bordered={false} className="admin-ui__miniCard">
-                  <Statistic title="평균 Todo 완료율" value={64} suffix="%" />
+                  <Statistic title="API p95" value={320} suffix="ms" />
                 </Card>
               </Col>
               <Col xs={24} md={12}>
                 <Card bordered={false} className="admin-ui__miniCard">
-                  <Statistic title="루틴 달성율" value={58} suffix="%" />
+                  <Statistic title="동기화 실패율" value={1.3} suffix="%" />
                 </Card>
               </Col>
             </Row>
+
+            <div style={{ marginTop: 10 }}>
+              <Space size={8}>
+                <ShieldCheck size={16} />
+                <Text type="secondary">
+                  실제 운영: 알람 룰(급증 탐지), 릴리즈 버전별 비교, 원인 분석 링크가 필요
+                </Text>
+              </Space>
+            </div>
           </Card>
         </Col>
       </Row>

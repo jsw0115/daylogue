@@ -236,8 +236,8 @@ export default function AppRoutes() {
         <Route path="/insight/ai-report" element={<AiReportScreen />} />
 
         {/* CHAT */}
-        <Route path="/chat" element={<ChatListScreen  />} />
-        <Route path="/chat/:roomId" element={<ChatRoomScreen />} />
+        {/* <Route path="/chat" element={<ChatListScreen  />} /> */}
+        {/* <Route path="/chat/:roomId" element={<ChatRoomScreen />} /> */}
 
         {/* FOCUS */}
         <Route path="/focus" element={<FocusModeScreen />} />

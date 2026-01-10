@@ -128,3 +128,164 @@
   background: rgba(0,0,0,0.02);
   border-radius: 12px;
 }
+
+/* =========================
+ * Admin UI (scoped)
+ * - Ant Design Button polish
+ * - Radix Tabs trigger polish
+ * ========================= */
+
+/* 공통 톤(변수 없으면 fallback 사용) */
+.admin-page {
+  --adm-radius: 12px;
+  --adm-radius-lg: 14px;
+  --adm-bg-soft: rgba(0, 0, 0, 0.04);
+  --adm-border: rgba(0, 0, 0, 0.10);
+  --adm-text: rgba(0, 0, 0, 0.88);
+  --adm-sub: rgba(0, 0, 0, 0.55);
+
+  /* 브랜드 컬러(프로젝트 변수 있으면 교체 권장) */
+  --adm-primary: var(--tf-primary, #3b82f6);
+  --adm-primary-hover: var(--tf-primary-hover, #2563eb);
+  --adm-primary-weak: rgba(59, 130, 246, 0.12);
+}
+
+/* ====== AntD Button: 기본 버튼 룩 정리 ====== */
+.admin-page .ant-btn {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: var(--adm-radius);
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  border-color: var(--adm-border);
+  color: var(--adm-text);
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+
+.admin-page .ant-btn .ant-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-inline-end: 8px; /* 아이콘-텍스트 간격 */
+}
+
+.admin-page .ant-btn:active {
+  transform: translateY(1px);
+}
+
+/* 기본 버튼 */
+.admin-page .ant-btn-default {
+  background: #fff;
+}
+.admin-page .ant-btn-default:hover {
+  border-color: rgba(0, 0, 0, 0.18);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* Primary 버튼 */
+.admin-page .ant-btn-primary {
+  background: var(--adm-primary);
+  border-color: var(--adm-primary);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+.admin-page .ant-btn-primary:hover {
+  background: var(--adm-primary-hover);
+  border-color: var(--adm-primary-hover);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16);
+}
+
+/* Ghost(필요하면) */
+.admin-page .ant-btn-background-ghost {
+  background: transparent;
+  border-color: var(--adm-border);
+}
+
+/* Danger 버튼(옵션) */
+.admin-page .ant-btn-dangerous {
+  border-color: rgba(239, 68, 68, 0.35);
+}
+.admin-page .ant-btn-dangerous:hover {
+  border-color: rgba(239, 68, 68, 0.55);
+  box-shadow: 0 8px 18px rgba(239, 68, 68, 0.12);
+}
+
+/* Disabled */
+.admin-page .ant-btn[disabled],
+.admin-page .ant-btn:disabled {
+  opacity: 0.55;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* 버튼 그룹 간격이 너무 좁을 때를 대비 */
+.admin-page .ant-space {
+  row-gap: 10px;
+}
+
+/* ====== Radix Tabs: 탭을 버튼처럼 ====== */
+.admin-page .admin-ui__tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border-radius: var(--adm-radius-lg);
+  background: var(--adm-bg-soft);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  overflow-x: auto;
+}
+
+.admin-page .admin-ui__tab {
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.70);
+  border-radius: var(--adm-radius);
+  padding: 8px 12px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: background 120ms ease, border-color 120ms ease, box-shadow 120ms ease, color 120ms ease, transform 120ms ease;
+}
+
+.admin-page .admin-ui__tab:hover {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.82);
+}
+
+.admin-page .admin-ui__tab[data-state="active"] {
+  background: #fff;
+  border-color: rgba(0, 0, 0, 0.12);
+  color: rgba(0, 0, 0, 0.92);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.10);
+}
+
+.admin-page .admin-ui__tab:active {
+  transform: translateY(1px);
+}
+
+/* 탭 내부 아이콘 정렬 보정 */
+.admin-page .admin-ui__tab svg {
+  flex: 0 0 auto;
+}
+
+/* ====== (선택) 관리자 레이아웃(버튼과 같이 보기 좋게) ====== */
+.admin-page__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.admin-two-col {
+  display: grid;
+  grid-template-columns: minmax(260px, 360px) 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 980px) {
+  .admin-two-col {
+    grid-template-columns: 1fr;
+  }
+}

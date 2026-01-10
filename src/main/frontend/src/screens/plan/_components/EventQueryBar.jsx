@@ -1,3 +1,4 @@
+// FILE: src/screens/plan/_components/EventQueryBar.jsx
 import React, { useMemo } from "react";
 import { TextField, MenuItem, FormControl, Select, InputLabel, Chip, Box, IconButton, Tooltip } from "@mui/material";
 import { X, Filter, Star, Users, AlarmClock } from "lucide-react";

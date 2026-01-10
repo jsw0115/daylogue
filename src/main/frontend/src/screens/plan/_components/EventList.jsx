@@ -1,3 +1,4 @@
+// FILE: src/screens/plan/_components/EventList.jsx
 import React from "react";
 import { ButtonBase, Box, Chip, Tooltip } from "@mui/material";
 import { Repeat2, Users, Star, Flag } from "lucide-react";

@@ -1,3 +1,4 @@
+// FILE: src/screens/plan/_components/PlannerViewTabs.jsx
 import React from "react";
 import { NavLink } from "react-router-dom";
 

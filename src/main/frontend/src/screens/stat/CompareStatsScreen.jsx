@@ -35,7 +35,6 @@ function clamp(n, min, max) {
 }
 
 function parseYmd(ymd) {
-  // local date (00:00)
   const [y, m, d] = (ymd || "").split("-").map((v) => Number(v));
   return new Date(y, (m || 1) - 1, d || 1);
 }
@@ -60,9 +59,8 @@ function getRange(period, baseYmd) {
     return { start: d, end: d, days: [d], label: d };
   }
   if (period === "WEEK") {
-    // ISO-ish: Monday start
-    const day = base.getDay(); // 0 Sun ... 6 Sat
-    const diffToMon = (day + 6) % 7; // Mon=0
+    const day = base.getDay();
+    const diffToMon = (day + 6) % 7;
     const start = addDays(base, -diffToMon);
     const days = Array.from({ length: 7 }, (_, i) => toYmd(addDays(start, i)));
     return { start: days[0], end: days[6], days, label: `${days[0]} ~ ${days[6]}` };
@@ -74,7 +72,6 @@ function getRange(period, baseYmd) {
     for (let d = new Date(start); d <= end; d = addDays(d, 1)) days.push(toYmd(d));
     return { start: toYmd(start), end: toYmd(end), days, label: `${toYmd(start)} ~ ${toYmd(end)}` };
   }
-  // YEAR
   const start = new Date(base.getFullYear(), 0, 1);
   const end = new Date(base.getFullYear(), 11, 31);
   const days = [];
@@ -97,7 +94,6 @@ function safeJsonParse(str, fallback) {
   }
 }
 
-/** localStorage 접근이 차단된 환경 대비(try/catch + 메모리 폴백) */
 const __memStore = new Map();
 function safeStorageGet(key) {
   try {
@@ -116,7 +112,6 @@ function safeStorageSet(key, value) {
   }
 }
 
-/** Deterministic RNG (드릴다운 더미 데이터 고정용) */
 function lcg(seed) {
   let s = (seed >>> 0) || 1;
   return () => {
@@ -151,10 +146,6 @@ function statusTone(st) {
   return "pva-pill--ok";
 }
 
-/** =========================
- *  Drilldown Dummy Builder
- *  - 실제 서비스에서는 서버 drilldown API로 대체
- *  ========================= */
 function buildDrilldown({ row, period, baseDate, actualMode }) {
   const range = getRange(period, baseDate);
   const seed = hashStr(`${row.id}|${period}|${baseDate}|${actualMode}`);
@@ -163,8 +154,7 @@ function buildDrilldown({ row, period, baseDate, actualMode }) {
   const planTotalMin = Math.max(0, Math.round((row.planHours || 0) * 60));
   const actualTotalMin = Math.max(0, Math.round((row.actualHours || 0) * 60));
 
-  // 일자별 분배(더미)
-  const weights = range.days.map(() => 0.4 + rnd() * 1.2); // 0.4~1.6
+  const weights = range.days.map(() => 0.4 + rnd() * 1.2);
   const wsum = weights.reduce((a, b) => a + b, 0) || 1;
 
   const daily = range.days.map((d, i) => {
@@ -174,7 +164,6 @@ function buildDrilldown({ row, period, baseDate, actualMode }) {
     return { date: d, planMin, actualMin, deltaMin: actualMin - planMin };
   });
 
-  // 항목 생성(더미)
   const itemCount = clamp(Math.floor(8 + rnd() * 10), 6, 18);
   const types = ["TASK", "EVENT", "TIMEBLOCK"];
   const obstaclePool = ["회의", "돌발", "피곤", "집중저하", "우선순위변경", "외부요청", "장애/이슈", "미루기"];
@@ -184,10 +173,7 @@ function buildDrilldown({ row, period, baseDate, actualMode }) {
     const day = range.days[Math.floor(rnd() * range.days.length)];
     const t = types[Math.floor(rnd() * types.length)];
     const planned = t === "TIMEBLOCK" ? Math.floor(30 + rnd() * 120) : Math.floor(15 + rnd() * 90);
-    // actualMode: DONE | TIME | HYBRID
-    // - DONE: “완료” 중심이라 실제 시간이 0/계획만, 또는 완료면 계획과 비슷하게
-    // - TIME: timeblock 중심이라 실제 시간 랜덤
-    // - HYBRID: 섞음
+
     let actual = 0;
     if (actualMode === "DONE") {
       const done = rnd() > 0.35;
@@ -212,18 +198,13 @@ function buildDrilldown({ row, period, baseDate, actualMode }) {
       actualMin: actual,
       deltaMin: delta,
       status: st,
-      // 회고용(초기값 더미)
       obstacles: st === "UNDER" ? [obstaclePool[Math.floor(rnd() * obstaclePool.length)]] : [],
       note: "",
       nextAction: "",
     });
   }
 
-  // Top 편차(절대값 기준)
-  const topDeviations = [...items]
-    .sort((a, b) => Math.abs(b.deltaMin) - Math.abs(a.deltaMin))
-    .slice(0, 5);
-
+  const topDeviations = [...items].sort((a, b) => Math.abs(b.deltaMin) - Math.abs(a.deltaMin)).slice(0, 5);
   return { range, daily, items, topDeviations };
 }
 
@@ -231,30 +212,24 @@ function buildDrilldown({ row, period, baseDate, actualMode }) {
  *  Main Screen
  *  ========================= */
 export default function CompareStatsScreen() {
-  // Period / BaseDate
-  const [period, setPeriod] = useState("WEEK"); // DAY | WEEK | MONTH | YEAR
+  const [period, setPeriod] = useState("WEEK");
   const [baseDate, setBaseDate] = useState(todayStr());
 
-  // Granularity
-  const [groupBy, setGroupBy] = useState("CATEGORY"); // CATEGORY | CATEGORY_SUB | TYPE
-  const [actualMode, setActualMode] = useState("HYBRID"); // DONE | TIME | HYBRID
+  const [groupBy, setGroupBy] = useState("CATEGORY");
+  const [actualMode, setActualMode] = useState("HYBRID");
 
-  // Filters / Sorting
   const [q, setQ] = useState("");
-  const [statusFilter, setStatusFilter] = useState("ALL"); // ALL | UNDER | ONTRACK | OVER
-  const [sortKey, setSortKey] = useState("DELTA_DESC"); // RATE_DESC | DELTA_DESC | PLAN_DESC | ACTUAL_DESC
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [sortKey, setSortKey] = useState("DELTA_DESC");
 
-  // Data
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
 
-  // Drilldown
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [drill, setDrill] = useState(null);
   const [drillTab, setDrillTab] = useState("summary");
 
-  // Reflection (persist)
   const [reflect, setReflect] = useState({
     tags: [],
     note: "",
@@ -262,7 +237,6 @@ export default function CompareStatsScreen() {
   });
   const [persistHint, setPersistHint] = useState(null);
 
-  // Toast
   const [toast, setToast] = useState({ open: false, type: "info", msg: "" });
   const showToast = (type, msg) => setToast({ open: true, type, msg });
 
@@ -279,7 +253,6 @@ export default function CompareStatsScreen() {
   }
 
   useEffect(() => {
-    // 기존 동작 유지: 기간 변경 시 자동 로드
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [period]);
@@ -289,14 +262,13 @@ export default function CompareStatsScreen() {
     const plan = data.summary.planTotal || 0;
     const actual = data.summary.actualTotal || 0;
     const rate = plan === 0 ? 0 : Math.round((actual / plan) * 100);
-    const delta = (actual - plan) * 60; // hours->min? (data는 hours 기준)
+    const delta = (actual - plan) * 60;
     return { plan, actual, rate, deltaMin: delta };
   }, [data]);
 
   const derivedRows = useMemo(() => {
     if (!data?.rows) return [];
 
-    // groupBy 확장(더미): CATEGORY_SUB, TYPE은 화면 개발용으로 분해
     let rows = data.rows.map((r) => ({
       ...r,
       planMin: Math.round((r.planHours || 0) * 60),
@@ -310,7 +282,7 @@ export default function CompareStatsScreen() {
       rows.forEach((r) => {
         const seed = hashStr(`sub|${r.id}`);
         const rnd = lcg(seed);
-        const aRatio = 0.35 + rnd() * 0.4; // 0.35~0.75
+        const aRatio = 0.35 + rnd() * 0.4;
         const bRatio = 1 - aRatio;
 
         const a = {
@@ -373,19 +345,15 @@ export default function CompareStatsScreen() {
       rows = expanded;
     }
 
-    // filters
     const qq = q.trim().toLowerCase();
     if (qq) rows = rows.filter((r) => (r.name || "").toLowerCase().includes(qq));
-
     if (statusFilter !== "ALL") rows = rows.filter((r) => r.status === statusFilter);
 
-    // sort
     const sorted = [...rows];
     sorted.sort((a, b) => {
       if (sortKey === "RATE_DESC") return (b.rate || 0) - (a.rate || 0);
       if (sortKey === "PLAN_DESC") return (b.planMin || 0) - (a.planMin || 0);
       if (sortKey === "ACTUAL_DESC") return (b.actualMin || 0) - (a.actualMin || 0);
-      // DELTA_DESC (abs delta)
       return Math.abs(b.deltaMin || 0) - Math.abs(a.deltaMin || 0);
     });
 
@@ -398,7 +366,6 @@ export default function CompareStatsScreen() {
     setDrillTab("summary");
     setDrawerOpen(true);
 
-    // 회고 데이터 로드
     const key = `pva_reflection_v1|${period}|${baseDate}|${row.id}`;
     const saved = safeJsonParse(safeStorageGet(key), null);
     if (saved) {
@@ -469,8 +436,7 @@ export default function CompareStatsScreen() {
   const rangeLabel = useMemo(() => getRange(period, baseDate).label, [period, baseDate]);
 
   return (
-    <div className="tf-page">
-      {/* Header */}
+    <div className="tf-page pva-page">
       <div className="tf-page__header">
         <div>
           <div className="tf-title">비교 분석 (Plan vs Actual)</div>
@@ -487,7 +453,6 @@ export default function CompareStatsScreen() {
         </div>
       </div>
 
-      {/* Top Controls */}
       <div className="pva-top tf-card">
         <div className="pva-top__row">
           <div className="pva-top__left">
@@ -528,8 +493,8 @@ export default function CompareStatsScreen() {
                 {summary
                   ? `Plan ${summary.plan}h · Actual ${summary.actual}h · 달성률 ${summary.rate}%`
                   : loading
-                    ? "불러오는 중..."
-                    : "—"}
+                  ? "불러오는 중..."
+                  : "—"}
               </div>
               <div className="pva-kpi__hint">
                 근거 부족: 현재 수치는 화면 검증용 더미이며, 실제 서비스에서는 서버 집계가 필요합니다.
@@ -540,7 +505,8 @@ export default function CompareStatsScreen() {
 
         <Divider style={{ margin: "12px 0" }} />
 
-        <div className="pva-top__row">
+        {/* ✅ filters row에 클래스 추가 */}
+        <div className="pva-top__row pva-top__row--filters">
           <div className="pva-top__left">
             <div className="pva-label">그룹</div>
             <select className="tf-select pva-select" value={groupBy} onChange={(e) => setGroupBy(e.target.value)}>
@@ -601,7 +567,6 @@ export default function CompareStatsScreen() {
         </div>
       </div>
 
-      {/* List */}
       <div className="tf-grid" style={{ marginTop: 12 }}>
         <div className="tf-col-12 tf-card">
           <div className="pva-list-head">
@@ -656,13 +621,7 @@ export default function CompareStatsScreen() {
         </div>
       </div>
 
-      {/* Drilldown Drawer */}
-      <Drawer
-        anchor="right"
-        open={drawerOpen}
-        onClose={closeDrilldown}
-        PaperProps={{ className: "pva-drawer" }}
-      >
+      <Drawer anchor="right" open={drawerOpen} onClose={closeDrilldown} PaperProps={{ className: "pva-drawer" }}>
         <div className="pva-drawer__header">
           <div className="pva-drawer__title">
             <div className="pva-drawer__name">
@@ -774,11 +733,7 @@ export default function CompareStatsScreen() {
             </Tabs.Content>
 
             <Tabs.Content value="items" className="pva-tabs__content">
-              {!drill ? (
-                <div className="tf-muted tf-small">데이터가 없습니다.</div>
-              ) : (
-                <DrillItemsPanel drill={drill} />
-              )}
+              {!drill ? <div className="tf-muted tf-small">데이터가 없습니다.</div> : <DrillItemsPanel drill={drill} />}
             </Tabs.Content>
 
             <Tabs.Content value="review" className="pva-tabs__content">
@@ -812,9 +767,7 @@ export default function CompareStatsScreen() {
                     placeholder="예) 미달성 원인은 회의가 많았고, 오전 블록이 너무 길어서 유지가 어려웠다."
                     rows={4}
                   />
-                  <div className="pva-review__hint">
-                    팁: “원인(Why) → 개선(How) → 다음 액션(What)” 순으로 짧게 쓰면 회고에 재사용하기 쉽습니다.
-                  </div>
+                  <div className="pva-review__hint">팁: “원인(Why) → 개선(How) → 다음 액션(What)” 순으로 쓰기</div>
                 </div>
 
                 <div className="pva-review__block">
@@ -832,7 +785,7 @@ export default function CompareStatsScreen() {
                             return { ...p, nextActions: next };
                           })
                         }
-                        placeholder={`액션 ${idx + 1} (예: 내일 오전 블록을 30분 단위로 쪼개기)`}
+                        placeholder={`액션 ${idx + 1}`}
                       />
                     ))}
                   </div>
@@ -852,7 +805,6 @@ export default function CompareStatsScreen() {
         </div>
       </Drawer>
 
-      {/* Toast */}
       <Snackbar
         open={toast.open}
         autoHideDuration={2500}
@@ -867,17 +819,13 @@ export default function CompareStatsScreen() {
   );
 }
 
-/** =========================
- *  Drilldown Items Panel
- *  ========================= */
 function DrillItemsPanel({ drill }) {
-  const [typeFilter, setTypeFilter] = useState("ALL"); // ALL | TASK | EVENT | TIMEBLOCK
-  const [statusFilter, setStatusFilter] = useState("ALL"); // ALL | UNDER | ONTRACK | OVER
-  const [sortKey, setSortKey] = useState("DATE_ASC"); // DATE_ASC | DELTA_DESC | PLAN_DESC | ACTUAL_DESC
+  const [typeFilter, setTypeFilter] = useState("ALL");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [sortKey, setSortKey] = useState("DATE_ASC");
 
   const items = useMemo(() => {
     let arr = drill.items || [];
-
     if (typeFilter !== "ALL") arr = arr.filter((x) => x.type === typeFilter);
     if (statusFilter !== "ALL") arr = arr.filter((x) => x.status === statusFilter);
 
@@ -886,10 +834,8 @@ function DrillItemsPanel({ drill }) {
       if (sortKey === "DELTA_DESC") return Math.abs(b.deltaMin) - Math.abs(a.deltaMin);
       if (sortKey === "PLAN_DESC") return (b.planMin || 0) - (a.planMin || 0);
       if (sortKey === "ACTUAL_DESC") return (b.actualMin || 0) - (a.actualMin || 0);
-      // DATE_ASC
       return (a.date || "").localeCompare(b.date || "");
     });
-
     return sorted;
   }, [drill.items, typeFilter, statusFilter, sortKey]);
 

@@ -1,5 +1,6 @@
 /* FILE: src/main/frontend/src/styles/compare-stats.css */
 
+/* ===== Top / Actions ===== */
 .pva-actions {
   display: flex;
   gap: 8px;
@@ -90,6 +91,7 @@
   color: #111827;
 }
 
+/* ===== KPI ===== */
 .pva-kpi {
   padding: 10px 12px;
   border: 1px solid rgba(0,0,0,0.06);
@@ -107,6 +109,13 @@
   font-size: 14px;
   color: #111827;
   font-weight: 700;
+  line-height: 1.35;
+}
+.pva-kpi__value > div + div {
+  margin-top: 4px;
+}
+.pva-kpi__value b {
+  font-weight: 900;
 }
 
 .pva-kpi__hint {
@@ -116,6 +125,7 @@
   line-height: 1.4;
 }
 
+/* ===== List ===== */
 .pva-list-head {
   display: flex;
   align-items: center;
@@ -159,8 +169,16 @@
 
 .pva-row__icon {
   width: 24px;
+  height: 24px;
   display: inline-flex;
   justify-content: center;
+  align-items: center;
+  color: #111827;
+}
+.pva-row__icon svg {
+  width: 18px;
+  height: 18px;
+  display: block;
 }
 
 .pva-row__name {
@@ -241,10 +259,14 @@
   color: #047857;
 }
 
-/* Drawer */
+/* ===== Drawer (Right/Left 공통) ===== */
+/* 정책 Drawer(좌) + 드릴다운 Drawer(우) 둘 다 스크롤/고정 KPI를 안정적으로 */
 .pva-drawer {
   width: min(520px, 92vw);
   padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .pva-drawer__header {
@@ -254,6 +276,14 @@
   gap: 12px;
 }
 
+/* CompareStatsScreen.jsx에서 추가 사용되는 wrapper */
+.pva-drawer__title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
 .pva-drawer__name {
   font-weight: 900;
   color: #111827;
@@ -261,6 +291,13 @@
   gap: 10px;
   align-items: center;
   font-size: 16px;
+  min-width: 0;
+}
+
+.pva-drawer__name > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pva-drawer__sub {
@@ -272,10 +309,10 @@
 .pva-drawer__actions {
   display: flex;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 .pva-drawer__kpi {
-  margin-top: 12px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
@@ -297,13 +334,16 @@
   margin-top: 4px;
   font-weight: 900;
   color: #111827;
+  font-size: 14px;
 }
 
 .pva-drawer__body {
-  margin-top: 12px;
+  flex: 1;
+  overflow: auto;
+  padding-right: 2px;
 }
 
-/* Radix Tabs */
+/* ===== Radix Tabs ===== */
 .pva-tabs {
   width: 100%;
 }
@@ -350,7 +390,7 @@
   line-height: 1.4;
 }
 
-/* Daily bars */
+/* ===== Daily bars ===== */
 .pva-daily {
   display: flex;
   flex-direction: column;
@@ -398,7 +438,7 @@
   align-items: center;
 }
 
-/* Top deviation */
+/* ===== Top deviation ===== */
 .pva-topdev {
   display: flex;
   flex-direction: column;
@@ -436,7 +476,7 @@
   gap: 8px;
 }
 
-/* Items */
+/* ===== Items ===== */
 .pva-item-toolbar {
   display: flex;
   justify-content: space-between;
@@ -505,7 +545,7 @@
   border: 1px solid rgba(239,68,68,0.18);
 }
 
-/* Review */
+/* ===== Review ===== */
 .pva-review {
   display: flex;
   flex-direction: column;
@@ -587,7 +627,7 @@
   line-height: 1.4;
 }
 
-/* Responsive */
+/* ===== Responsive ===== */
 @media (max-width: 900px) {
   .pva-drawer__kpi {
     grid-template-columns: repeat(2, 1fr);
@@ -601,5 +641,92 @@
   }
   .pva-progress {
     max-width: 100%;
+  }
+}
+/* FILE: src/main/frontend/src/styles/compare-stats.css */
+
+/* ✅ 페이지 폭/정렬 보정(좌측으로 쏠려 보이면 체감이 큼) */
+.pva-page {
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+/* ✅ filters row에서 오른쪽 컨트롤이 세로로 쌓이던 문제 해결 */
+.pva-top__row--filters {
+  align-items: center;
+}
+
+.pva-top__row--filters .pva-top__left {
+  flex: 1 1 auto;
+  min-width: 520px;
+}
+
+.pva-top__row--filters .pva-top__right.pva-right-controls {
+  flex: 0 0 auto;
+  min-width: 320px;
+  display: flex;              /* 핵심 */
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ✅ tf-select(width:100%) 때문에 select가 카드 전체폭을 먹던 문제 해결 */
+.pva-select {
+  width: 220px;               /* 핵심: width 지정으로 100% override */
+  min-width: 180px;
+  height: 36px;
+  padding: 5px 12px;
+}
+
+/* 검색창은 남는 공간을 먹게 해서 wrap을 덜 발생시키기 */
+.pva-search {
+  flex: 1 1 260px;
+  min-width: 240px;
+}
+
+/* 라벨이 줄바꿈되면서 어색해지는 것 방지 */
+.pva-label {
+  white-space: nowrap;
+}
+
+/* ✅ MUI TextField(date) 높이/라운드가 tf-ui와 어긋나는 경우 보정 */
+.pva-date {
+  width: 180px;
+}
+.pva-date .MuiInputBase-root {
+  height: 36px;
+  border-radius: 10px;
+  background: #fff;
+}
+.pva-date input {
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+/* ✅ Toggle 버튼 높이를 select와 맞추기 */
+.pva-toggle .MuiToggleButton-root {
+  height: 36px;
+  padding: 0 12px;
+  font-size: 12px;
+  border-radius: 10px;
+}
+
+/* 모바일에서는 자연스럽게 세로 스택 */
+@media (max-width: 900px) {
+  .pva-top__row--filters .pva-top__left,
+  .pva-top__row--filters .pva-top__right.pva-right-controls {
+    min-width: 0;
+  }
+
+  .pva-select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .pva-search {
+    width: 100%;
+    min-width: 0;
   }
 }
