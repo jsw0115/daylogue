@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Space, Tag } from "antd";
+import { Button, Tag, Typography } from "antd";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getEvents, seedIfEmpty } from "./eventMockStore";
+
+const { Text } = Typography;
 
 function ymd(d) {
   const y = d.getFullYear();
@@ -23,10 +25,15 @@ function addMonths(cursor, n) {
   return d;
 }
 
+function toMin(hhmm) {
+  const [h, m] = (hhmm || "00:00").split(":").map((x) => Number(x));
+  return h * 60 + m;
+}
+
 export default function MonthCalendarPortlet() {
   const [cursor, setCursor] = useState(() => startOfMonth(new Date()));
   const [selectedKey, setSelectedKey] = useState(() => ymd(new Date()));
-  const [ver, setVer] = useState(0);
+  const [ver] = useState(0);
 
   useEffect(() => {
     seedIfEmpty();
@@ -60,66 +67,105 @@ export default function MonthCalendarPortlet() {
   const monthLabel = `${cursor.getFullYear()}.${String(cursor.getMonth() + 1).padStart(2, "0")}`;
   const curMonth = cursor.getMonth();
 
-  const selectedEvents = (eventsByDate[selectedKey] || []).slice(0, 5);
+  const selectedAll = useMemo(() => {
+    const list = (eventsByDate[selectedKey] || []).slice();
+    return list.sort((a, b) => toMin(a.start) - toMin(b.start));
+  }, [eventsByDate, selectedKey]);
+
+  const selectedTop5 = selectedAll.slice(0, 5);
+  const selectedCount = selectedAll.length;
 
   return (
     <div className="mcal">
       <div className="mcalHead">
-        <Button size="small" icon={<ChevronLeft size={16} />} onClick={() => setCursor(addMonths(cursor, -1))} />
+        <Button
+          size="small"
+          icon={<ChevronLeft size={16} />}
+          onClick={() => setCursor(addMonths(cursor, -1))}
+        />
         <div className="mcalLabel">{monthLabel}</div>
-        <Button size="small" icon={<ChevronRight size={16} />} onClick={() => setCursor(addMonths(cursor, 1))} />
+        <Button
+          size="small"
+          icon={<ChevronRight size={16} />}
+          onClick={() => setCursor(addMonths(cursor, 1))}
+        />
       </div>
 
-      <div className="mcalDow">
-        {["일","월","화","수","목","금","토"].map((x) => (
-          <div key={x} className="mcalDowItem">{x}</div>
-        ))}
-      </div>
-
-      <div className="mcalGrid">
-        {days.map((d) => {
-          const key = ymd(d);
-          const inMonth = d.getMonth() === curMonth;
-          const cnt = (eventsByDate[key]?.length || 0);
-          const isSel = key === selectedKey;
-          const isToday = key === ymd(new Date());
-
-          return (
-            <button
-              key={key}
-              className={[
-                "mcalCell",
-                inMonth ? "" : "is-dim",
-                isSel ? "is-sel" : "",
-                isToday ? "is-today" : "",
-              ].join(" ")}
-              type="button"
-              onClick={() => setSelectedKey(key)}
-            >
-              <div className="mcalDate">{d.getDate()}</div>
-              {cnt ? <div className="mcalDot">{cnt}</div> : null}
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="mcalBottom">
-        <div className="mcalPicked">
-          선택: <b>{selectedKey}</b>
-        </div>
-
-        {selectedEvents.length === 0 ? (
-          <div className="hd-empty">선택 날짜에 일정이 없습니다.</div>
-        ) : (
-          <div className="mcalList">
-            {selectedEvents.map((e) => (
-              <div className="mcalRow" key={e.id}>
-                <Tag>{e.start}</Tag>
-                <div className="mcalRowTitle">{e.title}</div>
+      <div className="mcalWrap">
+        {/* LEFT: calendar */}
+        <div className="mcalLeft">
+          <div className="mcalDow">
+            {["일", "월", "화", "수", "목", "금", "토"].map((x) => (
+              <div key={x} className="mcalDowItem">
+                {x}
               </div>
             ))}
           </div>
-        )}
+
+          <div className="mcalGrid">
+            {days.map((d) => {
+              const key = ymd(d);
+              const inMonth = d.getMonth() === curMonth;
+              const cnt = eventsByDate[key]?.length || 0;
+              const isSel = key === selectedKey;
+              const isToday = key === ymd(new Date());
+
+              return (
+                <button
+                  key={key}
+                  className={[
+                    "mcalCell",
+                    inMonth ? "" : "is-dim",
+                    isSel ? "is-sel" : "",
+                    isToday ? "is-today" : "",
+                  ].join(" ")}
+                  type="button"
+                  onClick={() => setSelectedKey(key)}
+                  title={`${key} (${cnt}개)`}
+                >
+                  <div className="mcalDate">{d.getDate()}</div>
+                  {cnt ? <div className="mcalDot">{cnt}</div> : null}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* RIGHT: list (max 5) */}
+        <div className="mcalRight">
+          <div className="mcalRightHead">
+            <div className="mcalRightTitle">일정 목록</div>
+            <Tag>{selectedCount}개</Tag>
+          </div>
+
+          <div className="mcalRightSub">
+            선택: <b>{selectedKey}</b>
+          </div>
+
+          {selectedCount === 0 ? (
+            <div className="mcalRightEmpty">선택 날짜에 일정이 없습니다.</div>
+          ) : (
+            <div className="mcalRightList">
+              {selectedTop5.map((e) => (
+                <div key={e.id} className="mcalRightRow">
+                  <Tag className="mcalTimeTag">{e.start}</Tag>
+                  <div className="mcalRightRowMain" title={e.title}>
+                    <div className="mcalRightRowTitle">{e.title}</div>
+                    <Text type="secondary" className="mcalRightRowMeta">
+                      {e.category || "기타"}
+                      {e.importance === "HIGH" ? " · 중요" : ""}
+                      {e.isDday ? " · D-Day" : ""}
+                    </Text>
+                  </div>
+                </div>
+              ))}
+
+              {selectedCount > 5 ? (
+                <div className="mcalRightMore">외 {selectedCount - 5}개</div>
+              ) : null}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

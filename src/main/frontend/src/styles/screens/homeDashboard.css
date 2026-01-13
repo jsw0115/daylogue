@@ -64,7 +64,7 @@
   align-items: center;
   padding: 12px 12px;
   border-bottom: 1px solid #f1f3f8;
-  background: linear-gradient(180deg, rgba(249,250,251,0.9), rgba(255,255,255,1));
+  background: linear-gradient(180deg, rgba(249, 250, 251, 0.9), rgba(255, 255, 255, 1));
 }
 
 .portlet__head-left {
@@ -90,7 +90,9 @@
   cursor: grabbing;
 }
 
-.portlet__titles { min-width: 0; }
+.portlet__titles {
+  min-width: 0;
+}
 .portlet__title {
   font-weight: 900;
   font-size: 14px;
@@ -105,6 +107,10 @@
 .portlet__body {
   padding: 12px 12px 14px;
   overflow: auto;
+}
+
+.portlet__body--noScroll {
+  overflow: hidden;
 }
 
 /* Drawer Picker */
@@ -191,8 +197,15 @@
   background: #fff;
 }
 
-.evtTime__main { font-weight: 900; color: #111827; }
-.evtTime__sub { font-size: 12px; color: #6b7280; margin-top: 2px; }
+.evtTime__main {
+  font-weight: 900;
+  color: #111827;
+}
+.evtTime__sub {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}
 
 .evtTitleRow {
   display: flex;
@@ -200,18 +213,51 @@
   align-items: flex-start;
   gap: 8px;
 }
-.evtTitle { font-weight: 900; color: #111827; }
-.evtMeta { margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-.evtMetaIcon { display: inline-flex; align-items: center; color: #6b7280; }
+.evtTitle {
+  font-weight: 900;
+  color: #111827;
+}
+.evtMeta {
+  margin-top: 6px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.evtMetaIcon {
+  display: inline-flex;
+  align-items: center;
+  color: #6b7280;
+}
 
 /* Modal form layout */
-.evtForm { display: flex; flex-direction: column; gap: 12px; }
-.evtField { display: flex; flex-direction: column; gap: 6px; }
-.evtLabel { font-size: 12px; font-weight: 800; color: #374151; }
-.evtGrid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.evtForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.evtField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.evtLabel {
+  font-size: 12px;
+  font-weight: 800;
+  color: #374151;
+}
+.evtGrid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
 
 /* Dday */
-.ddayList { display: flex; flex-direction: column; gap: 10px; }
+.ddayList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 .ddayRow {
   display: flex;
   align-items: center;
@@ -221,11 +267,23 @@
   border: 1px solid #eef0f5;
   border-radius: 14px;
 }
-.ddayTitle { font-weight: 900; color: #111827; }
-.ddaySub { margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap; }
+.ddayTitle {
+  font-weight: 900;
+  color: #111827;
+}
+.ddaySub {
+  margin-top: 6px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
 
 /* Upcoming 7d */
-.up7 { display: flex; flex-direction: column; gap: 10px; }
+.up7 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 .up7Row {
   display: grid;
   grid-template-columns: 118px 1fr;
@@ -234,52 +292,258 @@
   border: 1px solid #eef0f5;
   border-radius: 14px;
 }
-.up7Date { font-size: 12px; color: #6b7280; display: inline-flex; align-items: center; gap: 6px; }
-.up7Title { font-weight: 900; color: #111827; margin-bottom: 6px; }
-
-/* MonthCalendarPortlet */
-.mcalHead {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 10px; margin-bottom: 10px;
-}
-.mcalLabel { font-weight: 900; color: #111827; }
-
-.mcalDow, .mcalGrid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
+.up7Date {
+  font-size: 12px;
+  color: #6b7280;
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
 }
-.mcalDowItem { text-align: center; font-size: 12px; color: #6b7280; font-weight: 800; }
+.up7Title {
+  font-weight: 900;
+  color: #111827;
+  margin-bottom: 6px;
+}
+
+/* MonthCalendarPortlet (2 columns: left calendar + right list) */
+.mcalHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.mcalLabel {
+  font-weight: 900;
+  color: #111827;
+}
+
+.mcalWrap {
+  display: grid;
+  grid-template-columns: 1.35fr 0.65fr;
+  gap: 10px;
+}
+
+.mcalDow,
+.mcalGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 7px;
+}
+
+.mcalDowItem {
+  text-align: center;
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 800;
+}
 
 .mcalCell {
-  height: 40px;
+  height: 26px;
   border-radius: 12px;
   border: 1px solid #eef0f5;
   background: #fff;
   cursor: pointer;
   position: relative;
+  padding: 0;
 }
-.mcalCell.is-dim { background: #fafafa; color: #9ca3af; }
-.mcalCell.is-today { border-color: #c7d2fe; background: #eef2ff; }
-.mcalCell.is-sel { border-color: #111827; box-shadow: 0 0 0 2px rgba(17,24,39,0.08); }
+.mcalCell.is-dim {
+  background: #fafafa;
+  color: #9ca3af;
+}
+.mcalCell.is-today {
+  border-color: #c7d2fe;
+  background: #eef2ff;
+}
+.mcalCell.is-sel {
+  border-color: #111827;
+  box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.08);
+}
 
-.mcalDate { position: absolute; top: 8px; left: 10px; font-weight: 800; font-size: 12px; }
+.mcalDate {
+  position: absolute;
+  top: 5px;
+  left: 7px;
+  font-weight: 800;
+  font-size: 12px;
+  line-height: 1;
+}
 .mcalDot {
   position: absolute;
-  bottom: 8px;
-  right: 10px;
-  min-width: 18px;
-  height: 18px;
+  bottom: 5px;
+  right: 7px;
+  min-width: 14px;
+  height: 14px;
   border-radius: 999px;
   background: #111827;
   color: #fff;
-  font-size: 11px;
+  font-size: 10px;
   display: grid;
   place-items: center;
 }
 
-.mcalBottom { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
-.mcalPicked { font-size: 12px; color: #6b7280; }
-.mcalList { display: flex; flex-direction: column; gap: 8px; }
-.mcalRow { display: flex; align-items: center; gap: 8px; }
-.mcalRowTitle { font-weight: 800; color: #111827; }
+.mcalRight {
+  border: 1px solid #eef0f5;
+  border-radius: 14px;
+  background: #fafbff;
+  padding: 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.mcalRightHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mcalRightTitle {
+  font-weight: 900;
+  color: #111827;
+}
+
+.mcalRightSub {
+  font-size: 12px;
+  color: #6b7280;
+}
+.mcalRightSub b {
+  color: #111827;
+}
+
+.mcalRightEmpty {
+  font-size: 12px;
+  color: #6b7280;
+  padding: 4px 2px;
+}
+
+.mcalRightList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mcalRightRow {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 8px 8px;
+  border: 1px solid #eef0f5;
+  border-radius: 12px;
+  background: #fff;
+  min-width: 0;
+}
+
+.mcalTimeTag {
+  margin-inline-end: 0 !important;
+}
+
+.mcalRightRowMain {
+  min-width: 0;
+  flex: 1;
+}
+
+.mcalRightRowTitle {
+  font-weight: 900;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mcalRightRowMeta {
+  font-size: 12px !important;
+  display: block;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mcalRightMore {
+  font-size: 12px;
+  color: #6b7280;
+  padding: 2px 2px;
+}
+
+/* NoticePortlet */
+.noticeTop {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.noticeList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.noticeRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 10px;
+  border: 1px solid #eef0f5;
+  border-radius: 14px;
+  background: #fff;
+}
+.noticeTitle {
+  font-weight: 900;
+  color: #111827;
+  margin-bottom: 4px;
+}
+.noticeMeta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 12px;
+  color: #6b7280;
+}
+.noticeBody {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #374151;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 520px;
+}
+
+/* RoutineTodayPortlet */
+.rtnHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.rtnList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.rtnRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 10px;
+  border: 1px solid #eef0f5;
+  border-radius: 14px;
+  background: #fff;
+}
+.rtnTime {
+  width: 56px;
+  font-weight: 900;
+  color: #111827;
+}
+.rtnName {
+  font-weight: 800;
+  color: #111827;
+}
+.rtnSub {
+  font-size: 12px;
+  color: #6b7280;
+}

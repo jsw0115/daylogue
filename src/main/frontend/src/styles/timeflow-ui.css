@@ -376,3 +376,99 @@
   color: rgba(0,0,0,0.55);
   line-height: 1.4;
 }
+
+
+/* =========================================================
+   Global Scrollbar Styling (Modal 포함 전역 적용)
+   - Chrome/Edge/Safari: ::-webkit-scrollbar
+   - Firefox: scrollbar-color / scrollbar-width
+   ========================================================= */
+
+:root {
+  /* 크기 */
+  --scrollbar-size: 10px;
+
+  /* 트랙/썸(토큰 있으면 그걸 우선 사용) */
+  --scrollbar-track: rgba(148, 163, 184, 0.15); /* muted 계열 */
+  --scrollbar-thumb: rgba(148, 163, 184, 0.45);
+  --scrollbar-thumb-hover: rgba(148, 163, 184, 0.65);
+  --scrollbar-thumb-active: rgba(99, 102, 241, 0.75); /* primary 계열 */
+
+  /* 모서리/반경 */
+  --scrollbar-radius: 999px;
+}
+
+/* (선택) 다크 테마에서 약간 더 진하게 */
+:root[data-theme="dark"] {
+  --scrollbar-track: rgba(148, 163, 184, 0.12);
+  --scrollbar-thumb: rgba(148, 163, 184, 0.40);
+  --scrollbar-thumb-hover: rgba(148, 163, 184, 0.58);
+  --scrollbar-thumb-active: rgba(129, 140, 248, 0.75);
+}
+
+/* Firefox (전역) */
+* {
+  scrollbar-width: thin; /* auto | thin | none */
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* WebKit (Chrome/Edge/Safari) */
+*::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: var(--scrollbar-radius);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: var(--scrollbar-radius);
+
+  /* 트랙과 자연스럽게 보이게 “속이 빈” 느낌 */
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: var(--scrollbar-thumb-active);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* 스크롤바 코너(가로/세로 만나는 지점) */
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ---------------------------------------------------------
+   유틸: 특정 영역만 더 얇게 / 숨기기 (필요할 때만 사용)
+   --------------------------------------------------------- */
+
+.scrollbar--thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scrollbar--x-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.no-scrollbar {
+  scrollbar-width: none; /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
+::-webkit-scrollbar-button {
+    display: none;
+}

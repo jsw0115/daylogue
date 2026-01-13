@@ -16,7 +16,7 @@ export default function TodayMemoPortlet() {
       <Input.TextArea
         value={memo}
         onChange={(e) => setMemo(e.target.value)}
-        autoSize={{ minRows: 6, maxRows: 10 }}
+        autoSize={{ minRows: 4, maxRows: 6 }}
         placeholder="오늘의 기록/메모를 남겨보세요."
       />
       <Text type="secondary" style={{ fontSize: 12 }}>

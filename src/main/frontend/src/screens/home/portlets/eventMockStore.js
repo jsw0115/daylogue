@@ -1,3 +1,4 @@
+// FILE: src/screens/home/portlets/eventMockStore.js
 import { safeStorage } from "../../../shared/utils/safeStorage";
 
 const KEY = "events.mock.v1";

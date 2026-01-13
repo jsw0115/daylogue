@@ -50,6 +50,9 @@
 
 .tbModal__body {
   padding: 16px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  max-height: 550px;
 }
 
 .tbModal__foot {

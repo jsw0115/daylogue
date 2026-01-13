@@ -1,7 +1,4 @@
-/* FILE: src/styles/screens/yearly-planner.css */
-/* .yearly-planner-screen {
-  padding: 16px;
-} */
+/* FILE: src/main/frontend/src/styles/screens/yearly-planner.css */
 
 .yearly-topbar {
   display: flex;
@@ -60,4 +57,81 @@
   font-size: 13px;
   font-weight: 650;
   color: rgba(99, 102, 241, 1);
+}
+
+/* 연간 목록 보기 */
+.yearly-listCard{
+  padding: 14px;
+}
+
+.yearly-listHead{
+  display:flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.yearly-list{
+  display: grid;
+  gap: 10px;
+}
+
+.yearly-row{
+  width: 100%;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 14px;
+  background: rgba(0,0,0,0.01);
+  padding: 12px;
+  cursor: pointer;
+  text-align: left;
+
+  display:flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.yearly-row__left{
+  display:grid;
+  gap: 4px;
+}
+
+.yearly-row__month{
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.yearly-row__right{
+  display:flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.yearly-chip{
+  display:inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(148,163,184,0.55);
+  background: rgba(255,255,255,0.02);
+}
+
+.yearly-chip .label{
+  font-size: 12px;
+  opacity: 0.75;
+  font-weight: 750;
+}
+.yearly-chip .val{
+  font-size: 12.5px;
+  font-weight: 900;
+}
+
+.yearly-row__cta{
+  font-weight: 900;
+  opacity: 0.65;
 }

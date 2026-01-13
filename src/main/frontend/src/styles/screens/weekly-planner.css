@@ -1,4 +1,5 @@
-/* src/styles/screens/weekly-planner.css */
+/* FILE: src/main/frontend/src/styles/screens/weekly-planner.css */
+
 .weekly-topbar{
   display:flex; align-items:center; justify-content:space-between;
   gap:12px; margin: 10px 0 14px;
@@ -34,6 +35,7 @@
   border:1px solid #e5e7eb; background:transparent;
   border-radius:12px; padding:10px 0;
   cursor:pointer;
+  position: relative;
 }
 .weekly-dayBtn.is-active{
   background: rgba(99,102,241,.10);
@@ -42,6 +44,16 @@
 
 .weekly-dayBtn__dow{ font-size:12px; opacity:.8; }
 .weekly-dayBtn__date{ font-size:14px; font-weight:700; margin-top:2px; }
+
+.weekly-dayBtn__badge{
+  position:absolute;
+  top:6px; right:6px;
+  font-size:11px; font-weight:800;
+  padding:2px 8px;
+  border-radius:999px;
+  border:1px solid rgba(148,163,184,0.6);
+  background: rgba(0,0,0,0.02);
+}
 
 .weekly-hint{ margin-top:10px; }
 
@@ -53,13 +65,128 @@
 .weekly-right__title{ font-weight:700; font-size:13px; }
 .weekly-right__actions{ display:flex; gap:8px; flex-wrap:wrap; }
 
-.weekly-eventList{ display:grid; gap:8px; }
-.weekly-eventRow{
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  border:1px solid #e5e7eb; border-radius:12px; padding:10px 12px;
+/* ---------------------------
+   주간 타임테이블 뷰
+--------------------------- */
+.weekly-timegridCard{
+  padding: 14px;
 }
-.weekly-eventMain{
-  flex:1; text-align:left;
-  border:0; background:transparent; cursor:pointer;
+
+.weekly-timegridHint{
+  margin-top: 10px;
 }
-.weekly-eventTitle{ font-weight:700; font-size:13px; }
+
+.weeklyTimebar{
+  display: grid;
+  gap: 10px;
+}
+
+.weeklyTimebar__head{
+  display:flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.weeklyTimebar__grid{
+  display: grid;
+  grid-template-columns: 62px 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+.weeklyTimebar__axis{
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.02);
+}
+
+.weeklyTimebar__tick{
+  position: relative;
+  border-bottom: 1px solid rgba(148,163,184,0.18);
+}
+.weeklyTimebar__tick.is-even{
+  border-bottom: 1px solid rgba(148,163,184,0.30);
+}
+.weeklyTimebar__tickLabel{
+  display: inline-flex;
+  padding: 6px 8px;
+  font-size: 11.5px;
+  font-weight: 800;
+  opacity: 0.82;
+}
+
+.weeklyTimebar__days{
+  display: grid;
+  grid-template-columns: repeat(7, minmax(140px, 1fr));
+  gap: 10px;
+  overflow: auto;
+  padding-bottom: 6px;
+}
+
+.weeklyTimebar__day{
+  min-width: 140px;
+}
+
+.weeklyTimebar__dayHead{
+  display:flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.weeklyTimebar__dayTitle{
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  font-weight: 850;
+}
+
+.weeklyTimebar__dayTitle .wkDow{
+  font-size: 12px;
+  opacity: 0.8;
+}
+.weeklyTimebar__dayTitle .wkDate{
+  font-size: 13px;
+}
+
+.weeklyTimebar__dayCanvas{
+  position: relative;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.015);
+  cursor: crosshair;
+}
+
+.weeklyTimebar__bg{
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(148,163,184,0.22) 1px, transparent 1px) 0 0 / 100% var(--tbRowPx),
+    linear-gradient(to bottom, rgba(148,163,184,0.34) 1px, transparent 1px) 0 0 / 100% calc(var(--tbRowPx) * 6);
+}
+
+.weeklyTimebar__block{
+  position: absolute;
+  border-radius: 10px;
+  padding: 6px 8px;
+  text-align: left;
+  cursor: pointer;
+  display: grid;
+  gap: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
+}
+
+.weeklyTimebar__blockTitle{
+  font-weight: 850;
+  font-size: 11.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

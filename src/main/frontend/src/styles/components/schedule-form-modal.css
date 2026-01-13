@@ -1,105 +1,362 @@
-/* FILE: src/styles/components/schedule-form-modal.css */
-.sfm__grid {
+/* =========================================================
+   ScheduleFormModal - Layout Fix
+   - 상단 "빈 박스" 같이 보이던 레이아웃 제거
+   - 간단/상세를 카드 그리드로 안정화
+   - 반응형(모바일에서 1열)
+   ========================================================= */
+
+.sfm {
+  display: grid;
+  gap: 14px;
+}
+
+/* Top bar */
+.sfm__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 14px;
+  background: var(--color-surface, #fff);
+}
+
+.sfm__barLeft {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+
+.sfm__barKicker {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--color-muted, #6b7280);
+}
+
+.sfm__barValue {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--color-text, #0f172a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Segmented control */
+.sfm__seg {
+  display: inline-flex;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.sfm__segBtn {
+  border: 0;
+  background: transparent;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+  color: var(--color-muted, #6b7280);
+  min-width: 64px;
+}
+
+.sfm__segBtn.is-active {
+  background: rgba(99, 102, 241, 0.14);
+  color: rgba(67, 56, 202, 1);
+}
+
+/* Occurrence scope box */
+.sfm__scopeBox {
+  padding: 12px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.01);
+  display: grid;
+  gap: 8px;
+}
+
+.sfm__scopeRow {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.sfm__radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+/* Cards grid */
+.sfm__cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 980px) {
+  .sfm__cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sfm__card {
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 16px;
+  background: var(--color-surface, #fff);
+  padding: 14px;
   display: grid;
   gap: 12px;
+  min-width: 0;
+}
+
+.sfm__cardFull {
+  grid-column: 1 / -1;
+}
+
+.sfm__cardHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sfm__cardTitle {
+  font-size: 14px;
+  font-weight: 850;
+  color: var(--color-text, #0f172a);
+}
+
+.sfm__cardSub {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--color-muted, #6b7280);
+}
+
+.sfm__repeatHead {
+  align-items: center;
+}
+
+/* Form grid inside a card */
+.sfm__formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 560px) {
+  .sfm__formGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sfm__col2 {
+  grid-column: 1 / -1;
 }
 
 .sfm__field {
   display: grid;
   gap: 6px;
+  min-width: 0;
 }
 
 .sfm__label {
   font-size: 12px;
+  font-weight: 800;
   color: var(--color-muted, #6b7280);
-  font-weight: 600;
 }
 
 .sfm__input {
-  width: 100%;
-  border: 1px solid var(--color-border, #e5e7eb);
+  height: 40px;
   border-radius: 12px;
-  padding: 10px 12px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: var(--color-surface, #fff);
+  padding: 0 12px;
+  outline: none;
   font-size: 13px;
-  background: var(--color-card, #fff);
+  color: inherit;
+  min-width: 0;
 }
 
-.sfm__row2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+.sfm__input:focus {
+  border-color: rgba(99, 102, 241, 0.45);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
 }
 
-@media (max-width: 560px) {
-  .sfm__row2 {
-    grid-template-columns: 1fr;
-  }
+.sfm__textarea {
+  border-radius: 12px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: var(--color-surface, #fff);
+  padding: 10px 12px;
+  outline: none;
+  font-size: 13px;
+  color: inherit;
+  resize: vertical;
+  min-height: 120px;
 }
 
+.sfm__textarea:focus {
+  border-color: rgba(99, 102, 241, 0.45);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+/* Small hint */
 .sfm__hint {
-  margin-top: 6px;
+  font-size: 12px;
+  color: var(--color-muted, #6b7280);
+  line-height: 1.35;
+}
+
+.sfm__muted {
   font-size: 12px;
   color: var(--color-muted, #6b7280);
 }
 
-.sfm__section {
-  border: 1px solid var(--color-border, #e5e7eb);
-  border-radius: 14px;
-  padding: 12px;
-  background: var(--color-bg-soft, #f8fafc);
-}
-
-.sfm__sectionHead {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  font-weight: 650;
-  margin-bottom: 10px;
-}
-
-.sfm__switch {
+/* Checkbox row */
+.sfm__checkRow {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: var(--color-muted, #6b7280);
+  user-select: none;
 }
 
-.sfm__repeatBox {
-  display: grid;
+.sfm__checkRow input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: rgba(99, 102, 241, 1);
+}
+
+/* Color */
+.sfm__colorRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sfm__colors {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sfm__colorDot {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+}
+
+.sfm__colorDot.is-on {
+  border-color: rgba(99, 102, 241, 1);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+}
+
+.sfm__colorPicker {
+  width: 42px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Tags */
+.sfm__tagsWrap {
+  display: grid;
+  gap: 10px;
+}
+
+.sfm__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.sfm__chip {
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 999px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sfm__chipX {
+  opacity: 0.7;
+  font-weight: 900;
+}
+
+.sfm__tagInputRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+@media (max-width: 560px) {
+  .sfm__tagInputRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* Repeat weekdays */
+.sfm__repeatBox {
+  padding-top: 8px;
 }
 
 .sfm__weekdays {
   display: flex;
-  flex-wrap: wrap;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .sfm__wkBtn {
-  border: 1px solid var(--color-border, #e5e7eb);
-  background: var(--color-card, #fff);
+  height: 34px;
+  padding: 0 10px;
   border-radius: 999px;
-  padding: 7px 10px;
-  font-size: 12px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: transparent;
   cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .sfm__wkBtn.is-on {
   background: rgba(99, 102, 241, 0.14);
-  border-color: rgba(99, 102, 241, 0.4);
+  border-color: rgba(99, 102, 241, 0.35);
+  color: rgba(67, 56, 202, 1);
 }
 
-.sfm__scope {
-  display: flex;
-  gap: 14px;
-  margin-top: 6px;
-}
-
-.sfm__radio {
+/* Switch */
+.sfm__switch {
   display: inline-flex;
-  gap: 8px;
   align-items: center;
+  gap: 10px;
   font-size: 13px;
+  font-weight: 700;
+  color: var(--color-muted, #6b7280);
+  user-select: none;
+}
+
+.sfm__switch input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: rgba(99, 102, 241, 1);
 }

@@ -1,0 +1,139 @@
+.timebar {
+  display: grid;
+  gap: 10px;
+}
+
+.timebar__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.timebar__summaryLeft {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.timebar__badge {
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: rgba(0,0,0,0.02);
+}
+
+.timebar__body {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 10px;
+}
+
+.timebar__axis {
+  position: relative;
+}
+
+.timebar__axisRow {
+  position: absolute;
+  left: 0;
+  transform: translateY(-50%);
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.timebar__canvas {
+  position: relative;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--color-surface, #fff);
+}
+
+.timebar__hourLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(148, 163, 184, 0.25);
+}
+
+.timebar__layer {
+  position: absolute;
+  inset: 0;
+}
+
+.timebar-block {
+  position: absolute;
+  border-radius: 12px;
+  padding: 8px 10px;
+  text-align: left;
+  border: 1px solid var(--color-border, #e5e7eb);
+  cursor: pointer;
+  display: grid;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.timebar-block__title {
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.timebar-block__meta {
+  font-size: 11px;
+  opacity: 0.8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.timebar-block.is-actual {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.35);
+}
+
+.timebar-block.is-plan {
+  background: rgba(34, 211, 238, 0.10);
+  border-style: dashed;
+  border-color: rgba(34, 211, 238, 0.45);
+}
+
+.timebar-block.is-overlap {
+  box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.35) inset;
+}
+
+.timebar-block.is-derived {
+  opacity: 0.9;
+}
+
+.timebar-gap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border: 0;
+  background: rgba(148, 163, 184, 0.10);
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 6px 8px;
+}
+
+.timebar-gap__text {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.timebar-nowLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(239, 68, 68, 0.8);
+  pointer-events: none;
+}

@@ -28,7 +28,12 @@ import {
 } from "lucide-react";
 
 import "../../styles/screens/homeDashboard.css";
-import { PORTLETS_BY_ID, DEFAULT_LAYOUTS, DEFAULT_VISIBLE } from "./portlets/portletRegistry";
+import {
+  PORTLETS_BY_ID,
+  DEFAULT_LAYOUTS,
+  DEFAULT_VISIBLE,
+  BREAKPOINTS,
+} from "./portlets/portletRegistry";
 import { safeStorage } from "../../shared/utils/safeStorage";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -45,6 +50,95 @@ function safeJsonParse(str, fallback) {
   }
 }
 
+function clamp(n, min, max) {
+  if (typeof n !== "number") return n;
+  if (typeof min === "number" && n < min) return min;
+  if (typeof max === "number" && n > max) return max;
+  return n;
+}
+
+function getSizeRule(id, bp) {
+  const def = PORTLETS_BY_ID[id];
+  if (!def) return null;
+  const sizes = def.sizes || {};
+  return sizes[bp] || sizes.all || null;
+}
+
+function applySizeRulesToLayouts(layouts) {
+  const out = {};
+  for (const bp of BREAKPOINTS) {
+    const arr = Array.isArray(layouts?.[bp]) ? layouts[bp] : [];
+    out[bp] = arr
+      .filter((it) => !!it && !!it.i && !!PORTLETS_BY_ID[it.i])
+      .map((it) => {
+        const rule = getSizeRule(it.i, bp);
+        if (!rule) return it;
+
+        const next = { ...it };
+
+        // react-grid-layout constraints
+        if (typeof rule.minW === "number") next.minW = rule.minW;
+        if (typeof rule.minH === "number") next.minH = rule.minH;
+        if (typeof rule.maxW === "number") next.maxW = rule.maxW;
+        if (typeof rule.maxH === "number") next.maxH = rule.maxH;
+
+        // clamp current size into [min,max] to prevent saved layouts causing scroll/overflow
+        next.w = clamp(next.w, next.minW, next.maxW);
+        next.h = clamp(next.h, next.minH, next.maxH);
+
+        return next;
+      });
+  }
+  return out;
+}
+
+function normalizeLayouts(rawLayouts) {
+  const out = {};
+  for (const bp of BREAKPOINTS) {
+    const defaults = Array.isArray(DEFAULT_LAYOUTS?.[bp]) ? DEFAULT_LAYOUTS[bp] : [];
+    const saved = Array.isArray(rawLayouts?.[bp]) ? rawLayouts[bp] : [];
+
+    const savedMap = new Map(saved.map((x) => [x.i, x]));
+    const used = new Set();
+
+    const merged = [];
+
+    // 1) defaults first (keep stable baseline ordering)
+    for (const d of defaults) {
+      const s = savedMap.get(d.i);
+      merged.push({ ...d, ...(s || {}), i: d.i });
+      used.add(d.i);
+    }
+
+    // 2) keep any other saved items that still exist in registry
+    for (const s of saved) {
+      if (!s?.i) continue;
+      if (used.has(s.i)) continue;
+      if (!PORTLETS_BY_ID[s.i]) continue;
+      merged.push({ ...s, i: s.i });
+      used.add(s.i);
+    }
+
+    out[bp] = merged;
+  }
+
+  return applySizeRulesToLayouts(out);
+}
+
+function normalizeVisible(rawVisible) {
+  const next = { ...DEFAULT_VISIBLE };
+  if (rawVisible && typeof rawVisible === "object") {
+    for (const id of Object.keys(PORTLETS_BY_ID)) {
+      if (id in rawVisible) next[id] = !!rawVisible[id];
+    }
+  }
+  // ensure all ids exist
+  for (const id of Object.keys(PORTLETS_BY_ID)) {
+    if (!(id in next)) next[id] = false;
+  }
+  return next;
+}
+
 export default function HomeDashboardScreen() {
   const navigate = useNavigate();
 
@@ -54,14 +148,14 @@ export default function HomeDashboardScreen() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerQuery, setPickerQuery] = useState("");
 
-  const [layouts, setLayouts] = useState(() => {
-    const saved = safeJsonParse(safeStorage.get(STORAGE_LAYOUTS), null);
-    return saved || DEFAULT_LAYOUTS;
-  });
-
   const [visible, setVisible] = useState(() => {
     const saved = safeJsonParse(safeStorage.get(STORAGE_VISIBLE), null);
-    return saved || DEFAULT_VISIBLE;
+    return normalizeVisible(saved);
+  });
+
+  const [layouts, setLayouts] = useState(() => {
+    const saved = safeJsonParse(safeStorage.get(STORAGE_LAYOUTS), null);
+    return normalizeLayouts(saved || DEFAULT_LAYOUTS);
   });
 
   const portletIds = useMemo(
@@ -78,12 +172,16 @@ export default function HomeDashboardScreen() {
   }, [visible]);
 
   const onLayoutChange = (_, allLayouts) => {
-    setLayouts(allLayouts);
+    // allLayouts may miss some breakpoints depending on rgl version; normalize anyway
+    setLayouts((prev) => {
+      const merged = { ...prev, ...(allLayouts || {}) };
+      return normalizeLayouts(merged);
+    });
   };
 
   const resetLayout = () => {
-    setLayouts(DEFAULT_LAYOUTS);
-    setVisible(DEFAULT_VISIBLE);
+    setLayouts(normalizeLayouts(DEFAULT_LAYOUTS));
+    setVisible(normalizeVisible(DEFAULT_VISIBLE));
   };
 
   const togglePortlet = (id) => {
@@ -112,9 +210,7 @@ export default function HomeDashboardScreen() {
             <LayoutDashboard className="hd-titleIcon" />
             <div className="hd-titleText">대시보드</div>
           </div>
-          <div className="hd-subtitle">
-            진행 상황과 일정/메모를 한눈에 확인하세요.
-          </div>
+          <div className="hd-subtitle">진행 상황과 일정/메모를 한눈에 확인하세요.</div>
         </div>
 
         <div className="hd-actions">
@@ -193,9 +289,7 @@ export default function HomeDashboardScreen() {
             ))}
           </div>
 
-          <div className="hd-pickerHint">
-            편집 모드에서 포틀릿을 드래그/리사이즈할 수 있습니다.
-          </div>
+          <div className="hd-pickerHint">편집 모드에서 포틀릿을 드래그/리사이즈할 수 있습니다.</div>
         </div>
       </Drawer>
 
@@ -219,6 +313,13 @@ export default function HomeDashboardScreen() {
           const def = PORTLETS_BY_ID[id];
           const Comp = def.component;
 
+          const bodyClass = [
+            "portlet__body",
+            def.bodyOverflow === "hidden" ? "portlet__body--noScroll" : "",
+          ]
+            .filter(Boolean)
+            .join(" ");
+
           return (
             <div key={id} className="portlet">
               <div className="portlet__head">
@@ -233,9 +334,7 @@ export default function HomeDashboardScreen() {
 
                   <div className="portlet__titles">
                     <div className="portlet__title">{def.title}</div>
-                    {def.subtitle ? (
-                      <div className="portlet__subtitle">{def.subtitle}</div>
-                    ) : null}
+                    {def.subtitle ? <div className="portlet__subtitle">{def.subtitle}</div> : null}
                   </div>
                 </div>
 
@@ -266,7 +365,7 @@ export default function HomeDashboardScreen() {
                 </div>
               </div>
 
-              <div className="portlet__body">
+              <div className={bodyClass}>
                 <Comp />
               </div>
             </div>

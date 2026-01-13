@@ -225,7 +225,7 @@ export default function DailyDiaryScreen() {
             <Button icon={<ChevronRight size={18} />} onClick={() => moveDay(1)} />
           </Tooltip>
 
-          <Divider type="vertical" />
+          <Divider orientation="vertical" />
 
           <Tabs.Root value={viewMode} onValueChange={setViewMode}>
             <Tabs.List className="diary-ui__tabs" aria-label="뷰 모드">
