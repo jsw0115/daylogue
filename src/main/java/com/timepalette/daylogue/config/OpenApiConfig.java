@@ -34,7 +34,7 @@ public class OpenApiConfig {
                 .info(new Info()
                         .title("TimeFlow API")
                         .description("Timebar Diary / Planner API")
-                        .version("v1"))
+                        .version("v0.0.1"))
                 // 전역으로 bearerAuth 요구(모든 API에 자물쇠 표시)
                 .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
                 .components(new Components()

@@ -146,6 +146,8 @@ server:
   forward-headers-strategy: framework
 
 logging:
+  # default Logging 프레임워크 설정 파일을 참조
+  config: classpath:log4j2.xml
   level:
     root: INFO
     # 웹 요청 로그(필요시 DEBUG로 올림)
@@ -205,16 +207,22 @@ springdoc:
   version: V.0.0.1  # 버전 기록용
   # Swagger UI 기본 경로
   cache:
-    disabled: true              # 캐시 사용 여부
+    disabled: true              # OpenAPI 문서의 캐싱 비활성화 (기본값: false)
   swagger-ui:
     enabled: true       # Swagger UI 사용여부 : 접근 경로 => <http://localhost:8080/swagger-ui/index.html>
     path: /demo-ui.html   # String, Swagger-ui HTML 문서의 사용자 정의 경로
     tags-sorter: alpha  # API 태그 목록에 정렬을 적용(alpha -> 영숫자순으로 경로별로 정렬)
     operations-sorter: alpha  # API 작업 목록에 정렬을 적용(alpha -> 영숫자 경로 기준 정렬)
+    display-request-duration: true  # 요청 실행 시간 표시 여부
+    doc-expansion: none  # Swagger UI에서 API 설명의 기본 펼침 상태 (none: 닫힘, list: 펼침, full: 전체 펼침)
+    persistAuthorization: true  # 페이지 새로고침 후에도 Authorization 헤더 유지 여부
+    defaultModelsExpandDepth: -1  # 모델 스키마의 기본 펼침 깊이 (-1이면 모델 펼쳐지지 않음)
   api-docs:
+    enabled: true  # API 문서(`/v3/api-docs`) 활성화 여부 (기본값: true)
     path: /v3/api-docs  # API 작업 목록에 정렬을 적용(alpha -> 영숫자 경로 기준 정렬)
     groups:
       enabled: true
   # 기본값 : 미디어 유형
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
+  show-actuator: false  # Spring Actuator 엔드포인트를 Swagger UI에 표시할지 여부 (기본값: false)
