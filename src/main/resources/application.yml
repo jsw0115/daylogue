@@ -145,6 +145,12 @@ server:
   # - 만약 Boot 2.5 이하라면 이 옵션이 동작이 다를 수 있음(그땐 server.use-forward-headers=true 고려)
   forward-headers-strategy: framework
 
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 logging:
   # default Logging 프레임워크 설정 파일을 참조
   config: classpath:log4j2.xml

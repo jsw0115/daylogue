@@ -2,6 +2,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../styles/screens/auth.css";
+import api from './../../api'; // api.js 파일 경로
+import { aiApi } from "../../services/localMockApi";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -121,7 +123,7 @@ export default function RegisterScreen() {
     if (!agreePrivacy) errors.push("개인정보 처리방침에 동의해 주세요.");
 
     // 가입 완료 전, 휴대폰 인증 완료를 요구(정책)
-    if (!smsVerified) errors.push("휴대폰 인증을 완료해 주세요.");
+    //if (!smsVerified) errors.push("휴대폰 인증을 완료해 주세요.");
 
     return { ok: errors.length === 0, errors };
   }, [normalized, agreeTerms, agreePrivacy, smsVerified]);
@@ -243,21 +245,33 @@ export default function RegisterScreen() {
     setSubmitting(true);
     try {
       // TODO: 실제 백엔드 엔드포인트로 맞추기
-      const res = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: normalized.email,
-          nick: normalized.nick,
-          phone: normalized.phoneDigits,
-          phoneVerifyToken: smsVerifyToken, // 서버 토큰 검증 기반 권장
-          password: normalized.pw,
-          tz,
-          agreeTerms: true,
-          agreePrivacy: true,
-          marketingOptIn: !!agreeMarketing,
-        }),
-      });
+      debugger;
+      console.log("normalized email : " + normalized.email);
+      console.log("normalized nick : " + normalized.nick);
+      console.log("normalized phoneDigits : " + normalized.phoneDigits);
+      console.log("normalized pw : " + normalized.pw);
+      const requestBody = {
+        email: normalized.email,
+        nickname: normalized.nick,
+        phone: normalized.phoneDigits,
+        phoneVerifyToken: smsVerifyToken,
+        password: normalized.pw,
+        tz,
+        agreeTerms: true,
+        agreePrivacy: true,
+        marketingOptIn: !!agreeMarketing,
+      };
+      const res = await api.post("/api/auth/signup", requestBody);
+
+      debugger;
+
+      const data = res.json();
+
+      if (res.status === 201 || res.status === 200) {
+        setFormInfo("가입 요청이 처리되었습니다. 로그인해 주세요.");
+        nav("/auth/login"); // 라우트 통일이면 이쪽이 더 안전
+        return;
+      }
 
       // 계정/휴대폰 존재 여부 등 열거 방지: 409(중복)도 동일 UX로 처리하는 편이 안전
       if (res.ok || res.status === 409) {
@@ -267,7 +281,30 @@ export default function RegisterScreen() {
       }
 
       setFormError("가입 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.");
-    } catch {
+
+    } catch (err) {
+      
+      const status = err?.response?.status;
+      const payload = err?.response?.data;
+
+      // 409(중복)도 동일 UX로 처리하고 싶다면 여기서 처리
+      if (status === 409) {
+        setFormError("중복된 사용자입니다.");
+        return;
+      }
+
+      // 서버가 400을 주는 경우(검증 실패) 메시지를 분기할 수도 있음
+      if (status === 400) {
+        setFormError(payload?.message || "입력값을 확인해 주세요.");
+        return;
+      }
+
+      // 진짜 네트워크 문제(응답 자체가 없음)
+      if (!status) {
+        setFormError("네트워크 오류가 발생했습니다. 연결을 확인해 주세요.");
+        return;
+      }
+
       setFormError("네트워크 오류가 발생했습니다. 연결을 확인해 주세요.");
     } finally {
       setSubmitting(false);
@@ -337,6 +374,7 @@ export default function RegisterScreen() {
               placeholder="010-1234-5678"
               disabled={smsSending || smsVerifying || smsVerified}
             />
+            {/*
             <button
               type="button"
               className="btn"
@@ -346,9 +384,11 @@ export default function RegisterScreen() {
             >
               {smsSending ? "발송 중..." : smsVerified ? "인증완료" : sendBtnLabel}
             </button>
+            */}
           </div>
 
           {/* 인증번호 입력/검증 */}
+          {/* 
           {smsSent && !smsVerified ? (
             <div style={{ marginTop: 10 }}>
               <label className="auth-label" htmlFor="reg-sms-code">
@@ -386,6 +426,7 @@ export default function RegisterScreen() {
               휴대폰 인증 완료
             </div>
           ) : null}
+          */}
 
           <label className="auth-label" htmlFor="reg-pw" style={{ marginTop: 10 }}>
             비밀번호
@@ -414,6 +455,7 @@ export default function RegisterScreen() {
           />
 
           {/* 동의 체크 */}
+          
           <div style={{ marginTop: 10 }}>
             <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <input type="checkbox" checked={agreeTerms} onChange={(e) => setAgreeTerms(e.target.checked)} />
@@ -421,7 +463,7 @@ export default function RegisterScreen() {
                 <Link to="/legal/terms">이용약관</Link> 동의(필수)
               </span>
             </label>
-
+            
             <label style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 6 }}>
               <input type="checkbox" checked={agreePrivacy} onChange={(e) => setAgreePrivacy(e.target.checked)} />
               <span>
@@ -438,7 +480,9 @@ export default function RegisterScreen() {
               시간대: {tz}
             </div>
           </div>
+          
 
+          {/*<button className="btn btn--primary auth-submit" type="submit" disabled={submitting || !validation.ok}>*/}
           <button className="btn btn--primary auth-submit" type="submit" disabled={submitting || !validation.ok}>
             {submitting ? "처리 중..." : "가입하기"}
           </button>

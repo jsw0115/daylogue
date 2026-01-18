@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -30,7 +31,9 @@ import java.time.LocalDateTime;
 public class User extends UtcCreatedUpdatedEntity {
 
     @Id
-    @Column(name = "id", length = 26, nullable = false)
+    @Column(name = "id", length = 255, nullable = false)
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
 
     @Column(name = "email", length = 255, nullable = false)
@@ -64,4 +67,8 @@ public class User extends UtcCreatedUpdatedEntity {
 
     @Column(name = "pw_chg_utc", columnDefinition = "DATETIME(3)")
     private LocalDateTime pwChgUtc;
+
+    // 2026.01.18 - ddl 문 컬럼 추가 필요
+    @Column(name = "is_enabled")
+    private int isEnabled;
 }

@@ -27,6 +27,7 @@ public class AuthUser implements UserDetails {
     }
 
     public String getId() { return id; }
+    public String getUserId() { return id; } // UserIdResolver 호환용 별칭
     public String getEmail() { return email; }
     public String getNickname() { return nickname; }
     public String getRole() { return role; }

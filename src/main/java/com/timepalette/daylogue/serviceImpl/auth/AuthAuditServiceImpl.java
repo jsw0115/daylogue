@@ -6,6 +6,8 @@ import com.timepalette.daylogue.repository.auth.AuthAuditLogRepository;
 import com.timepalette.daylogue.service.auth.AuthAuditService;
 //import com.timepalette.daylogue.shared.ids.UlidGenerator;
 import com.timepalette.daylogue.support.UlidGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +18,7 @@ public class AuthAuditServiceImpl implements AuthAuditService {
 
     private final AuthAuditLogRepository auditRepo;
     private final UlidGenerator ulid;
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public AuthAuditServiceImpl(AuthAuditLogRepository auditRepo, UlidGenerator ulid) {
         this.auditRepo = Objects.requireNonNull(auditRepo);

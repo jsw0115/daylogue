@@ -8,6 +8,7 @@ import com.timepalette.daylogue.model.entity.auth.EmailVerifyToken;
 import com.timepalette.daylogue.model.entity.auth.RefreshToken;
 import com.timepalette.daylogue.model.entity.auth.User;
 import com.timepalette.daylogue.model.enums.auth.AuthAuditEvent;
+import com.timepalette.daylogue.model.enums.auth.UserRole;
 import com.timepalette.daylogue.model.enums.auth.UserStatus;
 import com.timepalette.daylogue.model.enums.common.AuthErrorCode;
 import com.timepalette.daylogue.repository.auth.EmailVerifyTokenRepository;
@@ -19,17 +20,27 @@ import com.timepalette.daylogue.service.auth.AuthService;
 import com.timepalette.daylogue.service.auth.LoginThrottleService;
 import com.timepalette.daylogue.support.*;
 import io.jsonwebtoken.Claims;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Method;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Service
 public class AuthServiceImpl implements AuthService {
+
+    Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
 
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
@@ -50,6 +61,11 @@ public class AuthServiceImpl implements AuthService {
 
     private static final int EMAIL_VERIFY_TTL_MIN = 30;
     private static final int PW_RESET_TTL_MIN = 30;
+
+    private static final Pattern EMAIL_RE = Pattern.compile("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
+    private static final Pattern HAS_LETTER = Pattern.compile("[A-Za-z]");
+    private static final Pattern HAS_DIGIT = Pattern.compile("[0-9]");
+    private static final Pattern HAS_SPECIAL = Pattern.compile("[^A-Za-z0-9]");
 
     public AuthServiceImpl(PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, UserRepository userRepo, RefreshTokenRepository refreshRepo, EmailVerifyTokenRepository emailVerifyRepo, PasswordResetTokenRepository pwResetRepo, NormalizerSupporter emailNormalizer, TokenHashSupporter tokenHasher, UlidGenerator ulid, DateTimeSupporter clock, PasswordPolicy passwordPolicy, LoginThrottleService throttleService, AuthAuditService auditService, MailSendSupporter mailSender) {
         this.passwordEncoder = Objects.requireNonNull(passwordEncoder);
@@ -121,25 +137,132 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public SignUpResponseModel signUp(SignUpRequestModel req) {
 
+        logger.info("AuthServiceImpl, signUp");
         SignUpResponseModel result = new SignUpResponseModel();
 
         // 1. 입력 검증(형식/길이)
         // password 최소길이/복잡도 정책
+        if (req == null) {
+            throw new IllegalArgumentException("VAL-001: body is null");
+        }
+
+        String email = normalizeEmail(req.getEmail());
+        String nickname = normalizeNickname(req.getNickname());
+        String password = (req.getPassword() == null ? "" : req.getPassword());
+
+        logger.info("signUp, email : " + email);
+        logger.info("signUp, nickname : " + nickname);
+        logger.info("signUp, password : " + password);
+
+        if (email.isBlank() || !EMAIL_RE.matcher(email).matches()) {
+            throw new IllegalArgumentException("VAL-001: invalid email");
+        }
+
+        if (nickname.isBlank() || nickname.length() < 2 || nickname.length() > 30) {
+            throw new IllegalArgumentException("VAL-001: invalid nickname");
+        }
+
+        // password 최소길이/복잡도 정책(프론트: 8자 이상)
+        // 8자+ (영문/숫자/특수 중 2종 이상)
+        validatePasswordPolicy(password);
+
+        // 약관/개인정보 동의 — SignUpRequestModel에 필드가 "있으면" 강제
+//        boolean agreeTerms = readBooleanIfExists(req, "getAgreeTerms");
+//        boolean agreePrivacy = readBooleanIfExists(req, "getAgreePrivacy");
+
+        if (!req.isAgreeTerms()) {
+            throw new IllegalArgumentException("VAL-001: terms not agreed");
+        }
+        if (!req.isAgreePrivacy()) {
+            throw new IllegalArgumentException("VAL-001: privacy not agreed");
+        }
+
+        logger.info("signUp, isAgreeTerms : " + req.isAgreeTerms());
+        logger.info("signUp, isAgreePrivacy : " + req.isAgreePrivacy());
+
+        String phone = req.getPhone();
+        String phoneVerifyToken = req.getPhoneVertifyToken();
+        logger.info("signUp, phone : " + phone);
+        logger.info("signUp, phoneVerifyToken : " + phoneVerifyToken);
+        if (phone != null && !phone.isBlank()) {
+//            if (phoneVerifyToken == null || phoneVerifyToken.isBlank()) {
+//                // 프론트 정책상 가입 전 smsVerified를 요구하므로 토큰 없으면 400
+//                throw new IllegalArgumentException("VAL-001: phone verify token required");
+//            }
+
+            // TODO: 실제 휴대폰 인증 서비스가 있으면 여기서 검증
+            // phoneVerificationService.assertVerified(phone, phoneVerifyToken, "SIGNUP");
+        }
 
         // 2. 아이디 중복 체크(서비스 레벨)
         // 중복이면 409(CONFLICT)로 예외 처리 권장
+        if (userRepo.existsByEmail(email)) {
+            throw new DuplicateKeyException("USR-409-DUP: email duplicated");
+        }
 
         // 3. 비밀번호 해싱
         // encode 결과는 매번 salt가 달라져 같은 비번이어도 해시가 달라지는 게 정상
+        String passwordHash = passwordEncoder.encode(password);
+        logger.info("signUp, passwordHash : " + passwordHash);
 
         // 4. 사용자 저장
         // 저장 시점에 DB Unique Index 충돌이 날 수 있으니 DuplicateKey/Constraint 예외도 409로 매핑
+        User saved;
+        DateTimeSupporter supporter = new DateTimeSupporter();
+        LocalDateTime locDt = supporter.nowUtc();
+        logger.info("try 문 시작 전");
+
+        try {
+            User user = new User();
+            user.setEmail(email);
+            user.setNick(nickname);
+            user.setPwHash(passwordHash);
+            user.setRole(UserRole.USER);
+            user.setSt(UserStatus.ACTIVE);
+            user.setDAt(locDt);
+            user.setEmailVfy(true);
+            user.setIsEnabled(1);
+
+            // (선택) tz/marketingOptIn 같은 값도 모델에 있으면 저장
+//            String tz = readStringIfExists(req, "getTz");
+            Boolean marketingOptIn = readBooleanIfExists(req, "getMarketingOptIn");
+//            if (tz != null) user.setTz(tz);
+
+            // (선택) phone 저장
+//            if (phone != null && !phone.isBlank()) user.setPhone(phone);
+
+            saved = userRepo.save(user);
+            logger.info("signUp, saved");
+
+            User reloaded = userRepo.findByEmail(email).orElseThrow();
+
+            logger.info("signup persisted same-hash? {}", passwordHash.equals(reloaded.getPwHash()));
+            logger.info("signup persisted matches? {}", passwordEncoder.matches(password, reloaded.getPwHash()));
+
+        } catch (DataIntegrityViolationException e) {
+            // Unique Index 충돌 등
+            logger.error("signUp, DataIntegrityViolationException, {}", e);
+            throw new DuplicateKeyException("USR-409-DUP: constraint violation", e);
+        } catch (Exception e) {
+            logger.error("signUp, Exception, {}", e);
+//            throw new Exception("e");
+        }
+
+        logger.info("try {} catch{} 끝");
 
         // 5. 가입 인증 메일 발송
         // 이메일 인증 정책 : 원문 토큰은 메일 링크로만 전달(서버에 원문 저장 금지)
+        // - 서버에는 토큰 해시 + 만료시간만 저장 권장
+        // TODO: signupMailService.sendVerification(saved.getId(), saved.getEmail());
 
         // 6. 응답
         // 자동 로그인 정책이면 access/refresh를 여기서 발급할 수도 있음(정책에 맞춰 결정)
+        result.setEmail(email);
+        result.setNickname(nickname);
+        result.setRole(UserRole.USER.toString());
+//        result.setUserId(saved.getId());
+
+        logger.info("singUp, Return Ok");
 
         return result;
     }
@@ -210,40 +333,91 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public LoginResponseModel login(LoginRequestModel req) {
 
+        logger.info("AuthServiceImpl, login");
         LoginResponseModel result = new LoginResponseModel();
 
-        // 1. 입력 정규화
+        if (req == null) {
+            logger.error("AuthServiceImpl, login, req is null");
+            throw new IllegalArgumentException("VAL-001: body is null");
+        }
 
-        // 2. 로그인 시도 제한
-        // EMAIL, IP 연속 실패 횟수
-        // lock_utc(잠금 해제 시각)로 백오프/잠금 구현
+        String email = normalizeEmail(req.getEmail());
+        String password = (req.getPassword() == null ? "" : req.getPassword());
 
-        // 3. 사용자 조회
-        // "아이디 또는 비밀번호가 올바르지 않습니다"로 통일(계정 열거 방지)
+        // 비밀번호는 로그 찍지 말 것
+        logger.info("AuthServiceImpl, login, req email :: {}", email);
 
-        // 4. 사용자 상태 체크
-        // st=SUSPENDED/DELETED면 403 또는 정책에 따른 거부
-        // email 인증 필요 정책이면 email_vfy=0일 때 로그인 제한
+        if (email.isBlank() || password.isBlank()) {
+            logger.error("AuthServiceImpl, login, email or password is required");
+            throw new IllegalArgumentException("VAL-001: email/password required");
+        }
 
-        // 5. 비밀번호 검증
-        // 실패 시, 실패 카운트 증가 & 동일 메시지로 401
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new BadCredentialsException("AUTH-401"));
 
-        // 6. 성공 처리
-        // 실패 카운트 초기화 & last_login_utc 업데이트
+        // 상태 체크
+        if (user.getIsEnabled() != 1) {
+            logger.error("AuthServiceImpl, login, user is not enabled");
+            throw new AccessDeniedException("AUTH-403");
+        }
 
-        // 7. 토큰 발급
-        // AuthUser principal 구성(id, email, nickname, role, enabled)
+        // ===== 핵심 수정: matches(평문, 해시) =====
+        String storedHash = user.getPwHash();
 
-        // 8. refresh 저장형
-        // refresh_token에 tok_hash로 저장(원문 저장 금지)
-        // exp_utc 저장
-        // 로그아웃/회전/기기별 세션 관리를 위해 device_id/jti를 같이 저장하면 운영이 쉬움
+        logger.info("login pw_hash prefix={}, len={}",
+                (storedHash == null ? "null" : storedHash.substring(0, Math.min(4, storedHash.length()))),
+                (storedHash == null ? -1 : storedHash.length())
+        );
 
-        // 9. 응답
-        //
+        // (선택) storedHash가 비정상(평문 저장 등)이면 경고만 남기고 실패 처리
+        if (storedHash == null || storedHash.isBlank()) {
+            logger.error("AuthServiceImpl, login, stored password hash is empty");
+            throw new BadCredentialsException("AUTH-401");
+        }
+
+        logger.info("passwordEncoder.matches(password, storedHash) : " + passwordEncoder.matches(password, storedHash));
+        logger.info("password : " + password);
+        logger.info("storedHash " + storedHash);
+
+        logger.info("login lookup email={}", normalizeEmail(req.getEmail()));
+        logger.info("login user id={}, email={}", user.getId(), user.getEmail());
+        logger.info("login pw_hash prefix={}, len={}",
+                user.getPwHash().substring(0, 4), user.getPwHash().length());
+        logger.info("login password length={}", password.length());
+
+        if (!passwordEncoder.matches(password, storedHash)) {
+            logger.error("AuthServiceImpl, login, 비밀번호 검증 실패");
+            throw new BadCredentialsException("AUTH-401");
+        }
+        // =======================================
+
+        AuthUser principal = new AuthUser(
+                user.getId(),
+                user.getEmail(),
+                user.getNick(),
+                user.getRole().name(),
+                null,                      // pwHash 들고 다닐 필요 없음
+                user.getIsEnabled() == 1
+        );
+
+        String accessToken = jwtTokenProvider.createAccessToken(principal);
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
+
+        logger.info("login, accessToken : " + accessToken);
+        logger.info("login, refreshToken : " + refreshToken);
+
+        result.setUserId(user.getId());
+        result.setEmail(user.getEmail());
+        result.setNickname(user.getNick());
+        result.setRole(user.getRole().name());
+        result.setAccessToken(accessToken);
+        result.setRefreshToken(refreshToken);
+
+        logger.info("login, return Ok");
 
         return result;
     }
+
 
     /**
      * 로그아웃 처리 (refreshToken 폐기)
@@ -411,6 +585,13 @@ public class AuthServiceImpl implements AuthService {
         return result;
     }
 
+    @Override
+    public User getLoginUserByEmail(String email) {
+        User result = new User();
+        result = userRepo.findByEmail(email).orElseThrow(null);
+        return result;
+    }
+
 
     private void ensureLoginAllowedOrThrow(User user) {
         if (user.getSt() == UserStatus.SUSPENDED || user.getSt() == UserStatus.DELETED) {
@@ -527,5 +708,90 @@ public class AuthServiceImpl implements AuthService {
 
     private String buildPasswordResetLink(String rawToken) {
         return "https://app.timeflow.local/reset-password?token=" + rawToken;
+    }
+
+    /**
+     * 회원가입 이메일 확인
+     * @param raw
+     * */
+    private String normalizeEmail(String raw) {
+        if (raw == null) return "";
+        return raw.trim().toLowerCase(Locale.ROOT);
+    }
+
+    /**
+     * 닉네임 확인
+     * @param raw
+     * */
+    private String normalizeNickname(String raw) {
+        if (raw == null) return "";
+        return raw.trim();
+    }
+
+    /**
+     * 비밀번호 정책 확인
+     * @param password
+     * */
+    private void validatePasswordPolicy(String password) {
+        if (password == null) throw new IllegalArgumentException("VAL-001: password null");
+        if (password.length() < 8 || password.length() > 72) {
+            throw new IllegalArgumentException("VAL-001: password length");
+        }
+        if (password.contains(" ")) {
+            throw new IllegalArgumentException("VAL-001: password contains space");
+        }
+
+        int classes = 0;
+        if (HAS_LETTER.matcher(password).find()) classes++;
+        if (HAS_DIGIT.matcher(password).find()) classes++;
+        if (HAS_SPECIAL.matcher(password).find()) classes++;
+
+        // 2종 이상(영문/숫자/특수) 조합 권장
+        if (classes < 2) {
+            throw new IllegalArgumentException("VAL-001: weak password");
+        }
+    }
+
+    /**
+     *
+     * */
+    private String readStringIfExists(Object target, String getterName) {
+        try {
+            Method m = target.getClass().getMethod(getterName);
+            Object v = m.invoke(target);
+            if (v instanceof String s) return s;
+        } catch (Exception ignored) {}
+        return null;
+    }
+
+    /**
+     *  약관 체크 확인
+     * @param target
+     * @param getterName
+     * */
+    private Boolean readBooleanIfExists(Object target, String getterName) {
+        try {
+            Method m = target.getClass().getMethod(getterName);
+            Object v = m.invoke(target);
+            if (v instanceof Boolean b) {
+                return b;
+            }
+        } catch (Exception ignored) {
+
+        }
+        return false;
+    }
+
+    /**
+     *
+     * */
+    private boolean tryInvokeSetter(Object target, String setterName, Class<?> paramType, Object value) {
+        try {
+            Method m = target.getClass().getMethod(setterName, paramType);
+            m.invoke(target, value);
+            return true;
+        } catch (Exception ignored) {
+            return false;
+        }
     }
 }

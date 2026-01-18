@@ -26,6 +26,14 @@ import AuthPasswordResetScreen from "../screens/auth/AuthPasswordResetScreen";
 import AuthSocialLinkScreen from "../screens/auth/AuthSocialLinkScreen";
 import OnboardingScreen from "../screens/auth/OnboardingScreen";
 
+import AuthFindIdResultScreen from "../screens/auth/AuthFindIdResultScreen";
+import AuthFindIdScreen from "../screens/auth/AuthFindIdScreen";
+import AuthOAuthCallbackScreen from "../screens/auth/AuthOAuthCallbackScreen";
+import AuthPasswordResetInvalidTokenScreen from "../screens/auth/AuthPasswordResetInvalidTokenScreen";
+import AuthPasswordResetRequestSentScreen from "../screens/auth/AuthPasswordResetRequestSentScreen";
+import AuthPasswordResetTokenScreen from "../screens/auth/AuthPasswordResetTokenScreen";
+import AuthSessionExpiredScreen from "../screens/auth/AuthSessionExpiredScreen";
+
 // Home
 import NotificationInboxScreen from "../screens/home/NotificationInboxScreen";
 
@@ -153,6 +161,15 @@ export default function AppRoutes() {
       <Route path="/auth/register" element={<Navigate to="/register" replace />} />
       <Route path="/auth/reset-password" element={<Navigate to="/reset-password" replace />} />
       <Route path="/auth/find-id" element={<Navigate to="/find-id" replace />} />
+      <Route path="/auth/find-id" element={<AuthFindIdScreen />} />
+      <Route path="/auth/find-id/result" element={<AuthFindIdResultScreen />} />
+
+      <Route path="/auth/password-reset/sent" element={<AuthPasswordResetRequestSentScreen />} />
+      <Route path="/auth/password-reset/invalid" element={<AuthPasswordResetInvalidTokenScreen />} />
+      <Route path="/auth/password-reset/:token" element={<AuthPasswordResetTokenScreen />} />
+
+      <Route path="/auth/oauth/callback/:provider" element={<AuthOAuthCallbackScreen />} />
+      <Route path="/auth/session-expired" element={<AuthSessionExpiredScreen />} />
 
       {/* App 영역 */}
       <Route element={<AppShell />}>

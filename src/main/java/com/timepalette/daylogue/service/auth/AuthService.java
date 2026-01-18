@@ -2,6 +2,7 @@ package com.timepalette.daylogue.service.auth;
 
 import com.timepalette.daylogue.config.security.AuthUser;
 import com.timepalette.daylogue.model.dto.auth.*;
+import com.timepalette.daylogue.model.entity.auth.User;
 
 public interface AuthService {
 
@@ -111,4 +112,6 @@ public interface AuthService {
      * - state 검증 필수, 가능하면 PKCE 적용
      */
     public SocialLoginResponseModel socialLogin(SocialLoginRequestModel req);
+
+    public User getLoginUserByEmail(String loginId);
 }

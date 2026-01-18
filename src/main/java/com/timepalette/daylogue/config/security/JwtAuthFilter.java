@@ -17,6 +17,14 @@ import java.util.*;
  */
 public class JwtAuthFilter extends OncePerRequestFilter {
     private static final List<String> SKIP_PATH_PREFIXES = List.of(
+            "/api/auth/login",
+            "/api/auth/signup",
+            "/api/auth/token/refresh",
+            "/api/auth/password-reset",
+            "/api/auth/phone",
+            "/api/auth/find-id",
+            "/api/auth/oauth",
+
             "/api/auth/",
             "/v3/api-docs",
             "/swagger-ui",
