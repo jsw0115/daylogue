@@ -15,6 +15,7 @@ import DailyDiaryScreen from "../screens/diary/DailyDiaryScreen";
 import DataManagementScreen from "../screens/data/DataManagementScreen";
 import RoutineListScreen from "../screens/routine/RoutineListScreen";
 
+import AuthStartScreen  from "../screens/auth/AuthStartScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
 import RegisterScreen from "../screens/auth/RegisterScreen";
 import ResetPasswordScreen from "../screens/auth/ResetPasswordScreen";
@@ -149,6 +150,8 @@ export default function AppRoutes() {
   return (
     <Routes>
       {/* Auth: AppShell 없이 단독 */}
+      <Route path="/" element={<AuthStartScreen  />} />
+      <Route path="/start" element={<AuthStartScreen />} />
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/register" element={<RegisterScreen />} />
       <Route path="/reset-password" element={<ResetPasswordScreen />} />

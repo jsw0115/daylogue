@@ -90,6 +90,7 @@
   align-items: center;
   gap: 8px;
   transition: background 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
+  color: var(--tf-text);
 }
 
 .tf-btn:hover {
