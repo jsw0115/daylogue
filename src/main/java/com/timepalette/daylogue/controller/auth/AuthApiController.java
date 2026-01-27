@@ -1,12 +1,10 @@
 package com.timepalette.daylogue.controller.auth;
 
 import com.timepalette.daylogue.controller.BaseApiController;
-import com.timepalette.daylogue.model.dto.auth.LoginRequestModel;
-import com.timepalette.daylogue.model.dto.auth.LoginResponseModel;
-import com.timepalette.daylogue.model.dto.auth.SignUpRequestModel;
-import com.timepalette.daylogue.model.dto.auth.SignUpResponseModel;
+import com.timepalette.daylogue.model.dto.auth.*;
 import com.timepalette.daylogue.model.dto.common.ResponseResultModel;
 import com.timepalette.daylogue.service.auth.AuthService;
+import com.timepalette.daylogue.support.UserIdResolver;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,12 +29,12 @@ import java.util.*;
 @Validated
 @RestController
 @RequestMapping("/api/auth")
-public class AuthApiApiController extends BaseApiController {
+public class AuthApiController extends BaseApiController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass()) ;
     private final AuthService authService;
 
-    public AuthApiApiController(AuthService authService) {
+    public AuthApiController(AuthService authService) {
         this.authService = authService;
     }
 
@@ -209,6 +208,34 @@ public class AuthApiApiController extends BaseApiController {
             result. setMessage("REFRESH_FAILED");
             result. setErrorCode("AUTH-500");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+        }
+    }
+
+    /**
+     *  사용자 정보를 가져오는 메서드
+     * @since   2026.01.24
+     * */
+    @RequestMapping(value = "/UserData", method = RequestMethod.GET)
+    public ResponseEntity<ResponseResultModel> userData(Authentication auth) {
+
+        logger.info("AuthApiController, userData");
+        ResponseResultModel result = new ResponseResultModel();
+        try {
+
+            // 사용자 정보 가져옴
+            String userId = UserIdResolver.getUserIdByAuth(auth);
+
+            // 사용자 아이디를 토대로 사용자 이메일 및 정보들을 가져옴.
+            UserAuthDataResponseModel data =  authService.getUserData(userId);
+
+            result.setData(data);
+            result.setSuccess(true);
+            return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        } catch (Exception e) {
+            result. setSuccess(false);
+            result. setMessage("REFRESH_FAILED");
+            result. setErrorCode("AUTH-500");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
     }
 

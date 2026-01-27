@@ -34,8 +34,10 @@ public class SettingsApiApiController extends BaseApiController {
     @RequestMapping(value = "/general", method = RequestMethod.GET)
     public ResponseEntity<ResponseResultModel> getGeneral (Authentication auth) {
         ResponseResultModel result = new ResponseResultModel();
-
         logger.info("SettingsApiController, getGeneral");
+
+
+
         return ResponseEntity.ok(result);
     }
 

@@ -1,6 +1,6 @@
 // FILE : src/main/frontend/src/layout/MainSidebar.jsx
-import React from "react";
-import { NavLink } from "react-router-dom";
+import React, { useEffect, useMemo, useRef, useState }  from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const Item = ({ to, children }) => (
   <NavLink
@@ -11,7 +11,18 @@ const Item = ({ to, children }) => (
   </NavLink>
 );
 
-export default function MainSidebar() {
+export default function MainSidebar({
+  user = null, userLoading = false, userError = null, permissions = null,
+  bootstrap = null, bootstrapLoading = false, bootstrapError = null, 
+  onRefreshUser, onRefreshBootstrap, onLogout, // (옵션) 로그아웃 핸들러를 AppShell에서 내려주면 여기서 호출
+}) {
+  
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef(null);
+
+  const isAdmin = !!permissions?.isAdmin;
+
   return (
     <aside className="lnb">
       <div className="lnb__section">
@@ -63,10 +74,12 @@ export default function MainSidebar() {
         <Item to="/data">데이터 관리</Item>
       </div>
 
-      <div className="lnb__section">
-        <div className="lnb__title">ADMIN</div>
-        <Item to="/admin">관리자 설정</Item>
-      </div>
+      {isAdmin && (
+        <div className="lnb__section">
+          <div className="lnb__title">ADMIN</div>
+          <Item to="/admin">관리자 설정</Item>
+        </div>
+      )}
     </aside>
   );
 }

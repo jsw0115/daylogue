@@ -45,6 +45,11 @@ export default function LoginScreen() {
         loggedInAt: Date.now(),
       });
 
+      // console.log("[auth] origin =", location.origin);
+      console.log("[auth] persistent =", safeStorage.isPersistentAvailable());
+      console.log("[auth] storage(raw) =", localStorage.getItem("auth.session"));
+      console.log("[auth] storage(json) =", safeStorage.getJSON("auth.session"));
+
       nav("/home");
     } catch (err) {
       const status = err?.response?.status;

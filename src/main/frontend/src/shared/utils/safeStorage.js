@@ -3,6 +3,7 @@
 // - 기존 코드 호환: default export + named export(safeStorage) 둘 다 제공
 // - 기존 코드 호환: get/set/keys/removeItem/isPersistentAvailable 유지
 // - 신규 코드 호환: getItem/setItem/getJSON/setJSON 제공
+// - 추가: remove(key) 별칭 제공 (removeItem과 동일 동작)
 
 const memoryStore = new Map();
 
@@ -116,6 +117,11 @@ export const safeStorage = {
   },
 
   removeItem(key) {
+    removeRaw(key);
+  },
+
+  // 기존 코드에서 safeStorage.remove(key)를 쓰는 케이스 대응(별칭)
+  remove(key) {
     removeRaw(key);
   },
 

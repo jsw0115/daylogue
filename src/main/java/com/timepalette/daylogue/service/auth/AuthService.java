@@ -114,4 +114,6 @@ public interface AuthService {
     public SocialLoginResponseModel socialLogin(SocialLoginRequestModel req);
 
     public User getLoginUserByEmail(String loginId);
+
+    public UserAuthDataResponseModel getUserData(String userId);
 }

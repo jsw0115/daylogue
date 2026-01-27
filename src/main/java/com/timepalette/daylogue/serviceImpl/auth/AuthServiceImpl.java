@@ -592,6 +592,31 @@ public class AuthServiceImpl implements AuthService {
         return result;
     }
 
+    /**
+     * Authentication → Id 정보 가져와서 사용자 정보를 가져와서 사용함.
+     * @2026.01.26
+     * */
+    @Override
+    public UserAuthDataResponseModel getUserData(String userId) {
+
+        UserAuthDataResponseModel result = new UserAuthDataResponseModel();
+
+        User user = new User();
+        user = userRepo.findById(userId).orElseThrow(null);
+
+        if (user == null) {
+
+            return null;
+        }
+
+        result.setEmail(user.getEmail());
+        result.setRole(user.getRole().name());
+        result.setUserId(user.getId());
+        result.setNickName(user.getNick());
+
+        return result;
+    }
+
 
     private void ensureLoginAllowedOrThrow(User user) {
         if (user.getSt() == UserStatus.SUSPENDED || user.getSt() == UserStatus.DELETED) {

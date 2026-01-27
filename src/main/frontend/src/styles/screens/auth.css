@@ -129,6 +129,7 @@
   gap: 12px;
   position: relative;
   z-index: 1;
+  cursor: pointer;
 }
 
 .auth-brand__logo {
@@ -458,4 +459,48 @@
     animation: none !important;
     transition: none !important;
   }
+}
+
+/* FILE: src/styles/screens/auth.css (맨 아래에 추가) */
+
+.btn--full {
+  width: 100%;
+}
+
+.auth-session__actions {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+/* from 텍스트는 너무 튀지 않게 */
+.auth-session__from {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(15, 23, 42, 0.55);
+}
+
+/* 팁 박스 */
+.auth-session__tip {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  background: rgba(255, 255, 255, 0.70);
+  animation: authEnter 260ms ease-out both;
+  animation-delay: 70ms;
+}
+
+.auth-session__tipTitle {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+.auth-session__tipText {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(15, 23, 42, 0.72);
 }
