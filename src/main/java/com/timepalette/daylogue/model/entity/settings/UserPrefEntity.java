@@ -26,26 +26,27 @@ public class UserPrefEntity {
 
 	// 일반
 	@Column(name = "start_scr", length = 32, nullable = false)
-	private String startScr;
+	private String startScr = "home";
 
 	@Column(name = "date_fmt", length = 32, nullable = false)
-	private String dateFmt;
+	private String dateFmt = "YYYY-MM-DD";
 
-	@Column(name = "time_fmt", nullable = false)
-	private String timeFmt; // "24h" | "12h"
+	@Enumerated(EnumType.STRING)
+	@Column(name = "time_fmt", nullable = false, length = 8)
+	private TimeFormat timeFmt = TimeFormat._24h; // "24h" | "12h"
 
 	@Column(name = "theme_id", length = 64, nullable = false)
 	private String themeId;
 
 	// 알림
-	@Column(name = "push_on", nullable = false)
-	private boolean pushOn;
+	@Column(name = "push_on", nullable = false, columnDefinition = "TINYINT(1)")
+	private boolean pushOn = true;
 
-	@Column(name = "email_on", nullable = false)
-	private boolean emailOn;
+	@Column(name = "email_on", nullable = false, columnDefinition = "TINYINT(1)")
+	private boolean emailOn = false;
 
-	@Column(name = "inapp_on", nullable = false)
-	private boolean inappOn;
+	@Column(name = "inapp_on", nullable = false, columnDefinition = "TINYINT(1)")
+	private boolean inappOn = true;
 
 	@Column(name = "dnd_s", length = 5)
 	private String dndS; // HH:mm
@@ -54,47 +55,70 @@ public class UserPrefEntity {
 	private String dndE; // HH:mm
 
 	// 공유 기본값
-	@Column(name = "def_edit_sc", nullable = false)
-	private String defEditSc; // "single"|"future"
+	@Enumerated(EnumType.STRING)
+	@Column(name = "def_edit_sc", nullable = false, length = 16)
+	private EditScope defEditSc = EditScope.future;
 
-	@Column(name = "def_del_sc", nullable = false)
-	private String defDelSc; // "none"|"single"|"future"
+	@Enumerated(EnumType.STRING)
+	@Column(name = "def_del_sc", nullable = false, length = 16)
+	private DeleteScope defDelSc = DeleteScope.none;
 
-	@Column(name = "editor_del", nullable = false)
-	private boolean editorDel;
+	@Column(name = "editor_del", nullable = false, columnDefinition = "TINYINT(1)")
+	private boolean editorDel = false;
 
-	@Column(name = "max_edit_sc", nullable = false)
-	private String maxEditSc; // "single"|"future"
+	@Enumerated(EnumType.STRING)
+	@Column(name = "max_edit_sc", nullable = false, length = 16)
+	private EditScope maxEditSc = EditScope.future;
 
-	@Column(name = "max_del_sc", nullable = false)
-	private String maxDelSc; // "none"|"single"|"future"
+	@Enumerated(EnumType.STRING)
+	@Column(name = "max_del_sc", nullable = false, length = 16)
+	private DeleteScope maxDelSc = DeleteScope.future;
 
+	// 확장(권장)
+	@Enumerated(EnumType.STRING)
+	@Column(name = "week_start", nullable = false, length = 8)
+	private WeekStart weekStart = WeekStart.MON;
+
+	@Column(name = "locale", length = 16, nullable = false)
+	private String locale = "ko-KR";
+
+	@Column(name = "time_step_min", nullable = false)
+	private int timeStepMin = 10;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "def_event_vis", nullable = false, length = 16)
+	private EventVisibility defEventVis = EventVisibility.PRIVATE;
+
+	@Column(name = "def_event_all_day", nullable = false, columnDefinition = "TINYINT(1)")
+	private boolean defEventAllDay = true;
+
+	@Column(name = "def_event_dur_min", nullable = false)
+	private int defEventDurMin = 60;
+
+	@Column(name = "def_reminder_min")
+	private Integer defReminderMin;
+
+	@Column(name = "overlap_warn_on", nullable = false, columnDefinition = "TINYINT(1)")
+	private boolean overlapWarnOn = true;
+
+	// updated timestamp only
 	@Column(name = "u_at", nullable = false, columnDefinition = "DATETIME(3)")
 	private LocalDateTime uAt;
 
 	@PrePersist
-	public void prePersist() {
-		LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
-		if (uAt == null) uAt = now;
-
-		// DB 기본값과 동일하게 초기화(레코드 없을 때 생성용)
-		if (mode == null) mode = "B";
-		if (startScr == null) startScr = "home";
-		if (dateFmt == null) dateFmt = "YYYY-MM-DD";
-		if (timeFmt == null) timeFmt = "24h";
-		if (themeId == null) themeId = "default";
-		// 알림
-		// boolean은 default false라 DDL과 일치시키려면 명시 세팅 필요
-		// 하지만 create 시점에 서비스에서 세팅해도 됨.
-		if (defEditSc == null) defEditSc = "future";
-		if (defDelSc == null) defDelSc = "none";
-		if (maxEditSc == null) maxEditSc = "future";
-		if (maxDelSc == null) maxDelSc = "future";
+	protected void onCreate() {
+		this.uAt = LocalDateTime.now(ZoneOffset.UTC);
 	}
 
 	@PreUpdate
-	public void preUpdate() {
+	protected void onUpdate() {
 		this.uAt = LocalDateTime.now(ZoneOffset.UTC);
 	}
+
+	public enum TimeFormat { _24h, _12h }
+	public enum EditScope { single, future }
+	public enum DeleteScope { none, single, future }
+	public enum WeekStart { MON, SUN }
+	public enum EventVisibility { PRIVATE, FRIENDS, SHARED, PUBLIC }
 
 }

@@ -1,6 +1,6 @@
 package com.timepalette.daylogue.support;
 
-import com.timepalette.daylogue.model.dto.settings.CategoryDto;
+import com.timepalette.daylogue.model.dto.settings.category.CategoryDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 

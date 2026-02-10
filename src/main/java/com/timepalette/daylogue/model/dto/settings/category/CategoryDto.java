@@ -1,4 +1,4 @@
-package com.timepalette.daylogue.model.dto.settings;
+package com.timepalette.daylogue.model.dto.settings.category;
 
 import lombok.*;
 

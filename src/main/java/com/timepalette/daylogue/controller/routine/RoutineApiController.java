@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/routines")
 @Validated
 @Tag(name = "Routine", description = "루틴 정보를 가져오고 저장하는 API")
-public class RoutineApiApiController extends BaseApiController {
+public class RoutineApiController extends BaseApiController {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass()) ;
 

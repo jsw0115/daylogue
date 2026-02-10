@@ -2,6 +2,7 @@ package com.timepalette.daylogue.controller.settings;
 
 import com.timepalette.daylogue.controller.BaseApiController;
 import com.timepalette.daylogue.model.dto.common.ResponseResultModel;
+import com.timepalette.daylogue.service.settings.SettingsService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +22,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/settings")
 @Validated
-public class SettingsApiApiController extends BaseApiController {
+public class SettingsApiController extends BaseApiController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass()) ;
+    private final SettingsService settingsService;
+
+    public SettingsApiController(SettingsService settingsService) {
+        this.settingsService = settingsService;
+    }
 
     /**
      * SET-001 일반 설정 조회

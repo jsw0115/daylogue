@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -13,6 +15,8 @@ import java.time.ZoneOffset;
  * @since 2025.12.27
  */
 @MappedSuperclass
+@Getter
+@Setter
 public abstract class UtcCreatedUpdatedEntity {
 
     @Column(name = "c_at", nullable = false, columnDefinition = "DATETIME(3)")
@@ -32,10 +36,4 @@ public abstract class UtcCreatedUpdatedEntity {
     protected void onUpdate() {
         this.uAt = LocalDateTime.now(ZoneOffset.UTC);
     }
-
-    public LocalDateTime getcAt() { return cAt; }
-    public LocalDateTime getuAt() { return uAt; }
-
-    public void setcAt(LocalDateTime cAt) { this.cAt = cAt; }
-    public void setuAt(LocalDateTime uAt) { this.uAt = uAt; }
 }

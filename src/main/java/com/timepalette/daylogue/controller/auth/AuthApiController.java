@@ -125,7 +125,7 @@ public class AuthApiController extends BaseApiController {
 
         } catch (BadCredentialsException e) {
 
-            logger.error("login, BadCredentialsException");
+            logger.info("이메일 또는 비밀번호가 올바르지 않습니다.");
             result.setSuccess(false);
             result.setMessage("UNAUTHORIZED");
             result.setErrorCode("AUTH-401");
