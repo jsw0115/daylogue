@@ -5,6 +5,24 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
+  output:
+    ansi:
+      enabled: always
+
+  # 수정사항 생길시 자동 재빌드를 위한 코드
+  devtools:
+    livereload: 
+      enabled: true
+    restart:
+      enabled: true
+      additional-paths: 
+        - src/main/java
+        - src/main/resources
+      exclude: 
+        - static/**
+        - public/** 
+
+
   # 기본 연결 DB 설정
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

@@ -9,7 +9,8 @@
         <Property name="jsonInfoLogNm">./logs/test/api_json_info.log</Property>
 
         <!-- 로그 패턴: %d{...} 는 날짜 포맷 패턴이어야 함 -->
-        <Property name="layoutPattern">%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{%-5level} [%t] %c{1.} - %msg%n%throwable</Property>
+        <Property name="layoutPattern">%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{%-5level} [%t] %c{1.} - %msg%n%throwable
+        </Property>
 
         <!-- (선택) DB 설정: 비번은 환경변수로 받는 걸 권장 -->
         <Property name="DB_URL">jdbc:mariadb://localhost:3307/timeflow</Property>
@@ -79,16 +80,21 @@
         </RollingFile>
 
         <!-- (선택) DB에 ERROR 로그 저장: Log4j2 JDBC Appender -->
-        <JDBC name="dbError" tableName="tbllog">
+        <JDBC
+                name="dbError"
+                tableName="tbllog"
+                ignoreExceptions="true"
+                reconnectIntervalMillis="5000">
             <Filters>
                 <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
 
             <!-- DriverManager ConnectionSource -->
-            <DriverManager connectionString="jdbc:mysql://localhost:3307/timeflow"
-                           driverClassName="com.mysql.cj.jdbc.Driver"
-                           username="timeflow"
-                           password="timeflow9661"/>
+            <DriverManager
+                    connectionString="jdbc:mysql://localhost:3307/timeflow"
+                    driverClassName="com.mysql.cj.jdbc.Driver"
+                    username="timeflow"
+                    password="timeflow9661"/>
 
             <!-- 테이블 컬럼 매핑 --><!--
             <ColumnMappings>
