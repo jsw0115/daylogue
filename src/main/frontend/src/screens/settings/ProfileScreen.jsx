@@ -1,89 +1,89 @@
-// FILE: src/main/frontend/src/components/routine/RoutineTrackerGrid.jsx
-import React from "react";
-import Checkbox from "../../components/common/Checkbox";
+// FILE: src/main/frontend/src/screens/settings/ProfileScreen.jsx
+import React, { useState } from "react";
+import { SettingsLayout } from "./SettingsLayout";
+import { safeStorage } from "../../shared/utils/safeStorage";
+import { User, Camera } from "lucide-react";
+import Button from "../../components/common/Button";
+import TextInput from "../../components/common/TextInput";
 
-/**
- * ROUT-003: 루틴 히스토리 / 달성률 그리드용 간단한 컴포넌트
- *
- * props:
- *  - routines: [
- *      { id, name, categoryName, color, streak, days: ['월','화',...] }
- *    ]
- *  - weekDays: ['월','화','수','목','금','토','일']
- */
-const DEFAULT_WEEK_DAYS = ["월", "화", "수", "목", "금", "토", "일"];
+const DEFAULT_PROFILE = { name: "홍길동", email: "user@example.com" };
 
-function RoutineTrackerGrid({ routines = [], weekDays = DEFAULT_WEEK_DAYS }) {
-  const hasData = routines.length > 0;
+export default function ProfileScreen() {
+  const [profile, setProfile] = useState(() => safeStorage.getJSON("profile", { ...DEFAULT_PROFILE, bio: "", avatar: null }));
+  const [name, setName] = useState(profile.name || "");
+  const [email, setEmail] = useState(profile.email || "");
+  const [bio, setBio] = useState(profile.bio || "");
+
+  const saveProfile = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email && !emailRegex.test(email)) {
+      alert("올바른 이메일 형식이 아닙니다.");
+      return;
+    }
+
+    const next = { ...profile, name: name.trim(), email: email.trim(), bio: bio.trim() };
+    safeStorage.setJSON("profile", next);
+    setProfile(next);
+    alert("프로필이 저장되었습니다.");
+  };
 
   return (
-    <div className="routine-grid">
-      <header className="routine-grid__header">
-        <h3 className="routine-grid__title">루틴 달성 현황</h3>
-        <p className="routine-grid__subtitle">
-          요일별 체크 상태와 연속 스트릭을 한눈에 확인할 수 있습니다.
-        </p>
-      </header>
+    <SettingsLayout title="프로필 편집" description="사용자 정보와 프로필 사진을 관리합니다.">
+      <div className="settings-form">
+        <div className="settings-section">
+          <div className="flex flex-col items-center mb-8 p-6 bg-slate-50 rounded-2xl border border-slate-100">
+            <div className="relative w-28 h-28 rounded-full bg-white flex items-center justify-center mb-4 overflow-hidden border-4 border-white shadow-sm group">
+              {profile.avatar ? (
+                <img src={profile.avatar} alt="avatar" className="w-full h-full object-cover" />
+              ) : (
+                <User size={64} className="text-gray-400" />
+              )}
+              <label className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+                <Camera size={32} className="text-white" />
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      const url = URL.createObjectURL(file);
+                      setProfile((prev) => ({ ...prev, avatar: url }));
+                    }
+                  }}
+                />
+              </label>
+            </div>
+            <div className="text-sm text-slate-500 font-medium">프로필 사진 변경</div>
+          </div>
+        </div>
 
-      <div className="routine-grid__table-wrapper">
-        <table className="routine-grid__table">
-          <thead>
-            <tr>
-              <th>루틴</th>
-              {weekDays.map((d) => (
-                <th key={d}>{d}</th>
-              ))}
-              <th>연속 스트릭</th>
-            </tr>
-          </thead>
-          <tbody>
-            {hasData ? (
-              routines.map((r) => (
-                <tr key={r.id}>
-                  <td className="routine-grid__routine-cell">
-                    <span
-                      className="routine-grid__color-dot"
-                      style={{ backgroundColor: r.color || "#6366f1" }}
-                    />
-                    <div>
-                      <div className="routine-grid__routine-name">
-                        {r.name}
-                      </div>
-                      {r.categoryName && (
-                        <div className="routine-grid__routine-category">
-                          {r.categoryName}
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                  {weekDays.map((d) => (
-                    <td key={d} className="routine-grid__check-cell">
-                      <Checkbox
-                        checked={r.days?.includes(d)}
-                        onChange={() => {}}
-                      />
-                    </td>
-                  ))}
-                  <td className="routine-grid__streak-cell">
-                    {r.streak ?? 0}일
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  className="routine-grid__empty"
-                  colSpan={weekDays.length + 2}
-                >
-                  아직 등록된 루틴이 없습니다. 상단에서 루틴을 추가해 보세요.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+        <div className="settings-section">
+          <div className="settings-section-title">기본 정보</div>
+          <div className="settings-row">
+            <div className="settings-row__label">이름</div>
+            <div className="settings-row__control w-1/2">
+              <TextInput value={name} onChange={(e) => setName(e.target.value)} fullWidth />
+            </div>
+          </div>
+          <div className="settings-row">
+            <div className="settings-row__label">이메일</div>
+            <div className="settings-row__control w-1/2">
+              <TextInput value={email} onChange={(e) => setEmail(e.target.value)} fullWidth />
+            </div>
+          </div>
+          <div className="settings-row">
+            <div className="settings-row__label">상태 메시지</div>
+            <div className="settings-row__control w-1/2">
+              <TextInput value={bio} onChange={(e) => setBio(e.target.value)} placeholder="오늘의 기분이나 상태를 입력하세요" fullWidth />
+            </div>
+          </div>
+        </div>
+
+        <div className="settings-actions-right">
+          <Button onClick={saveProfile}>변경사항 저장</Button>
+        </div>
       </div>
-    </div>
+    </SettingsLayout>
   );
 }
-
-export default RoutineTrackerGrid;

@@ -384,7 +384,8 @@
 
 .auth-card .btn--primary {
   color: white;
-  background: linear-gradient(135deg, rgba(124, 58, 237, 1), rgba(99, 102, 241, 1));
+  /* background: linear-gradient(135deg, rgba(124, 58, 237, 1), rgba(99, 102, 241, 1)); */
+  background: linear-gradient(135deg, rgba(131, 84, 217, 0.7), rgba(99, 135, 258, 0.7));
   border-color: rgba(124, 58, 237, 0.35);
   box-shadow: 0 10px 22px rgba(124, 58, 237, 0.18);
 }

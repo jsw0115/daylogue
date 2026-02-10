@@ -1,54 +1,75 @@
 // FILE: src/main/frontend/src/screens/settings/SecuritySettingsScreen.jsx
 import React from "react";
-import PageContainer from "../../layout/PageContainer";
+import { SettingsLayout } from "./SettingsLayout";
 import TextInput from "../../components/common/TextInput";
 import Button from "../../components/common/Button";
+import Checkbox from "../../components/common/Checkbox";
+import Select from "../../components/common/Select";
 
 function SecuritySettingsScreen() {
   return (
-    <PageContainer
-      screenId="SET-005"
+    <SettingsLayout
       title="보안 / 로그인 설정"
-      subtitle="비밀번호와 소셜 로그인, 로그인 기기를 관리합니다."
+      description="비밀번호와 소셜 로그인, 2단계 인증 및 기기를 관리합니다."
     >
-      <div className="screen settings-screen settings-screen--security">
+      <div className="settings-form">
         {/* 비밀번호 변경 */}
-        <div className="settings-card settings-card--password">
-          <header className="settings-card__header">
-            <h3 className="settings-card__title">비밀번호 변경</h3>
-            <p className="settings-card__subtitle">
-              정기적으로 비밀번호를 변경하면 계정을 더 안전하게 지킬 수
-              있습니다.
-            </p>
-          </header>
+        <div className="settings-section">
+          <div className="settings-section-title">비밀번호 변경</div>
+            <div className="settings-row">
+              <div className="settings-row__label">현재 비밀번호</div>
+              <div className="settings-row__control w-1/2"><TextInput type="password" fullWidth /></div>
+            </div>
+            <div className="settings-row">
+              <div className="settings-row__label">새 비밀번호</div>
+              <div className="settings-row__control w-1/2"><TextInput type="password" fullWidth /></div>
+            </div>
+            <div className="settings-row">
+              <div className="settings-row__label">새 비밀번호 확인</div>
+              <div className="settings-row__control w-1/2"><TextInput type="password" fullWidth /></div>
+            </div>
 
-          <form className="settings-form">
-            <TextInput label="현재 비밀번호" type="password" />
-            <TextInput label="새 비밀번호" type="password" />
-            <TextInput label="새 비밀번호 확인" type="password" />
-
-            <div className="settings-form__actions">
+            <div className="settings-actions-right mt-4">
               <Button type="button" variant="primary">
                 비밀번호 변경
               </Button>
             </div>
-          </form>
         </div>
 
+        <hr className="settings-divider" />
+
+        {/* 추가 보안 */}
+        <div className="settings-section">
+          <div className="settings-section-title">추가 보안</div>
+          <div className="settings-row">
+            <div className="settings-row__label">
+              2단계 인증 (2FA)
+              <div className="text-muted text-xs font-normal mt-1">로그인 시 이메일이나 SMS로 인증 코드를 한 번 더 확인합니다.</div>
+            </div>
+            <Checkbox />
+          </div>
+          <div className="settings-row">
+            <div className="settings-row__label">자동 로그아웃</div>
+            <div className="settings-row__control">
+              <Select
+                options={[{value: "never", label: "사용 안 함"}, {value: "30", label: "30분 후"}, {value: "60", label: "1시간 후"}]}
+                defaultValue="never"
+              />
+            </div>
+          </div>
+        </div>
+
+        <hr className="settings-divider" />
+
         {/* 소셜 로그인 연동 */}
-        <div className="settings-card settings-card--social">
-          <header className="settings-card__header">
-            <h3 className="settings-card__title">소셜 로그인 연동</h3>
-            <p className="settings-card__subtitle">
-              Google / Apple / Kakao 계정을 연결해 더 편하게 로그인합니다.
-            </p>
-          </header>
+        <div className="settings-section">
+          <div className="settings-section-title">소셜 로그인 연동</div>
 
           <div className="settings-social-list">
-            <div className="settings-social-item">
-              <div className="settings-social-item__info">
-                <span className="settings-social-item__name">Google</span>
-                <span className="settings-social-item__status">
+            <div className="settings-list-item">
+              <div className="settings-menu-item__content">
+                <span className="font-bold">Google</span>
+                <span className="text-muted text-sm">
                   아직 연결되지 않음
                 </span>
               </div>
@@ -56,10 +77,10 @@ function SecuritySettingsScreen() {
                 연결하기
               </Button>
             </div>
-            <div className="settings-social-item">
-              <div className="settings-social-item__info">
-                <span className="settings-social-item__name">Apple</span>
-                <span className="settings-social-item__status">
+            <div className="settings-list-item">
+              <div className="settings-menu-item__content">
+                <span className="font-bold">Apple</span>
+                <span className="text-muted text-sm">
                   아직 연결되지 않음
                 </span>
               </div>
@@ -67,10 +88,10 @@ function SecuritySettingsScreen() {
                 연결하기
               </Button>
             </div>
-            <div className="settings-social-item">
-              <div className="settings-social-item__info">
-                <span className="settings-social-item__name">Kakao</span>
-                <span className="settings-social-item__status">
+            <div className="settings-list-item">
+              <div className="settings-menu-item__content">
+                <span className="font-bold">Kakao</span>
+                <span className="text-muted text-sm">
                   demo@kakao.com 연결됨
                 </span>
               </div>
@@ -81,46 +102,43 @@ function SecuritySettingsScreen() {
           </div>
         </div>
 
-        {/* 로그인 기기 관리 */}
-        <div className="settings-card settings-card--devices">
-          <header className="settings-card__header">
-            <h3 className="settings-card__title">로그인 기기 관리</h3>
-            <p className="settings-card__subtitle">
-              로그인된 기기 목록을 확인하고 필요 시 로그아웃할 수 있습니다.
-            </p>
-          </header>
+        <hr className="settings-divider" />
 
-          <ul className="settings-device-list">
-            <li className="settings-device-item">
-              <div className="settings-device-item__info">
-                <div className="settings-device-item__name">
+        {/* 로그인 기기 관리 */}
+        <div className="settings-section">
+          <div className="settings-section-title">로그인 기기 관리</div>
+
+          <div className="settings-device-list">
+            <div className="settings-list-item">
+              <div className="settings-menu-item__content">
+                <div className="font-bold">
                   Chrome · Windows PC
                 </div>
-                <div className="settings-device-item__meta">
+                <div className="text-muted text-sm">
                   마지막 접속: 2025-12-06 19:20
                 </div>
               </div>
               <Button type="button" size="sm" variant="ghost">
                 이 기기
               </Button>
-            </li>
-            <li className="settings-device-item">
-              <div className="settings-device-item__info">
-                <div className="settings-device-item__name">
+            </div>
+            <div className="settings-list-item">
+              <div className="settings-menu-item__content">
+                <div className="font-bold">
                   Safari · iPhone
                 </div>
-                <div className="settings-device-item__meta">
+                <div className="text-muted text-sm">
                   마지막 접속: 2025-12-05 23:10
                 </div>
               </div>
               <Button type="button" size="sm" variant="ghost">
                 로그아웃
               </Button>
-            </li>
-          </ul>
+            </div>
+          </div>
         </div>
       </div>
-    </PageContainer>
+    </SettingsLayout>
   );
 }
 

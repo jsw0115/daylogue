@@ -1,7 +1,11 @@
 // FILE: src/main/frontend/src/screens/settings/ThemeStickerSettingsScreen.jsx
 import React from "react";
-import PageContainer from "../../layout/PageContainer";
-import Button from "../../components/common/Button";
+import { SettingsLayout } from "./SettingsLayout";
+import { Button } from "../../components/ui/button";
+import { 
+  Smile, Flame, Coffee, Star, BookOpen, Activity, Leaf, Zap 
+} from "lucide-react";
+import { useTheme } from "../../shared/context/ThemeContext";
 
 const THEME_PRESETS = [
   {
@@ -22,77 +26,112 @@ const THEME_PRESETS = [
 ];
 
 function ThemeStickerSettingsScreen() {
+  const { theme: currentTheme, setTheme } = useTheme();
+
   return (
-    <PageContainer
-      screenId="SET-003"
+    <SettingsLayout
       title="테마 / 색상 / 스티커"
-      subtitle="앱의 분위기를 나에게 맞게 커스터마이징합니다."
+      description="앱의 분위기와 글자 크기 등을 나에게 맞게 커스터마이징합니다."
     >
-      <div className="screen settings-screen settings-screen--theme">
-        <div className="settings-card settings-card--theme">
-          <header className="settings-card__header">
-            <h3 className="settings-card__title">테마 선택</h3>
-            <p className="settings-card__subtitle">
-              실시간 미리보기를 보면서 테마를 골라 보세요.
-            </p>
-          </header>
+        <div className="settings-form">
+          <div className="settings-section">
+          <div className="settings-section-title">테마 선택</div>
 
           <div className="settings-theme-grid">
-            {THEME_PRESETS.map((theme) => (
-              <div
-                key={theme.id}
-                className="settings-theme-card"
-                data-theme-id={theme.id}
-              >
-                <div className="settings-theme-card__preview" />
-                <div className="settings-theme-card__body">
-                  <div className="settings-theme-card__name">
-                    {theme.name}
+            {THEME_PRESETS.map((t) => {
+              const isActive = currentTheme === t.id;
+              return (
+                <div
+                  key={t.id}
+                  className={`settings-theme-card ${isActive ? "ring-2 ring-primary" : ""}`}
+                  data-theme-id={t.id}
+                >
+                  <div className={`settings-theme-card__preview ${t.id === 'dark' ? 'bg-slate-900' : t.id === 'pastel' ? 'bg-[#FFFBF0]' : 'bg-white'}`} />
+                  <div className="settings-theme-card__body">
+                    <div className="settings-theme-card__name">
+                      {t.name}
+                    </div>
+                    <div className="settings-theme-card__desc">
+                      {t.description}
+                    </div>
                   </div>
-                  <div className="settings-theme-card__desc">
-                    {theme.description}
+                  <div className="settings-theme-card__footer">
+                    <Button 
+                      type="button" 
+                      size="sm" 
+                      variant={isActive ? "default" : "ghost"}
+                      onClick={() => setTheme(t.id)}
+                    >
+                      {isActive ? "사용 중" : "적용"}
+                    </Button>
                   </div>
                 </div>
-                <div className="settings-theme-card__footer">
-                  <Button type="button" size="sm" variant="ghost">
-                    적용
-                  </Button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
-        </div>
+          </div>
 
-        <div className="settings-card settings-card--sticker">
-          <header className="settings-card__header">
-            <h3 className="settings-card__title">스티커 / 이모지</h3>
-            <p className="settings-card__subtitle">
-              다이어리와 타임바에 사용할 스티커 세트를 고릅니다.
-            </p>
-          </header>
+          <hr className="settings-divider" />
+
+          <div className="settings-section">
+          <div className="settings-section-title">화면 스타일</div>
+            <div className="field">
+              <label className="field__label">글자 크기</label>
+              <div className="flex items-center gap-4">
+                <span className="text-xs">가</span>
+                <input type="range" min="1" max="3" step="1" className="flex-1" defaultValue="2" />
+                <span className="text-lg">가</span>
+              </div>
+              <div className="flex justify-between text-xs text-muted mt-1">
+                <span>작게</span><span>보통</span><span>크게</span>
+              </div>
+            </div>
+          </div>
+
+          <hr className="settings-divider" />
+
+          <div className="settings-section">
+          <div className="settings-section-title">스티커 / 이모지 (Lucide Icons)</div>
 
           <div className="settings-sticker-preview">
             <div className="settings-sticker-preview__row">
-              <span className="settings-sticker-chip">😊 기분 좋음</span>
-              <span className="settings-sticker-chip">🔥 열공 모드</span>
-              <span className="settings-sticker-chip">🌿 휴식</span>
-              <span className="settings-sticker-chip">🏃 루틴 성공</span>
+              <span className="settings-sticker-chip">
+                <Smile size={16} style={{ marginRight: 6 }} /> 기분 좋음
+              </span>
+              <span className="settings-sticker-chip">
+                <Flame size={16} style={{ marginRight: 6 }} /> 열공 모드
+              </span>
+              <span className="settings-sticker-chip">
+                <Leaf size={16} style={{ marginRight: 6 }} /> 휴식
+              </span>
+              <span className="settings-sticker-chip">
+                <Activity size={16} style={{ marginRight: 6 }} /> 루틴 성공
+              </span>
             </div>
             <div className="settings-sticker-preview__row">
-              <span className="settings-sticker-chip">⭐ 중요</span>
-              <span className="settings-sticker-chip">☕ 휴식 타임</span>
-              <span className="settings-sticker-chip">📚 공부</span>
+              <span className="settings-sticker-chip">
+                <Star size={16} style={{ marginRight: 6 }} /> 중요
+              </span>
+              <span className="settings-sticker-chip">
+                <Coffee size={16} style={{ marginRight: 6 }} /> 휴식 타임
+              </span>
+              <span className="settings-sticker-chip">
+                <BookOpen size={16} style={{ marginRight: 6 }} /> 공부
+              </span>
+              <span className="settings-sticker-chip">
+                <Zap size={16} style={{ marginRight: 6 }} /> 에너지
+              </span>
             </div>
           </div>
+          </div>
 
-          <div className="settings-form__actions">
-            <Button type="button" variant="primary">
+          <div className="settings-actions-right">
+            <Button type="button" variant="default">
               테마 / 스티커 적용
             </Button>
           </div>
         </div>
-      </div>
-    </PageContainer>
+    </SettingsLayout>
   );
 }
 

@@ -1,17 +1,14 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path' // 반드시 있어야 함
+const __dirname = path.resolve();
 
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@components': path.resolve(__dirname, './src/components'),
-      '@screens': path.resolve(__dirname, './src/screens'),
-      '@shared': path.resolve(__dirname, './src/shared'),
-      '@layout': path.resolve(__dirname, './src/layout'),
-      '@styles': path.resolve(__dirname, './src/styles'),
+      // 윈도우 환경에서 가장 안전한 절대 경로 매핑 방식입니다.
+      "@": path.resolve(__dirname, "src"),
     },
   },
   server: {

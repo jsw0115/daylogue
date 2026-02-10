@@ -1,85 +1,48 @@
-// FILE: src/main/frontend/src/shared/context/ThemeContext.jsx
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-
-const STORAGE_KEY = "app-theme";
-
-// localStorage 접근을 항상 안전하게 처리하는 헬퍼
-function safeGetTheme() {
-  if (typeof window === "undefined") return "light";
-
-  try {
-    // 여기서도 window.localStorage 접근 자체를 try 안에서 처리
-    const ls = window.localStorage;
-    if (!ls) return "light";
-
-    const saved = ls.get(STORAGE_KEY);
-    return saved || "light";
-  } catch (e) {
-    // SecurityError 등 모든 에러 무시하고 기본값 사용
-    return "light";
-  }
-}
-
-function safeSetTheme(theme) {
-  if (typeof window === "undefined") return;
-
-  try {
-    const ls = window.localStorage;
-    if (!ls) return;
-    ls.set(STORAGE_KEY, theme);
-  } catch (e) {
-    // 저장 실패해도 앱 동작에는 영향 없도록 그냥 무시
-  }
-}
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 const ThemeContext = createContext({
   theme: "light",
-  setTheme: () => {},
+  setTheme: () => null,
 });
 
-/**
- * ThemeProvider
- * - theme 상태를 관리하고
- * - documentElement 에 data-theme 를 세팅해서 CSS 테마가 동작하도록 함
- */
-export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => safeGetTheme());
+export function ThemeProvider({ children, defaultTheme = "light", storageKey = "daylogue-ui-theme" }) {
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem(storageKey) || defaultTheme;
+  });
 
-  // theme 변경 시 DOM, localStorage 반영
   useEffect(() => {
-    // data-theme 속성 세팅 (CSS에서 :root[data-theme="..."] 로 사용)
-    if (typeof document !== "undefined") {
-      document.documentElement.setAttribute("data-theme", theme);
-    }
+    const root = window.document.documentElement;
 
-    safeSetTheme(theme);
+    // 기존 테마 클래스 제거
+    root.classList.remove("light", "dark", "pastel");
+
+    // 새 테마 클래스 추가 (light는 기본값이므로 클래스 추가 안 함, 필요시 추가 가능)
+    if (theme !== "light") {
+      root.classList.add(theme);
+    }
   }, [theme]);
 
-  const value = useMemo(
-    () => ({
-      theme,
-      setTheme,
-    }),
-    [theme]
-  );
+  const value = {
+    theme,
+    setTheme: (newTheme) => {
+      localStorage.setItem(storageKey, newTheme);
+      setTheme(newTheme);
+    },
+  };
 
   return (
-    <ThemeContext.Provider value={value}>
+    <ThemeContext.Provider value={value} {...children}>
       {children}
     </ThemeContext.Provider>
   );
 }
 
-export function useTheme() {
-  const ctx = useContext(ThemeContext);
-  if (!ctx) {
-    throw new Error("useTheme must be used within ThemeProvider");
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+
+  if (context === undefined) {
+    throw new Error("useTheme must be used within a ThemeProvider");
   }
-  return ctx;
-}
+
+  return context;
+};

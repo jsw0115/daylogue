@@ -1,6 +1,6 @@
 // FILE: src/main/frontend/src/screens/settings/CategoryColorSettingsScreen.jsx
 import React, { useEffect, useMemo, useState } from "react";
-import PageContainer from "../../layout/PageContainer";
+import { SettingsLayout } from "./SettingsLayout";
 import { DEFAULT_CATEGORIES } from "../../shared/constants/categories";
 import Button from "../../components/common/Button";
 
@@ -329,10 +329,9 @@ export default function CategoryColorSettingsScreen() {
   }
 
   return (
-    <PageContainer
-      screenId="SET-006"
+    <SettingsLayout
       title="카테고리 색 / 아이콘 설정"
-      subtitle="플래너/통계/캘린더에서 공통으로 사용하는 카테고리 색상과 아이콘을 관리합니다."
+      description="플래너/통계/캘린더에서 공통으로 사용하는 카테고리 색상과 아이콘을 관리합니다."
     >
       <div className="ccs">
         {/* Top Actions */}
@@ -708,6 +707,6 @@ export default function CategoryColorSettingsScreen() {
           </Alert>
         </Snackbar>
       </div>
-    </PageContainer>
+    </SettingsLayout>
   );
 }

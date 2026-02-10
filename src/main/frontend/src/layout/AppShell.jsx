@@ -198,7 +198,8 @@ export default function AppShell() {
         permissions={permissions} bootstrap={bootstrap} bootstrapLoading={bootstrapLoading} bootstrapError={bootstrapError} onRefreshBootstrap={refreshBootstrap}/>
 
       <div className="app-shell__body">
-        {!isMobile && <Sidebar />}
+        {!isMobile && <Sidebar  user={user} userLoading={userLoading} userError={userError} onRefreshUser={refreshUser}
+        permissions={permissions} bootstrap={bootstrap} bootstrapLoading={bootstrapLoading} bootstrapError={bootstrapError} onRefreshBootstrap={refreshBootstrap}/>}
 
         <main className="app-shell__main">
           {/* 자식 화면(HomeDashboardScreen 포함)이 me를 꺼내 쓸 수 있게 Outlet context로 전달 */}

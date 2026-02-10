@@ -34,7 +34,8 @@
   font-size: 13px;
 }
 
-.btn:hover { background: #f3f4f6; }
+/* .btn:hover { background-color: rgba(126, 60, 237, 1) !important; } */
+.btn:hover { background: linear-gradient(135deg, rgba(131, 84, 217, 0.9), rgba(99, 135, 258, 0.9)) !important; }
 .btn.primary { background: #4f46e5; border-color: #4f46e5; color: #fff; }
 .btn.primary:hover { filter: brightness(0.97); }
 .btn.danger { border-color: #f1c0c0; color: #b42318; }

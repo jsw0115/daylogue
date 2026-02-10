@@ -91,6 +91,8 @@ import ThemeStickerSettingsScreen from "../screens/settings/ThemeStickerSettings
 import NotificationSettingsScreen from "../screens/settings/NotificationSettingsScreen";
 import SecuritySettingsScreen from "../screens/settings/SecuritySettingsScreen";
 import CategoryColorSettingsScreen from "../screens/settings/CategoryColorSettingsScreen";
+import WorkReportMasterSettingsScreen from "../screens/settings/WorkReportMasterSettingsScreen";
+import ShareUsersSettingsScreen from "../screens/settings/ShareUsersSettingsScreen";
 
 // Admin
 import AdminSettingsScreen from "../screens/admin/AdminSettingsScreen";
@@ -229,6 +231,8 @@ export default function AppRoutes() {
         <Route path="/settings/notifications" element={<NotificationSettingsScreen />} />
         <Route path="/settings/security" element={<SecuritySettingsScreen />} />
         <Route path="/settings/categories" element={<CategoryColorSettingsScreen />} />
+        <Route path="/settings/work-master" element={<WorkReportMasterSettingsScreen />} />
+        <Route path="/settings/share-users" element={<ShareUsersSettingsScreen />} />
 
         <Route path="/focus" element={<FocusModeScreen />} />
 
