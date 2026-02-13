@@ -1,732 +1,416 @@
-/* FILE: src/main/frontend/src/styles/compare-stats.css */
-
-/* ===== Top / Actions ===== */
-.pva-actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
+/* Container & Global Fixes */
+.pva-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  background-color: #f8fafc;
+  min-height: 100vh;
 }
 
-.pva-top {
-  padding: 14px;
-}
-
-.pva-top__row {
+/* Header */
+.pva-header {
   display: flex;
   justify-content: space-between;
-  gap: 14px;
-  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 20px;
 }
 
-.pva-top__left {
+.pva-actions button {
+  height: 38px;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* Controls Card (Grid Layout) */
+.pva-controls {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+}
+
+.pva-controls__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.control-wrapper {
   display: flex;
   align-items: center;
   gap: 10px;
-  flex-wrap: wrap;
-}
-
-.pva-top__right {
-  flex: 1;
-  min-width: 260px;
-}
-
-.pva-right-controls {
-  justify-content: flex-end;
 }
 
 .pva-label {
   font-size: 12px;
-  color: #6b7280;
+  font-weight: 600;
+  color: #64748b;
+  margin-left: 2px;
 }
 
-.pva-mini {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.pva-toggle button {
-  font-size: 12px;
-}
-
-.pva-date {
-  width: 160px;
-}
-
-.pva-select {
-  min-width: 160px;
-  height: 36px;
-  padding: 5px 12px;
-}
-
-.pva-iconbar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 10px;
-  background: #fff;
-  color: #374151;
-}
-
-.pva-search {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 36px;
-  padding: 0 10px;
-  border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 10px;
-  background: #fff;
-  min-width: 220px;
-}
-
-.pva-search__input {
-  border: none;
-  outline: none;
-  width: 100%;
+/* MUI Toggle Override */
+.pva-toggle-group .MuiToggleButton-root {
+  height: 38px;
+  padding: 0 16px;
   font-size: 13px;
-  background: transparent;
-  color: #111827;
+  border-color: #e2e8f0;
+  color: #64748b;
+  text-transform: none;
 }
 
-/* ===== KPI ===== */
-.pva-kpi {
-  padding: 10px 12px;
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 14px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+.pva-toggle-group .MuiToggleButton-root.Mui-selected {
+  background-color: #eff6ff !important;
+  color: #3b82f6 !important;
+  border-color: #bfdbfe !important;
 }
 
-.pva-kpi__title {
-  font-size: 12px;
-  color: #6b7280;
+/* MUI TextField Override */
+.pva-date-input .MuiInputBase-root {
+  height: 38px;
+  border-radius: 8px;
+  background-color: #fff;
+  font-size: 13px;
+  width: 150px;
 }
 
-.pva-kpi__value {
-  margin-top: 4px;
-  font-size: 14px;
-  color: #111827;
-  font-weight: 700;
-  line-height: 1.35;
-}
-.pva-kpi__value > div + div {
-  margin-top: 4px;
-}
-.pva-kpi__value b {
-  font-weight: 900;
-}
-
-.pva-kpi__hint {
-  margin-top: 6px;
-  font-size: 12px;
-  color: #6b7280;
-  line-height: 1.4;
-}
-
-/* ===== List ===== */
-.pva-list-head {
+/* Summary Box */
+.pva-summary-box {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  font-weight: 700;
-  color: #111827;
+  gap: 12px;
+  background: #f1f5f9;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
 }
 
-.pva-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.pva-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 12px;
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 16px;
-  background: #fff;
-  cursor: pointer;
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
-}
-
-.pva-row:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.07);
-}
-
-.pva-row__left {
-  min-width: 280px;
-}
-
-.pva-row__title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.pva-row__icon {
-  width: 24px;
-  height: 24px;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  color: #111827;
-}
-.pva-row__icon svg {
-  width: 18px;
-  height: 18px;
-  display: block;
-}
-
-.pva-row__name {
+.pva-summary-box .value {
   font-weight: 800;
-  color: #111827;
+  font-size: 16px;
+  color: #0f172a;
 }
 
-.pva-row__meta {
-  margin-top: 6px;
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  align-items: center;
+.pva-summary-box .delta.warning {
+  color: #f59e0b;
+  font-weight: 600;
 }
 
-.pva-row__right {
-  flex: 1;
-  min-width: 240px;
+.pva-divider {
+  margin: 16px 0 !important;
+}
+
+/* Filter Grid System (핵심 수정) */
+.pva-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  align-items: end;
+}
+
+.filter-item {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  align-items: flex-end;
+  gap: 6px;
 }
 
-.pva-row__rate {
-  font-weight: 900;
-  color: #111827;
-}
-
-.pva-progress {
+/* Custom Select & Input Standardization */
+.tf-select, .pva-search-box input {
+  height: 38px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 13px;
   width: 100%;
-  max-width: 320px;
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(0,0,0,0.06);
+  background-color: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.tf-select:focus, .pva-search-box input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.pva-search-box {
+  position: relative;
+  width: 100%;
+}
+
+.pva-search-box svg {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+}
+
+.pva-search-box input {
+  padding-left: 34px;
+}
+
+/* Main Content Grid */
+.pva-grid-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+/* Card Item */
+.pva-card-item {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
   overflow: hidden;
 }
 
-.pva-progress > div {
-  height: 100%;
-  border-radius: 999px;
-  background: #111827;
+.pva-card-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  border-color: #bfdbfe;
 }
 
-.pva-row__hint {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.pva-mchip {
-  font-size: 12px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  background: rgba(0,0,0,0.06);
-  color: #374151;
-}
-
-.pva-pill {
-  font-size: 12px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  font-weight: 800;
-  border: 1px solid rgba(0,0,0,0.08);
-}
-
-.pva-pill--under {
-  background: rgba(239, 68, 68, 0.08);
-  color: #b91c1c;
-}
-
-.pva-pill--over {
-  background: rgba(59, 130, 246, 0.10);
-  color: #1d4ed8;
-}
-
-.pva-pill--ok {
-  background: rgba(34, 197, 94, 0.10);
-  color: #047857;
-}
-
-/* ===== Drawer (Right/Left 공통) ===== */
-/* 정책 Drawer(좌) + 드릴다운 Drawer(우) 둘 다 스크롤/고정 KPI를 안정적으로 */
-.pva-drawer {
-  width: min(520px, 92vw);
-  padding: 14px;
+.pva-item-header {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.pva-drawer__header {
-  display: flex;
-  justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
+  margin-bottom: 16px;
 }
 
-/* CompareStatsScreen.jsx에서 추가 사용되는 wrapper */
-.pva-drawer__title {
+.pva-icon-box {
+  width: 42px;
+  height: 42px;
+  background: #f8fafc;
+  border-radius: 12px;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.pva-drawer__name {
-  font-weight: 900;
-  color: #111827;
-  display: flex;
-  gap: 10px;
   align-items: center;
-  font-size: 16px;
-  min-width: 0;
-}
-
-.pva-drawer__name > span:last-child {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.pva-drawer__sub {
-  margin-top: 4px;
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.pva-drawer__actions {
-  display: flex;
-  gap: 6px;
+  justify-content: center;
+  font-size: 20px;
   flex-shrink: 0;
 }
 
-.pva-drawer__kpi {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-}
-
-.pva-kcard {
-  padding: 10px;
-  border-radius: 14px;
-  border: 1px solid rgba(0,0,0,0.06);
-  background: #fff;
-}
-
-.pva-kcard__label {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.pva-kcard__value {
-  margin-top: 4px;
-  font-weight: 900;
-  color: #111827;
-  font-size: 14px;
-}
-
-.pva-drawer__body {
+.pva-info {
   flex: 1;
-  overflow: auto;
-  padding-right: 2px;
 }
 
-/* ===== Radix Tabs ===== */
-.pva-tabs {
-  width: 100%;
+.pva-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: #1e293b;
+  margin-bottom: 4px;
 }
 
-.pva-tabs__list {
-  display: flex;
-  gap: 8px;
-  padding: 6px;
-  border-radius: 14px;
-  background: rgba(0,0,0,0.05);
+.pva-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-weight: 600;
 }
 
-.pva-tabs__trigger {
-  all: unset;
-  cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 800;
-  color: #374151;
-}
+.pva-badge.success { background: #dcfce7; color: #166534; }
+.pva-badge.warning { background: #fef3c7; color: #92400e; }
+.pva-badge.error { background: #fee2e2; color: #991b1b; }
 
-.pva-tabs__trigger[data-state="active"] {
-  background: #fff;
-  color: #111827;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.08);
-}
-
-.pva-tabs__content {
-  padding: 12px 2px;
-}
-
-.pva-section-title {
-  font-size: 13px;
-  font-weight: 900;
-  color: #111827;
-  margin-bottom: 8px;
-}
-
-.pva-muted {
-  margin-top: 10px;
-  font-size: 12px;
-  color: #6b7280;
-  line-height: 1.4;
-}
-
-/* ===== Daily bars ===== */
-.pva-daily {
+.pva-rate {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  align-items: flex-end;
 }
 
-.pva-daily__row {
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 14px;
-  padding: 10px;
-  background: #fff;
+.pva-rate .val {
+  font-size: 20px;
+  font-weight: 900;
+  color: #0f172a;
 }
 
-.pva-daily__date {
-  font-size: 12px;
-  color: #6b7280;
+.pva-rate .lbl {
+  font-size: 11px;
+  color: #64748b;
 }
 
-.pva-daily__bars {
-  margin-top: 8px;
+/* Ghost Chart */
+.pva-ghost-chart {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.pva-bar {
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(0,0,0,0.12);
-}
-
-.pva-bar--plan {
-  background: rgba(17, 24, 39, 0.65);
-}
-
-.pva-bar--actual {
-  background: rgba(17, 24, 39, 0.30);
-}
-
-.pva-daily__meta {
-  margin-top: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
-/* ===== Top deviation ===== */
-.pva-topdev {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.pva-topdev__row {
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 14px;
-  padding: 10px;
-  background: #fff;
-}
-
-.pva-topdev__title {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  font-weight: 800;
-  color: #111827;
-}
-
-.pva-type {
-  font-size: 11px;
-  font-weight: 900;
-  padding: 3px 7px;
-  border-radius: 999px;
-  background: rgba(0,0,0,0.08);
-  color: #374151;
-}
-
-.pva-topdev__meta {
-  margin-top: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-/* ===== Items ===== */
-.pva-item-toolbar {
+.chart-label {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.pva-item-toolbar__left,
-.pva-item-toolbar__right {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.pva-items {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.pva-item {
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 14px;
-  padding: 10px;
-  background: #fff;
-}
-
-.pva-item__top {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  align-items: center;
-}
-
-.pva-item__title {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  font-weight: 900;
-  color: #111827;
-}
-
-.pva-item__meta {
-  margin-top: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
-.pva-item__ob {
-  margin-top: 8px;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.pva-obchip {
   font-size: 11px;
-  padding: 3px 7px;
-  border-radius: 999px;
-  background: rgba(239,68,68,0.10);
-  color: #b91c1c;
-  border: 1px solid rgba(239,68,68,0.18);
+  color: #64748b;
+  font-weight: 500;
 }
 
-/* ===== Review ===== */
-.pva-review {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.pva-review__block {
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 14px;
-  padding: 12px;
-  background: #fff;
-}
-
-.pva-review__label {
-  font-size: 12px;
-  color: #6b7280;
-  font-weight: 800;
-}
-
-.pva-tags {
-  margin-top: 10px;
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.pva-tag {
-  border-radius: 999px;
-}
-
-.pva-textarea {
+.chart-track {
+  position: relative;
+  height: 10px;
+  background: #f1f5f9;
+  border-radius: 99px;
   width: 100%;
-  margin-top: 10px;
+}
+
+/* Ghost (Plan) Bar */
+.bar-ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: #cbd5e1; /* Grey for Plan */
+  border-radius: 99px;
+  opacity: 0.5;
+  z-index: 1;
+}
+
+/* Solid (Actual) Bar */
+.bar-solid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 99px;
+  z-index: 2;
+  /* Mix blend mode helps visualize overlap, but simple overlay is often clearer */
+}
+
+.bar-solid.ontrack { background: #22c55e; }
+.bar-solid.over { background: #ef4444; }
+.bar-solid.under { background: #f59e0b; }
+
+.chart-diff {
+  text-align: right;
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* Drawer Styling */
+.pva-drawer-paper {
+  width: 480px !important;
+  max-width: 90vw;
+  padding: 24px;
+  background: #fff;
+}
+
+.pva-drawer-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.drawer-header h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.drawer-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  background: #f8fafc;
+  padding: 16px;
   border-radius: 12px;
-  border: 1px solid rgba(0,0,0,0.10);
-  padding: 10px;
-  font-size: 13px;
-  outline: none;
+}
+
+.stat-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-box .lbl { font-size: 12px; color: #64748b; }
+.stat-box .val { font-size: 16px; font-weight: 800; color: #0f172a; }
+
+/* Tabs */
+.pva-tabs-root {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.pva-tabs-list {
+  display: flex;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 20px;
+}
+
+.pva-tab-trigger {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.pva-tab-trigger[data-state='active'] {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+}
+
+.tf-textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
   resize: vertical;
 }
 
-.pva-review__hint {
-  margin-top: 8px;
-  font-size: 12px;
-  color: #6b7280;
-}
+.mb-2 { margin-bottom: 8px; }
 
-.pva-actions3 {
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.pva-input {
-  width: 100%;
-  height: 38px;
-  border-radius: 12px;
-  border: 1px solid rgba(0,0,0,0.10);
-  padding: 0 12px;
-  font-size: 13px;
-  outline: none;
-}
-
-.pva-review__footer {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.pva-warn {
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 12px;
-  background: rgba(245, 158, 11, 0.12);
-  border: 1px solid rgba(245, 158, 11, 0.18);
-  color: #92400e;
-  font-size: 12px;
-  line-height: 1.4;
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 900px) {
-  .pva-drawer__kpi {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .pva-row {
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .pva-controls__row {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
   }
-  .pva-row__right {
-    align-items: stretch;
-  }
-  .pva-progress {
-    max-width: 100%;
-  }
-}
-/* FILE: src/main/frontend/src/styles/compare-stats.css */
-
-/* ✅ 페이지 폭/정렬 보정(좌측으로 쏠려 보이면 체감이 큼) */
-.pva-page {
-  width: 100%;
-  max-width: 1160px;
-  margin: 0 auto;
-}
-
-/* ✅ filters row에서 오른쪽 컨트롤이 세로로 쌓이던 문제 해결 */
-.pva-top__row--filters {
-  align-items: center;
-}
-
-.pva-top__row--filters .pva-top__left {
-  flex: 1 1 auto;
-  min-width: 520px;
-}
-
-.pva-top__row--filters .pva-top__right.pva-right-controls {
-  flex: 0 0 auto;
-  min-width: 320px;
-  display: flex;              /* 핵심 */
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-/* ✅ tf-select(width:100%) 때문에 select가 카드 전체폭을 먹던 문제 해결 */
-.pva-select {
-  width: 220px;               /* 핵심: width 지정으로 100% override */
-  min-width: 180px;
-  height: 36px;
-  padding: 5px 12px;
-}
-
-/* 검색창은 남는 공간을 먹게 해서 wrap을 덜 발생시키기 */
-.pva-search {
-  flex: 1 1 260px;
-  min-width: 240px;
-}
-
-/* 라벨이 줄바꿈되면서 어색해지는 것 방지 */
-.pva-label {
-  white-space: nowrap;
-}
-
-/* ✅ MUI TextField(date) 높이/라운드가 tf-ui와 어긋나는 경우 보정 */
-.pva-date {
-  width: 180px;
-}
-.pva-date .MuiInputBase-root {
-  height: 36px;
-  border-radius: 10px;
-  background: #fff;
-}
-.pva-date input {
-  padding: 8px 12px;
-  font-size: 13px;
-}
-
-/* ✅ Toggle 버튼 높이를 select와 맞추기 */
-.pva-toggle .MuiToggleButton-root {
-  height: 36px;
-  padding: 0 12px;
-  font-size: 12px;
-  border-radius: 10px;
-}
-
-/* 모바일에서는 자연스럽게 세로 스택 */
-@media (max-width: 900px) {
-  .pva-top__row--filters .pva-top__left,
-  .pva-top__row--filters .pva-top__right.pva-right-controls {
-    min-width: 0;
-  }
-
-  .pva-select {
+  
+  .control-group.right-align {
     width: 100%;
-    min-width: 0;
+  }
+  
+  .pva-summary-box {
+    width: 100%;
+    justify-content: space-between;
   }
 
-  .pva-search {
-    width: 100%;
-    min-width: 0;
+  .pva-filter-grid {
+    grid-template-columns: 1fr; /* Stack vertically on mobile */
+  }
+  
+  .mobile-hidden {
+    display: none;
   }
 }

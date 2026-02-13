@@ -1,127 +1,190 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Button, Card, Progress, Typography, Space, Tooltip, Badge, Modal, Input, Radio, Divider } from "antd";
+import { Play, Pause, RotateCcw, Coffee, Zap, Maximize2, Volume2, ListTodo } from "lucide-react";
+import "../../styles/screens/focus.css";
+
+const { Title, Text } = Typography;
 
 function pad(n) {
   return String(n).padStart(2, "0");
 }
 
 export default function FocusModeScreen() {
-  const [tab, setTab] = useState("pomodoro"); // "free" | "pomodoro"
-  const [running, setRunning] = useState(false);
+  const [mode, setMode] = useState("pomodoro");
+  const [isRunning, setIsRunning] = useState(false);
+  
+  const [workTime, setWorkTime] = useState(25);
+  const [breakTime, setBreakTime] = useState(5);
+  const [timeLeft, setTimeLeft] = useState(workTime * 60);
+  const [phase, setPhase] = useState("focus"); 
 
-  const [workMin, setWorkMin] = useState(25);
-  const [breakMin, setBreakMin] = useState(5);
+  const [sessionCount, setSessionCount] = useState(0);
+  const [taskName, setTaskName] = useState("집중 업무");
 
-  const [phase, setPhase] = useState("work"); // work | break
-  const [secLeft, setSecLeft] = useState(workMin * 60);
+  const timerRef = useRef(null);
+  const totalTime = phase === "focus" ? workTime * 60 : breakTime * 60;
+  const progressPercent = Math.round(((totalTime - timeLeft) / totalTime) * 100);
 
-  const tickRef = useRef(null);
-
-  const total = useMemo(() => {
-    const m = Math.floor(secLeft / 60);
-    const s = secLeft % 60;
+  const formatTime = useMemo(() => {
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
     return `${pad(m)}:${pad(s)}`;
-  }, [secLeft]);
-
-  // 설정 변경 시(정지 상태) 초기화
-  useEffect(() => {
-    if (running) return;
-    if (phase === "work") setSecLeft(workMin * 60);
-    else setSecLeft(breakMin * 60);
-  }, [workMin, breakMin, phase, running]);
+  }, [timeLeft]);
 
   useEffect(() => {
-    if (!running) return;
-
-    tickRef.current = setInterval(() => {
-      setSecLeft((prev) => {
-        if (prev <= 1) return 0;
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => {
-      if (tickRef.current) clearInterval(tickRef.current);
-      tickRef.current = null;
-    };
-  }, [running]);
+    resetTimer();
+  }, [workTime, breakTime, mode]);
 
   useEffect(() => {
-    if (!running) return;
-    if (secLeft !== 0) return;
-
-    // 세션 종료 → 다음 페이즈로 자동 전환
-    if (phase === "work") {
-      setPhase("break");
-      setSecLeft(breakMin * 60);
-    } else {
-      setPhase("work");
-      setSecLeft(workMin * 60);
+    if (isRunning && timeLeft > 0) {
+      timerRef.current = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+    } else if (timeLeft === 0 && isRunning) {
+      clearInterval(timerRef.current);
+      handleTimerComplete();
     }
-  }, [secLeft, running, phase, workMin, breakMin]);
+    return () => clearInterval(timerRef.current);
+  }, [isRunning, timeLeft]);
 
-  const start = () => setRunning(true);
-  const pause = () => setRunning(false);
-  const reset = () => {
-    setRunning(false);
-    setPhase("work");
-    setSecLeft(workMin * 60);
+  const handleTimerComplete = () => {
+    setIsRunning(false);
+    
+    if (phase === "focus") {
+      setSessionCount(c => c + 1);
+      Modal.confirm({
+        title: "집중 시간 종료! 👏",
+        content: "수고하셨습니다. 잠깐 휴식할까요?",
+        okText: "휴식 시작",
+        cancelText: "건너뛰기",
+        onOk: () => {
+          setPhase("break");
+          setTimeLeft(breakTime * 60);
+          setIsRunning(true);
+        },
+        onCancel: () => {
+          setPhase("focus");
+          setTimeLeft(workTime * 60);
+        }
+      });
+    } else {
+      Modal.info({
+        title: "휴식 종료 ☕️",
+        content: "다시 집중할 준비 되셨나요?",
+        onOk: () => {
+          setPhase("focus");
+          setTimeLeft(workTime * 60);
+        }
+      });
+    }
+  };
+
+  const toggleTimer = () => setIsRunning(!isRunning);
+  
+  const resetTimer = () => {
+    setIsRunning(false);
+    setPhase("focus");
+    setTimeLeft(workTime * 60);
+  };
+
+  const toggleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
   };
 
   return (
-    <div className="focus-screen">
-      <div className="screen-head">
-        <div>
-          <div className="screen-title">집중 모드</div>
-          <div className="screen-subtitle">포모도로/자유 타이머로 집중 시간을 기록하세요.</div>
+    <div className={`focus-screen-container ${phase === 'break' ? 'theme-break' : 'theme-focus'}`}>
+      
+      <div className="focus-header">
+        <div className="focus-title-block">
+          <Title level={3} style={{margin:0, color: 'inherit'}}>집중 모드</Title>
+          <Text style={{color: 'inherit', opacity: 0.8}}>
+            {phase === 'focus' ? '몰입의 시간입니다. 🔥' : '잠시 뇌를 식혀주세요. 🍃'}
+          </Text>
         </div>
-        <div className="seg">
-          <button className={`seg__btn ${tab === "free" ? "is-on" : ""}`} onClick={() => setTab("free")} type="button">자유 시간</button>
-          <button className={`seg__btn ${tab === "pomodoro" ? "is-on" : ""}`} onClick={() => setTab("pomodoro")} type="button">포모도로</button>
-        </div>
+        <Space>
+          <Button icon={<Maximize2 size={16}/>} onClick={toggleFullScreen} ghost>전체화면</Button>
+        </Space>
       </div>
 
-      {tab === "pomodoro" && (
-        <div className="focus-card">
-          <div className="focus-row">
-            <div className="field small">
-              <div className="label">집중(분)</div>
-              <input type="number" min={1} value={workMin} onChange={(e) => setWorkMin(Number(e.target.value || 25))} disabled={running} />
-            </div>
-            <div className="field small">
-              <div className="label">휴식(분)</div>
-              <input type="number" min={1} value={breakMin} onChange={(e) => setBreakMin(Number(e.target.value || 5))} disabled={running} />
-            </div>
-            <div className="pill">{phase === "work" ? "집중" : "휴식"}</div>
-          </div>
-
-          <div className="timer">{total}</div>
-
-          <div className="focus-actions">
-            {!running ? (
-              <button className="btn primary" onClick={start} type="button">시작</button>
-            ) : (
-              <button className="btn" onClick={pause} type="button">일시정지</button>
-            )}
-            <button className="btn" onClick={reset} type="button">리셋</button>
-          </div>
-
-          <div className="muted">
-            포모도로 탭이 “미구현”으로 보이던 건 UI만 있고 타이머 로직이 없어서였고, 지금 파일로 동작하게 바뀜.
-          </div>
+      <Card className="focus-timer-card" bordered={false}>
+        <div className="timer-display-wrapper">
+           <Progress 
+             type="circle" 
+             percent={progressPercent} 
+             format={() => <div className="timer-text">{formatTime}</div>}
+             width={280}
+             strokeWidth={4}
+             strokeColor={phase === 'focus' ? '#ef4444' : '#10b981'}
+             trailColor="rgba(0,0,0,0.05)"
+           />
+           <div className="phase-badge">
+             {phase === 'focus' ? <Badge status="processing" text="FOCUS" color="#ef4444"/> : <Badge status="success" text="BREAK" color="#10b981"/>}
+           </div>
         </div>
-      )}
 
-      {tab === "free" && (
-        <div className="focus-card">
-          <div className="muted">자유 타이머는 다음 단계에서 “목표 시간/카테고리/기록 저장 API” 연결로 확장.</div>
-          <div className="timer">00:00</div>
-          <div className="focus-actions">
-            <button className="btn primary" type="button" onClick={() => alert("자유 타이머는 다음 단계에서 구현 확장")}>
-              시작
-            </button>
-          </div>
+        <div className="focus-task-input">
+           <ListTodo size={16} style={{marginRight: 8, opacity: 0.5}}/>
+           <Input 
+             variant="borderless" 
+             value={taskName} 
+             onChange={(e) => setTaskName(e.target.value)}
+             placeholder="지금 무슨 일을 하고 있나요?"
+             style={{textAlign: 'center', fontSize: 16, fontWeight: 500}}
+           />
         </div>
-      )}
+
+        <div className="timer-controls">
+          <Button 
+            type="primary" 
+            shape="circle" 
+            size="large" 
+            icon={isRunning ? <Pause size={24} fill="white"/> : <Play size={24} fill="white" style={{marginLeft:2}}/>} 
+            onClick={toggleTimer}
+            className={`main-play-btn ${isRunning ? 'pulse' : ''}`}
+            style={{backgroundColor: phase === 'focus' ? '#ef4444' : '#10b981'}}
+          />
+          <Tooltip title="리셋">
+            <Button shape="circle" icon={<RotateCcw size={18}/>} onClick={resetTimer} />
+          </Tooltip>
+        </div>
+      </Card>
+
+      <div className="focus-bottom-panel">
+        <Card size="small" className="focus-settings-card">
+          <div className="setting-row">
+            <Text strong><Zap size={14}/> 집중 시간</Text>
+            <Radio.Group value={workTime} onChange={e => setWorkTime(e.target.value)} size="small" disabled={isRunning}>
+              <Radio.Button value={25}>25분</Radio.Button>
+              <Radio.Button value={50}>50분</Radio.Button>
+            </Radio.Group>
+          </div>
+          <div className="setting-row">
+            <Text strong><Coffee size={14}/> 휴식 시간</Text>
+            <Radio.Group value={breakTime} onChange={e => setBreakTime(e.target.value)} size="small" disabled={isRunning}>
+              <Radio.Button value={5}>5분</Radio.Button>
+              <Radio.Button value={10}>10분</Radio.Button>
+            </Radio.Group>
+          </div>
+        </Card>
+
+        <Card size="small" className="focus-stat-card">
+          <div className="stat-item">
+            <div className="stat-label">완료한 세션</div>
+            <div className="stat-value">{sessionCount}</div>
+          </div>
+          <Divider type="vertical" style={{height: '2em'}}/>
+          <div className="stat-item">
+            <div className="stat-label">백색 소음</div>
+            <Button size="small" icon={<Volume2 size={14}/>}>켜기</Button>
+          </div>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -187,6 +187,7 @@ export default function AppRoutes() {
         <Route path="/planner/monthly" element={<MonthlyPlannerScreen />} />
         <Route path="/planner/yearly" element={<YearlyPlannerScreen />} />
 
+        <Route path="/diary/calendar" element={<DiaryCalendarScreen />} />
         <Route path="/diary/daily" element={<DailyDiaryScreen />} />
         <Route path="/data" element={<DataManagementScreen />} />
 

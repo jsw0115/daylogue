@@ -1,207 +1,206 @@
-import React, { useMemo, useState } from "react";
-import PageContainer from "../../layout/PageContainer";
-import Button from "../../components/common/Button";
-import DatePicker from "../../components/common/DatePicker";
+import React, { useMemo, useState, useEffect } from "react";
+import clsx from "clsx";
+import dayjs from "dayjs";
+import "dayjs/locale/ko";
+
+import {
+  Button, Card, Typography, Tag, Divider, Statistic, Row, Col, Empty, Tooltip, message
+} from "antd";
+
+import {
+  ChevronLeft, ChevronRight, SmilePlus, Smile, Meh, Frown, Angry,
+  Edit3, Hash, CalendarDays, Flame, BarChart3
+} from "lucide-react";
+
+import { safeStorage } from "../../shared/utils/safeStorage";
+import "../../styles/screens/diary.css";
+
+const { Title, Text } = Typography;
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
-// 선택한 달 기준 6×7 캘린더 그리드 생성
-function buildMonthMatrix(baseDate) {
-  const year = baseDate.getFullYear();
-  const monthIndex = baseDate.getMonth(); // 0~11
-  const firstDay = new Date(year, monthIndex, 1);
-  const startOffset = firstDay.getDay(); // 0=일
-  const startDate = new Date(year, monthIndex, 1 - startOffset);
+const MOODS = [
+  { id: "great", label: "최고", Icon: SmilePlus, color: "#10b981", bg: "#d1fae5" },
+  { id: "good", label: "좋음", Icon: Smile, color: "#3b82f6", bg: "#dbeafe" },
+  { id: "soso", label: "보통", Icon: Meh, color: "#f59e0b", bg: "#fef3c7" },
+  { id: "bad", label: "나쁨", Icon: Frown, color: "#f97316", bg: "#ffedd5" },
+  { id: "terrible", label: "최악", Icon: Angry, color: "#ef4444", bg: "#fee2e2" },
+];
 
-  const cells = [];
-  for (let i = 0; i < 42; i += 1) {
-    const d = new Date(startDate);
-    d.setDate(startDate.getDate() + i);
-    const dateKey = d.toISOString().slice(0, 10);
-    cells.push({
-      dateKey,
-      day: d.getDate(),
-      isCurrentMonth: d.getMonth() === monthIndex,
-      weekday: d.getDay(),
-    });
-  }
-  return cells;
-}
+function toDateKey(date) { return dayjs(date).format("YYYY-MM-DD"); }
+function loadDiaryMap() { return safeStorage.getJSON("diary.entries", {}); }
 
-// 데모용 샘플 데이터
-const SAMPLE_DIARY = {
-  "2025-12-01": {
-    mood: "😊",
-    title: "월요일, 계획대로 잘 흘러간 하루",
-  },
-  "2025-12-03": {
-    mood: "😵",
-    title: "회의와 일정이 너무 많았던 날",
-  },
-  "2025-12-06": {
-    mood: "✨",
-    title: "타임바 다이어리 설계 정리 완료!",
-  },
-};
+export default function DiaryCalendarScreen() {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDateKey, setSelectedDateKey] = useState(toDateKey(new Date()));
+  const [diaryMap, setDiaryMap] = useState({});
 
-function DiaryCalendarScreen() {
-  const todayKey = new Date().toISOString().slice(0, 10);
-  const [monthValue, setMonthValue] = useState(todayKey.slice(0, 7) + "-01");
-  const [selectedDate, setSelectedDate] = useState(todayKey);
+  useEffect(() => { setDiaryMap(loadDiaryMap()); }, []);
 
-  const baseDate = useMemo(
-    () => new Date(monthValue + "T00:00:00"),
-    [monthValue]
-  );
+  // --- Monthly Grid Data ---
+  const monthCells = useMemo(() => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const startDate = new Date(year, month, 1 - firstDay.getDay());
+    const cells = [];
+    for (let i = 0; i < 42; i++) {
+      const d = new Date(startDate);
+      d.setDate(startDate.getDate() + i);
+      const key = toDateKey(d);
+      cells.push({
+        dateKey: key,
+        day: d.getDate(),
+        isCurrentMonth: d.getMonth() === month,
+        isToday: key === toDateKey(new Date()),
+      });
+    }
+    return cells;
+  }, [currentDate]);
 
-  const monthCells = useMemo(
-    () => buildMonthMatrix(baseDate),
-    [baseDate]
-  );
+  // --- Yearly Heatmap Data (Dummy Logic for Demo) ---
+  const heatmapData = useMemo(() => {
+    const months = [];
+    for(let i=4; i>=0; i--) {
+      const d = dayjs().subtract(i, 'month');
+      months.push(d);
+    }
+    return months;
+  }, []);
 
-  const selectedEntry = SAMPLE_DIARY[selectedDate];
+  const selectedEntry = diaryMap[selectedDateKey];
+  const selectedMood = selectedEntry ? MOODS.find(m => m.id === selectedEntry.mood) : null;
 
-  const subtitle =
-    "일기 작성 여부를 캘린더와 목록으로 보고, 일간 다이어리 화면으로 이동합니다.";
+  // Handlers
+  const handlePrev = () => setCurrentDate(dayjs(currentDate).subtract(1, 'month').toDate());
+  const handleNext = () => setCurrentDate(dayjs(currentDate).add(1, 'month').toDate());
+  const handleToday = () => {
+    const now = new Date();
+    setCurrentDate(now);
+    setSelectedDateKey(toDateKey(now));
+  };
+  
+  const navigateToWrite = (key) => {
+    console.log("Go to write:", key);
+    message.info(`${key} 작성 화면으로 이동`);
+  };
 
   return (
-    <PageContainer
-      screenId="DIARY-001"
-      title="일간 다이어리 캘린더"
-      subtitle={subtitle}
-    >
-      <div className="screen diary-calendar-screen">
-        <div className="diary-calendar-header">
-          <DatePicker
-            label="월 선택"
-            value={monthValue}
-            onChange={(value) => {
-              // YYYY-MM-DD 기준으로 들어오므로 1일로 고정
-              const base = value ? `${value.slice(0, 7)}-01` : monthValue;
-              setMonthValue(base);
-            }}
-          />
-          <div className="diary-calendar-header__actions">
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              onClick={() => {
-                const now = new Date();
-                const key = now.toISOString().slice(0, 10);
-                setMonthValue(key.slice(0, 7) + "-01");
-                setSelectedDate(key);
-              }}
-            >
-              오늘로 이동
-            </Button>
-          </div>
+    <div className="screen diary-calendar-screen">
+      <header className="diary-ui__header">
+        <div className="diary-ui__titleBlock">
+          <Title level={3} style={{ margin: 0 }}>다이어리 인사이트</Title>
+          <Text type="secondary">나의 기록 패턴과 감정 흐름을 분석합니다.</Text>
+        </div>
+        <div className="diary-ui__actions">
+           <div className="diary-cal-nav">
+             <Button type="text" icon={<ChevronLeft size={16}/>} onClick={handlePrev} />
+             <span className="diary-cal-title">{dayjs(currentDate).format("YYYY년 M월")}</span>
+             <Button type="text" icon={<ChevronRight size={16}/>} onClick={handleNext} />
+             <Button size="small" onClick={handleToday}>오늘</Button>
+           </div>
+        </div>
+      </header>
+
+      <div className="diary-ui__layout">
+        {/* Main: Calendar & Heatmap */}
+        <div className="diary-ui__mainPanel">
+          
+          {/* 1. Monthly Calendar */}
+          <Card className="diary-ui__card diary-cal-card" bodyStyle={{padding:0}}>
+            <div className="diary-cal-weekdays">
+              {WEEKDAYS.map((w,i) => <div key={w} className={clsx("weekday", i===0&&"sun", i===6&&"sat")}>{w}</div>)}
+            </div>
+            <div className="diary-cal-grid">
+              {monthCells.map(cell => {
+                const entry = diaryMap[cell.dateKey];
+                const moodItem = entry ? MOODS.find(m => m.id === entry.mood) : null;
+                const MoodIcon = moodItem?.Icon;
+                
+                return (
+                  <div 
+                    key={cell.dateKey}
+                    className={clsx("diary-cal-cell", !cell.isCurrentMonth && "outside", cell.dateKey === selectedDateKey && "selected", cell.isToday && "today")}
+                    onClick={() => setSelectedDateKey(cell.dateKey)}
+                    onDoubleClick={() => navigateToWrite(cell.dateKey)}
+                  >
+                    <div className="cell-header">
+                      <span className="day-num">{cell.day}</span>
+                      {cell.isToday && <span className="today-dot"/>}
+                    </div>
+                    <div className="cell-content">
+                      {moodItem && (
+                        <div className="mood-badge" style={{background: moodItem.bg, color: moodItem.color}}>
+                          <MoodIcon size={18} />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </Card>
+
+          {/* 2. Yearly Heatmap (Simple Ver.) */}
+          <Card size="small" title={<><Flame size={16} style={{marginRight:8, verticalAlign:'text-bottom', color:'#f59e0b'}}/>기록 잔디 (Heatmap)</>} className="diary-ui__card">
+             <div className="diary-heatmap-container">
+               {heatmapData.map(m => (
+                 <div key={m.toString()} className="heatmap-month">
+                   <div className="heatmap-title">{m.format("M월")}</div>
+                   <div className="heatmap-grid">
+                     {Array.from({length: m.daysInMonth()}).map((_, i) => {
+                       const d = m.date(i+1);
+                       const k = d.format("YYYY-MM-DD");
+                       const hasEntry = !!diaryMap[k];
+                       return (
+                         <Tooltip key={k} title={`${k}: ${hasEntry ? '기록됨' : '없음'}`}>
+                           <div className={clsx("heatmap-cell", hasEntry && "filled")} />
+                         </Tooltip>
+                       )
+                     })}
+                   </div>
+                 </div>
+               ))}
+             </div>
+          </Card>
         </div>
 
-        <div className="diary-calendar-layout">
-          {/* 좌측: 캘린더 */}
-          <section className="diary-calendar-panel">
-            <header className="diary-calendar-panel__header">
-              <h3>이번 달 일기 캘린더</h3>
-              <p className="diary-calendar-panel__description">
-                ● 표시된 날짜는 일기가 작성된 날입니다.
-              </p>
-            </header>
-
-            <div className="diary-calendar-grid">
-              <div className="diary-calendar-grid__weekday-row">
-                {WEEKDAYS.map((w) => (
-                  <div
-                    key={w}
-                    className="diary-calendar-grid__weekday-cell"
-                  >
-                    {w}
-                  </div>
-                ))}
-              </div>
-              <div className="diary-calendar-grid__body">
-                {monthCells.map((cell) => {
-                  const hasDiary = !!SAMPLE_DIARY[cell.dateKey];
-                  const isSelected = cell.dateKey === selectedDate;
-                  const cellClassNames = [
-                    "diary-calendar-grid__day-cell",
-                    !cell.isCurrentMonth &&
-                      "diary-calendar-grid__day-cell--outside",
-                    hasDiary && "diary-calendar-grid__day-cell--has-diary",
-                    isSelected && "diary-calendar-grid__day-cell--selected",
-                  ]
-                    .filter(Boolean)
-                    .join(" ");
-
-                  return (
-                    <button
-                      key={cell.dateKey}
-                      type="button"
-                      className={cellClassNames}
-                      onClick={() => setSelectedDate(cell.dateKey)}
-                    >
-                      <span className="diary-calendar-grid__day-number">
-                        {cell.day}
-                      </span>
-                      {hasDiary && (
-                        <span className="diary-calendar-grid__dot" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-
-          {/* 우측: 선택한 날짜 일기 목록 */}
-          <section className="diary-calendar-detail-panel">
-            <header className="diary-calendar-detail__header">
-              <h3>선택한 날짜</h3>
-              <p className="diary-calendar-detail__date">
-                {selectedDate}의 기록
-              </p>
-            </header>
-
+        {/* Side: Detail */}
+        <div className="diary-ui__sidePanel">
+          <Card className="diary-ui__card diary-detail-card" title={dayjs(selectedDateKey).format("M월 D일 (ddd)")}>
             {selectedEntry ? (
-              <article className="diary-calendar-entry-card">
-                <div className="diary-calendar-entry-card__meta">
-                  <span className="diary-calendar-entry-card__mood">
-                    {selectedEntry.mood}
-                  </span>
-                  <span className="diary-calendar-entry-card__label">
-                    작성 완료
-                  </span>
+              <div className="diary-detail-content">
+                <div className="detail-mood-header" style={{background: selectedMood?.bg}}>
+                   {selectedMood && <selectedMood.Icon size={40} color={selectedMood.color}/>}
+                   <div className="mood-text">
+                     <span className="label">Mood</span>
+                     <span className="value" style={{color: selectedMood?.color}}>{selectedMood?.label}</span>
+                   </div>
                 </div>
-                <h4 className="diary-calendar-entry-card__title">
-                  {selectedEntry.title}
-                </h4>
-                <p className="diary-calendar-entry-card__hint">
-                  자세한 회고는{" "}
-                  <strong>DIARY-002 일간 다이어리 / 회고</strong> 화면에서
-                  확인할 수 있습니다.
-                </p>
-                <div className="diary-calendar-entry-card__actions">
-                  <Button type="button" size="sm" variant="primary">
-                    이 날짜 다이어리 열기
-                  </Button>
-                  <Button type="button" size="sm" variant="ghost">
-                    오늘 플래너로 이동
-                  </Button>
+                <Divider style={{margin:'12px 0'}}/>
+                <div className="detail-section">
+                  <Text type="secondary" className="section-label"><Edit3 size={12}/> 한 줄 요약</Text>
+                  <div className="summary-box">{selectedEntry.summary || "-"}</div>
                 </div>
-              </article>
-            ) : (
-              <div className="diary-calendar-empty">
-                <p>아직 이 날에는 작성된 일기가 없습니다.</p>
-                <Button type="button" size="sm" variant="primary">
-                  이 날짜에 새 일기 쓰기
+                {selectedEntry.tags?.length > 0 && (
+                  <div className="detail-section">
+                    <div className="tags-wrap">
+                      {selectedEntry.tags.map(t => <Tag key={t}>#{t}</Tag>)}
+                    </div>
+                  </div>
+                )}
+                <Button block type="primary" icon={<Edit3 size={14}/>} onClick={() => navigateToWrite(selectedDateKey)}>
+                  수정하기
                 </Button>
               </div>
+            ) : (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="기록이 없습니다.">
+                 <Button type="primary" ghost onClick={() => navigateToWrite(selectedDateKey)}>새 일기 쓰기</Button>
+              </Empty>
             )}
-          </section>
+          </Card>
         </div>
       </div>
-    </PageContainer>
+    </div>
   );
 }
-
-export default DiaryCalendarScreen;

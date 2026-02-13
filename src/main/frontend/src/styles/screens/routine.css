@@ -371,3 +371,159 @@
   background: rgba(99, 102, 241, 0.12);
   color: var(--color-text, #111827);
 }
+
+.routine-list-screen {
+  padding: 24px;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.screen-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.filter-card {
+  margin-bottom: 20px;
+  border-radius: 12px;
+}
+
+.routine-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.routine-card {
+  border-radius: 16px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.routine-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.routine-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.routine-icon {
+  font-size: 24px;
+  background: #f1f5f9;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+.routine-info {
+  flex: 1;
+}
+
+.routine-name {
+  font-size: 16px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.routine-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.routine-streak {
+  text-align: right;
+}
+
+.streak-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff7ed;
+  color: #c2410c;
+  padding: 4px 8px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.routine-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.routine-days {
+  display: flex;
+  gap: 4px;
+}
+
+.day-dot {
+  font-size: 10px;
+  color: #cbd5e1;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.day-dot.active {
+  color: #3b82f6;
+  font-weight: 700;
+  background: #eff6ff;
+}
+
+.day-dot.daily {
+  color: #10b981;
+  background: #ecfdf5;
+  padding: 2px 8px;
+}
+
+/* Modal Styles */
+.routine-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.weekday-selector {
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+}
+
+.day-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #64748b;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.day-btn.active {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}

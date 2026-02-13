@@ -1,173 +1,137 @@
-# Timebar Diary (TimeFlow)
-시간을 “색(타임바)”으로 관리하는 올인원 생산성 앱 프로토타입
+# Timebar Diary (TimeFlow) 🎨⏳
 
-- 플래너(일/주/월/연) + 데일리 다이어리 + 할 일 + 루틴 + 포커스(포모도로) + 통계 + 설정/관리자 기능을 하나의 앱에서 운영하는 구조입니다.
-- 이 README는 **현재 제공된 `src/routes/AppRoutes.jsx` 라우팅**과 **화면 캡처** 기준으로 정리했습니다.
-
----
-
-## 핵심 정책(현재 결정사항)
-- **Auth 화면은 AppShell 없이 단독 화면(standalone)**
-- **App 화면은 AppShell(사이드바/헤더/모바일 하단탭) 기반**
-- **반복 일정(Recurring Event)은 주간/월간에서 여러 날짜 자동 표시까지 MVP 포함**
-- **일정(상세) 공유 UX(서버 전 임시 UX)**: 입력칩 + 입력 중 검색/자동완성 + 엔터로 추가
-- **루틴 상세**: 알림(몇 분 전), 아이콘/카테고리 포함(MVP)
+**Timebar Diary**는 시간을 "색(Timebar)"으로 시각화하여 관리하는 **올인원 생산성 플랫폼** 프로토타입입니다.
+단순한 일정 관리를 넘어, **플래너, 다이어리, 할 일(To-Do), 루틴, 포커스(Pomodoro), 통계**를 하나의 흐름(Flow)으로 통합하여 제공합니다.
 
 ---
 
-## 주요 화면(현재 내비게이션 기준)
-### DAYLOGUE
-- 홈 대시보드
-- 데일리 다이어리
+## 📚 목차
 
-### PLAN
-- 일간 / 주간 / 월간 / 연간 플래너
-
-### ACTION
-- 할 일
-- 루틴
-- 포커스
-
-### INSIGHT
-- 통계
-
-### DATA
-- 데이터 관리
-
-### ADMIN
-- 관리자 설정
+1. [프로젝트 소개](#-프로젝트-소개)
+2. [주요 기능](#-주요-기능)
+3. [시작하기](#-시작하기)
+4. [기술 스택](#-기술-스택)
+5. [프로젝트 구조 및 라우팅](#-프로젝트-구조-및-라우팅)
+6. [개발 규칙](#-개발-규칙)
 
 ---
 
-## 라우트 요약 (src/routes/AppRoutes.jsx 기준)
+## 📖 프로젝트 소개
 
-### Auth (AppShell 없음)
-- `/login` 로그인
-- `/register` 회원가입
-- `/reset-password` 비밀번호 재설정
-- `/find-id` 아이디 찾기
-- `/social-link` 소셜 연동
-- `/onboarding` 온보딩
-- (호환) `/auth/login` → `/login`
-- (호환) `/auth/register` → `/register`
-- (호환) `/auth/reset-password` → `/reset-password`
-- (호환) `/auth/find-id` → `/find-id`
+TimeFlow는 사용자의 하루를 색상 띠(Timebar)로 표현합니다. 계획된 일정과 실제 수행한 기록을 시각적으로 비교하고, 루틴과 할 일을 체계적으로 관리하여 생산성을 극대화하는 것을 목표로 합니다.
 
-### App (AppShell 포함)
-- `/` → `/home`
-- `/home` 홈 대시보드
-- `/inbox` 알림 인박스
-
-#### Planner
-- `/planner/daily` 일간 플래너
-- `/planner/weekly` 주간 플래너
-- `/planner/monthly` 월간 플래너
-- `/planner/yearly` 연간 플래너
-
-#### Diary / Data
-- `/diary/daily` 데일리 다이어리
-- `/data` 데이터 관리
-
-#### Routine
-- `/routine` 루틴 목록
-- `/action/routine` → `/routine`
-- `/action/routine/list` → `/routine`
-- `/routines` 루틴 목록(별칭)
-- `/routines/new` 루틴 생성/편집
-- `/routines/:routineId/edit` 루틴 편집
-- `/routines/history` 루틴 히스토리
-
-#### Task
-- `/tasks` 할 일 목록 (`ROUTES.TASKS`)
-- `/tasks/:taskId` 할 일 상세
-- `/action/task` 할 일 목록(별칭)
-
-#### Memo
-- `/memos` 메모 인박스
-- `/memos/new` 메모 작성
-- `/memos/:memoId` 메모 편집
-- `/memos/to-task` 메모 → 할 일 변환
-
-#### Stat
-- `/insight/stat` 통계 대시보드(별칭)
-- `ROUTES.STAT_DASHBOARD` 통계 대시보드
-- `/stat/categories` 카테고리 통계
-- `/stat/plan-actual` 계획 vs 실행
-- `/stat/focus-report` 포커스 리포트
-
-#### Settings
-- `/settings` 통합 설정
-- `ROUTES.SETTINGS_PROFILE` 프로필
-- `/settings/general` 일반 설정
-- `/settings/theme` 테마/스티커
-- `/settings/notifications` 알림 설정
-- `/settings/security` 보안 설정
-- `/settings/categories` 카테고리 설정
-
-#### Focus
-- `/focus` 집중 모드
-
-#### Admin
-- `/admin` 관리자 허브
-- `/admin/users` 사용자 관리
-- `/admin/logs` 시스템 로그
-- `/admin/notices` 공지/배너
-- `/admin/stats` 서비스 통계
+### 핵심 가치
+- **Visual Time Management**: 직관적인 타임바 인터페이스
+- **All-in-One Workflow**: 플래너에서 회고(Diary)까지 끊김 없는 경험
+- **Data-Driven Insight**: 활동 로그 기반의 상세 통계 제공
 
 ---
 
-## 기술 스택(현재 확인 가능한 범위)
-- **Frontend**: React 18
-- **Routing**: React Router v6
-- **Styling**: 커스텀 CSS(className 기반)
+## ✨ 주요 기능
 
-> 참고: Tailwind/Zustand/Recharts/date-fns 등은 “README에만 있던 정보”로는 실제 사용 여부를 확정할 근거가 부족해 제외했습니다.
-> (원하면 package.json 기준으로 재정리해서 반영)
+### 1. 📅 Smart Planner (플래너)
+- **다양한 뷰 모드**: 일간(Daily), 주간(Weekly), 월간(Monthly), 연간(Yearly) 뷰 지원
+- **드래그 앤 드롭**: 직관적인 일정 시간 변경 및 이동
+- **스마트 입력**: 일정 생성 시 입력 칩(Chip)과 자동완성을 통한 빠른 태그 및 공유 설정
+- **반복 일정**: 복잡한 반복 규칙(매주, 매월 등)을 지원하며 캘린더에 자동 표시
 
----
+### 2. 📝 Daily Log & Diary (기록)
+- **데일리 다이어리**: 하루의 감정과 주요 사건 기록
+- **타임바 연동**: 일정 수행 여부를 체크하고 실제 소요 시간 기록
 
-## 프로젝트 구조(요약)
-레포가 “Spring Boot 내부 프론트 포함” 형태라면 보통 아래 구조를 사용합니다.
-(실제 폴더명이 다르면, 트리 기준으로 README 구조 섹션을 맞춰 수정해야 합니다.)
+### 3. ✅ Action Hub (실행)
+- **Tasks (할 일)**: GTD 방식의 할 일 관리, 인박스 및 프로젝트별 분류
+- **Routines (루틴)**: 매일 반복되는 습관 관리, 알림 및 아이콘 커스텀
+- **Focus (집중)**: 포모도로 타이머 및 집중 시간 추적
 
-## 실행 방법(프론트)
+### 4. 📊 Insight (통계)
+- **생활 패턴 분석**: 카테고리별 시간 사용량 분석
+- **계획 vs 실행**: 계획 대비 달성률 시각화 리포트
 
-프론트 프로젝트 폴더에서:
-
-```bash
-npm install
-npm start
-```
-접속: http://localhost:3000
-
-- 참고: `npm run dev`(Vite)인지 `npm start`(CRA)인지는 현재 대화에 “명시된 실행 스크립트”가 없어, 위는 가장 보수적인 형태로만 표기했습니다.  
-  (근거 부족: 실제 프로젝트의 `package.json`의 `scripts`를 확인하지 못해 실행 스크립트는 달라질 수 있습니다.)
+### 5. ⚙️ Management (관리)
+- **커스텀 설정**: 테마, 알림, 카테고리 색상 설정
+- **데이터 관리**: 데이터 백업 및 복원
 
 ---
 
-## 백엔드 API 설계 규칙(요약)
+## 🚀 시작하기 (Getting Started)
 
-- Base: `/api`
-- Auth: `Authorization: Bearer <accessToken>`
-- 응답(권장): `success(boolean)`, `data(any)`, `message?(string)`, `errorCode?(string)`
+이 프로젝트는 **React** (Create React App) 환경에서 개발되었습니다.
 
-### 시간
-- 서버 저장: UTC
-- 요청/응답 날짜시간: ISO 8601 (예: `2025-12-14T09:30:00Z`)
-- `Event.timeZone`은 필수
+### 설치 및 실행
 
-### 반복 인스턴스 식별
-- `occurrenceStart` = `YYYY-MM-DDTHH:mm` (로컬 기준 문자열, 예: `2025-12-14T09:30`)
+1. **의존성 설치**
+   ```bash
+   npm install
+   ```
+
+2. **개발 서버 실행**
+   ```bash
+   npm start
+   ```
+   - 브라우저에서 http://localhost:3000으로 접속됩니다.
+
+### 빌드 및 기타
+
+| 명령어 | 설명 |
+|---|---|
+| `npm run build` | 프로덕션 배포를 위한 정적 파일을 `build` 폴더에 생성합니다. |
+| `npm test` | 테스트 러너를 실행합니다. |
 
 ---
 
-## 개발 메모
+## 🛠 기술 스택 (Tech Stack)
 
-- 개발 중 환경에서는 localStorage 접근 제한(브라우저/정책)에 따라 “새로고침 시 저장 유지”가 깨질 수 있습니다.
-- 반복 일정/공유 권한(editScope/deleteScope 등) 로직은 서버 검증 규칙을 강하게 적용하는 전제를 둡니다.
+| 분류 | 기술 | 비고 |
+|---|---|---|
+| **Core** | React 18 | Hooks 중심의 함수형 컴포넌트 |
+| **Routing** | React Router v6 | SPA 라우팅 처리 |
+| **Styling** | CSS Modules / Custom CSS | className 기반 스타일링 |
+| **Build** | Webpack (CRA) | Create React App 기본 설정 |
 
 ---
 
-## 라이선스
+## 📂 프로젝트 구조 및 라우팅
 
-개발 중인 프로토타입(내부/개인 프로젝트)입니다.
+애플리케이션은 크게 인증이 필요한 **App (Main)** 영역과 인증 전 **Auth** 영역으로 구분됩니다.
+
+### 🔐 Auth (Standalone)
+레이아웃(LNB, Header) 없이 단독 화면으로 구성됩니다.
+- `/login`, `/register`: 로그인 및 회원가입
+- `/onboarding`: 신규 사용자 온보딩
+- `/reset-password`, `/find-id`: 계정 찾기
+
+### 🏠 App (Main Layout)
+사이드바(LNB)와 헤더가 포함된 메인 레이아웃이 적용됩니다.
+
+| 영역 | 경로 | 설명 |
+|---|---|---|
+| **Dashboard** | `/home` | 메인 대시보드 (오늘의 요약) |
+| | `/inbox` | 알림 및 미처리 항목 인박스 |
+| **Planner** | `/planner/*` | 일간/주간/월간/연간 플래너 |
+| **Action** | `/tasks` | 할 일 목록 관리 |
+| | `/routine` | 루틴 목록 및 체크 |
+| | `/focus` | 집중 모드 (타이머) |
+| | `/memos` | 빠른 메모 작성 |
+| **Insight** | `/diary/daily` | 데일리 다이어리 |
+| | `/insight/stat` | 통계 대시보드 |
+| **System** | `/settings` | 사용자 환경 설정 |
+| | `/admin` | 관리자 페이지 |
+
+---
+
+## 📡 백엔드 연동 규칙 (API Convention)
+
+- **Base URL**: `/api`
+- **Authentication**: JWT 기반 (`Authorization: Bearer <token>`)
+- **Date/Time Format**:
+  - Request/Response: **ISO 8601** (`YYYY-MM-DDTHH:mm:ssZ`)
+  - Server Storage: **UTC**
+- **Recurring Events**: 반복 일정은 `occurrenceStart` 필드로 개별 인스턴스를 식별합니다.
+
+---
+
+## 📝 라이선스
+
+Copyright © 2026 Timebar Diary Project. All rights reserved.
+(현재 내부 프로토타입 개발 단계입니다.)
