@@ -1,0 +1,70 @@
+/* FILE: src/main/frontend/src/styles/theme/theme.css */
+/* 기본(라이트) */
+:root {
+    --tf-bg: #f8fafc;
+    --tf-surface: #ffffff;
+    --tf-surface-hover: #f1f5f9; /* 호버 색상 */
+    --tf-border: #e2e8f0;
+    --tf-text: #0f172a;
+    --tf-text-muted: #64748b;
+    --tf-primary: #6366f1;
+    --tf-primary-hover: #4f46e5;
+    --tf-primary-soft: #eef2ff;
+    
+    /* Sidebar Specific */
+    --tf-sidebar-bg: var(--tf-surface);
+    --tf-sidebar-border: var(--tf-border);
+  }
+  
+  /* 🌑 다크 */
+  [data-theme='dark'] {
+    --tf-bg: #0f172a;
+    --tf-surface: #1e293b;
+    --tf-surface-hover: #334155;
+    --tf-border: #334155;
+    --tf-text: #f1f5f9;
+    --tf-text-muted: #94a3b8;
+    --tf-primary: #818cf8;
+    --tf-primary-hover: #6366f1;
+    --tf-primary-soft: #1e1b4b; /* 진한 남색 */
+    
+    --tf-sidebar-bg: #1e293b;
+    --tf-sidebar-border: #334155;
+  }
+  
+  /* 🌸 파스텔 */
+  [data-theme='pastel'] {
+    --tf-bg: #fffbf0;
+    --tf-surface: #ffffff;
+    --tf-surface-hover: #fcf6e9;
+    --tf-border: #e6e2d3;
+    --tf-text: #5d5d5a;
+    --tf-text-muted: #9e9e96;
+    --tf-primary: #ffb7b2;
+    --tf-primary-hover: #ff9e99;
+    --tf-primary-soft: #fff0f0;
+    
+    --tf-sidebar-bg: #fffbf0;
+  }
+  
+  /* 🎩 세련(Chic) */
+  [data-theme='chic'] {
+    --tf-bg: #ffffff;
+    --tf-surface: #f4f4f5;
+    --tf-surface-hover: #e4e4e7;
+    --tf-border: #d4d4d8;
+    --tf-text: #000000;
+    --tf-text-muted: #52525b;
+    --tf-primary: #18181b;
+    --tf-primary-hover: #3f3f46;
+    --tf-primary-soft: #e4e4e7;
+    
+    --tf-sidebar-bg: #f4f4f5;
+  }
+  
+  /* 전역 적용 */
+  body {
+    background-color: var(--tf-bg);
+    color: var(--tf-text);
+    transition: background-color 0.3s, color 0.3s;
+  }

@@ -1175,3 +1175,55 @@ export const aiApi = {
     };
   },
 };
+
+/** Memo/Inbox API */
+export const memoApi = {
+  async listMemos({ q = "", type = "ALL", status = "ALL" } = {}) {
+    await delay(100);
+    const db = loadDb();
+    let list = db.memos || [
+      { id: "m1", content: "다음 주 워크샵 장소 알아보기", type: "text", tags: ["업무"], createdAt: nowIso() },
+      { id: "m2", content: "https://velog.io/@trend/react-query", type: "link", tags: ["공부"], createdAt: nowIso() },
+      { id: "m3", content: "집 가는 길에 세탁소 들르기", type: "voice", tags: ["루틴"], createdAt: nowIso() }
+    ];
+
+    if (q) list = list.filter(m => m.content.includes(q));
+    if (type !== "ALL") list = list.filter(m => m.type === type);
+    
+    // 최신순 정렬
+    return list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  },
+
+  async createMemo(payload) {
+    await delay(100);
+    const db = loadDb();
+    const newMemo = {
+      id: uid("mem"),
+      content: payload.content,
+      type: payload.type || "text", // text | voice | link
+      tags: payload.tags || [],
+      createdAt: nowIso(),
+      isProcessed: false // 할일로 변환되었는지 여부
+    };
+    db.memos = [newMemo, ...(db.memos || [])];
+    saveDb(db);
+    return newMemo;
+  },
+
+  async deleteMemo(id) {
+    await delay(100);
+    const db = loadDb();
+    db.memos = (db.memos || []).filter(m => m.id !== id);
+    saveDb(db);
+    return true;
+  },
+
+  // AI가 메모를 분석하여 Task로 변환한다고 가정
+  async aiSortMemos() {
+    await delay(800); // AI 처리 시간 모사
+    return {
+      convertedCount: 2,
+      message: "2개의 메모를 [할 일]로 변환하고, 1개를 [일정]에 등록했습니다."
+    };
+  }
+};

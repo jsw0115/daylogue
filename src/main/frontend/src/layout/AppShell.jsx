@@ -14,6 +14,9 @@ import { fetchMe } from "../shared/api/authApi";
 
 import safeStorage from "../shared/utils/safeStorage";
 
+import QuickMenu from "../components/common/QuickMenu";
+import "../styles/components/QuickMenu.css";
+
 // 2026.01.24 @jsw - 정보 가져오기 
 async function getUser() {
   // return data
@@ -197,7 +200,7 @@ export default function AppShell() {
       <Header user={user} userLoading={userLoading} userError={userError} onRefreshUser={refreshUser}
         permissions={permissions} bootstrap={bootstrap} bootstrapLoading={bootstrapLoading} bootstrapError={bootstrapError} onRefreshBootstrap={refreshBootstrap}/>
 
-      <div className="app-shell__body">
+      <div className="app-shell__body" style={{ display: 'flex', height: '100vh', overflow: 'hidden', backgroundColor: 'var(--tf-bg)', color: 'var(--tf-text)' }}>
         {!isMobile && <Sidebar  user={user} userLoading={userLoading} userError={userError} onRefreshUser={refreshUser}
         permissions={permissions} bootstrap={bootstrap} bootstrapLoading={bootstrapLoading} bootstrapError={bootstrapError} onRefreshBootstrap={refreshBootstrap}/>}
 
@@ -206,6 +209,8 @@ export default function AppShell() {
           <Outlet context={{ user, userLoading, userError, refreshUser, permissions, bootstrap, bootstrapLoading, bootstrapError, refreshBootstrap }} />
         </main>
       </div>
+
+      <QuickMenu />
 
       {isMobile && <MobileBottomNav />}
     </div>

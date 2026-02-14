@@ -1,48 +1,40 @@
+// FILE: src/main/frontend/src/shared/context/ThemeContext.jsx
 import React, { createContext, useContext, useEffect, useState } from "react";
 
+// 기본값
 const ThemeContext = createContext({
   theme: "light",
   setTheme: () => null,
 });
 
-export function ThemeProvider({ children, defaultTheme = "light", storageKey = "daylogue-ui-theme" }) {
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem(storageKey) || defaultTheme;
-  });
+export function ThemeProvider({ children }) {
+  // 테마 상태
+  const [theme, setTheme] = useState(() => localStorage.getItem("app-theme") || "light");
+  // 스티커 팩 상태 추가 (basic | emoji | pixel)
+  const [stickerPack, setStickerPack] = useState(() => localStorage.getItem("app-sticker") || "basic");
 
   useEffect(() => {
-    const root = window.document.documentElement;
-
-    // 기존 테마 클래스 제거
-    root.classList.remove("light", "dark", "pastel");
-
-    // 새 테마 클래스 추가 (light는 기본값이므로 클래스 추가 안 함, 필요시 추가 가능)
-    if (theme !== "light") {
-      root.classList.add(theme);
-    }
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("app-theme", theme);
   }, [theme]);
 
-  const value = {
-    theme,
-    setTheme: (newTheme) => {
-      localStorage.setItem(storageKey, newTheme);
-      setTheme(newTheme);
-    },
+  const changeStickerPack = (packId) => {
+    setStickerPack(packId);
+    localStorage.setItem("app-sticker", packId);
   };
 
   return (
-    <ThemeContext.Provider value={value} {...children}>
+    <ThemeContext.Provider value={{ theme, setTheme, stickerPack, setStickerPack: changeStickerPack }}>
       {children}
     </ThemeContext.Provider>
   );
 }
 
+// Custom Hook
 export const useTheme = () => {
   const context = useContext(ThemeContext);
-
-  if (context === undefined) {
+  if (!context) {
     throw new Error("useTheme must be used within a ThemeProvider");
   }
-
   return context;
 };

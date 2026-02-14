@@ -1,0 +1,394 @@
+/* 전역 Reset (Layout 깨짐 방지 핵심) */
+.work-report-page * {
+    box-sizing: border-box;
+  }
+  
+  .work-report-page {
+    padding: 24px;
+    background-color: #f8fafc;
+    min-height: 100vh;
+    color: #1e293b;
+  }
+  
+  /* --- Layout Grid --- */
+  .report-grid {
+    display: grid;
+    /* 핵심 수정: 왼쪽 컬럼이 최소 0까지 줄어들 수 있게 하여 overflow 방지 */
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 24px;
+    margin-top: 20px;
+    align-items: start;
+  }
+  
+  /* --- Editor Section (Left) --- */
+  .report-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-height: 600px;
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid #e2e8f0;
+  }
+  
+  .editor-header {
+    display: flex;
+    flex-wrap: wrap; /* 작은 화면에서 줄바꿈 */
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .report-title-input {
+    flex: 1;
+    min-width: 200px;
+    font-size: 22px;
+    font-weight: 800;
+    border: none;
+    border-bottom: 2px solid transparent;
+    outline: none;
+    background: transparent;
+    color: #0f172a;
+    padding: 4px 0;
+    transition: border-color 0.2s;
+  }
+  
+  .report-title-input:focus {
+    border-bottom-color: #3b82f6;
+  }
+  
+  .date-picker {
+    width: 150px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    padding: 0 12px;
+    font-size: 14px;
+  }
+  
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed #e2e8f0;
+  }
+  
+  .section-title {
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #334155;
+  }
+  
+  .error-text { color: #ef4444; }
+  
+  /* --- Block List (업무 내역) --- */
+  .block-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .report-block {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+  }
+  
+  .report-block:hover {
+    background: #fff;
+    border-color: #94a3b8;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
+  }
+  
+  .block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 10px;
+  }
+  
+  .block-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0; /* Flex 자식 넘침 방지 */
+  }
+  
+  /* 핵심 수정: Select와 Input이 유연하게 늘어나도록 변경 */
+  .block-project-select {
+    flex: 2; /* 프로젝트명이 길 수 있으므로 더 넓게 */
+    min-width: 140px; 
+    height: 38px;
+    font-weight: 600;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 0 12px;
+    background-color: white;
+  }
+  
+  .block-hours {
+    flex: 0 0 80px; /* 고정 너비 */
+    height: 38px;
+    text-align: right;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 0 8px;
+  }
+  
+  .unit {
+    font-size: 13px;
+    color: #64748b;
+    white-space: nowrap;
+  }
+  
+  .icon-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #94a3b8;
+    padding: 8px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  
+  .icon-btn:hover { background: #f1f5f9; color: #475569; }
+  .icon-btn.danger:hover { background: #fee2e2; color: #ef4444; }
+  
+  .block-content {
+    width: 100%;
+    min-height: 80px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+    color: #334155;
+  }
+  
+  .block-content:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.1);
+  }
+  
+  /* --- Issues Section --- */
+  .issue-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .issue-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    padding: 4px;
+    border-radius: 8px;
+  }
+  
+  .issue-status {
+    width: 110px;
+    height: 36px;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    padding-left: 8px;
+  }
+  
+  .issue-status.OPEN { color: #b91c1c; border-color: #fecaca; background: #fef2f2; }
+  .issue-status.RESOLVED { color: #15803d; border-color: #bbf7d0; background: #f0fdf4; }
+  
+  .issue-content {
+    flex: 1;
+    height: 36px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 0 10px;
+    font-size: 13px;
+    min-width: 0;
+  }
+  
+  /* --- Dashboard (Right) --- */
+  .report-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: sticky;
+    top: 20px; /* 스크롤 시 따라오도록 */
+  }
+  
+  .summary-card, .guide-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  
+  .card-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #1e293b;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  
+  .chart-container {
+    width: 100%;
+    height: 220px;
+    position: relative;
+  }
+  
+  .empty-chart {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    border-radius: 12px;
+    color: #94a3b8;
+    font-size: 13px;
+  }
+  
+  .total-hours {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 8px;
+    font-weight: 700;
+  }
+  
+  .total-hours .val {
+    font-size: 20px;
+    color: #3b82f6;
+  }
+  
+  .guide-card {
+    background: #fffbeb;
+    border-color: #fcd34d;
+  }
+  
+  .guide-list {
+    padding-left: 20px;
+    margin: 0;
+    font-size: 13px;
+    color: #92400e;
+    line-height: 1.6;
+  }
+  
+  /* --- Github Modal --- */
+  .github-list {
+    max-height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 4px;
+  }
+  
+  .github-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid #f1f5f9;
+    align-items: flex-start;
+    transition: background 0.1s;
+  }
+  
+  .github-item:hover { background: #f8fafc; border-color: #e2e8f0; }
+  
+  .github-item input {
+    margin-top: 4px;
+    accent-color: #3b82f6;
+    width: 16px;
+    height: 16px;
+  }
+  
+  .git-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .git-msg { 
+    font-weight: 600; 
+    font-size: 14px; 
+    color: #334155; 
+    line-height: 1.4;
+  }
+  
+  .git-time { 
+    font-size: 12px; 
+    color: #94a3b8; 
+  }
+  
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #f1f5f9;
+  }
+  
+  .tf-btn--xs {
+    padding: 4px 10px;
+    font-size: 12px;
+    height: 28px;
+  }
+  
+  /* --- Responsive Breakpoints --- */
+  @media (max-width: 1024px) {
+    .report-grid {
+      grid-template-columns: 1fr; /* Stack layout on tablets/mobile */
+    }
+    
+    .report-dashboard {
+      position: static; /* Remove sticky on mobile */
+      order: -1; /* Show dashboard on top (optional) */
+    }
+  
+    .block-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .block-title-row {
+      flex-wrap: wrap;
+    }
+    
+    .block-project-select {
+      width: 100%;
+      flex: none;
+    }
+  }

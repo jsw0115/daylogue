@@ -18,9 +18,7 @@ spring:
       additional-paths: 
         - src/main/java
         - src/main/resources
-      exclude: 
-        - static/**
-        - public/** 
+      exclude: static/**, public/** 
 
 
   # 기본 연결 DB 설정
@@ -169,6 +167,8 @@ server:
       charset: UTF-8
       enabled: true
       force: true
+    session:
+      timeout: 30m  # 30분 후 세션 만료 (10m, 60s 등 설정 가능) [1, 6]
 logging:
   # default Logging 프레임워크 설정 파일을 참조
   config: classpath:log4j2.xml
@@ -215,7 +215,7 @@ app:
       # 토큰 발급자(issuer). 검증 시 일치 체크에 활용 가능
       issuer: timeflow
       # accessToken 만료(초) - 예: 1시간
-      access-token-ttl-seconds: 3600
+      access-token-ttl-seconds: 360000
       # refreshToken 만료(초) - 예: 14일
       refresh-token-ttl-seconds: 1209600
       # 운영에서는 반드시 환경변수로 주입 권장

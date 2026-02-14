@@ -1,0 +1,99 @@
+/* FILE: src/main/frontend/src/styles/components/QuickMenu.css */
+/* 전체 컨테이너: 화면 위에 둥둥 떠있음 */
+.qm-container {
+  position: fixed;
+  z-index: 9999; /* 제일 위에 표시 */
+  display: flex;
+  flex-direction: column-reverse; /* 버튼이 아래, 메뉴가 위로 */
+  align-items: center;
+  /* 드래그 시 텍스트 선택 방지 */
+  user-select: none;
+  touch-action: none; 
+}
+
+/* 메인 버튼 (FAB) */
+.qm-fab {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #1e293b; /* Dark Navy */
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab; /* 드래그 가능 아이콘 */
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.qm-fab:active {
+  cursor: grabbing; /* 잡았을 때 아이콘 */
+  transform: scale(0.95);
+}
+
+.qm-fab.active {
+  background: #ef4444; /* 열렸을 때는 닫기 색상(빨강) */
+  transform: rotate(90deg);
+}
+
+/* 펼쳐지는 메뉴 영역 */
+.qm-menu {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  pointer-events: none; /* 닫혀있을 땐 클릭 방지 */
+}
+
+.qm-menu.open {
+  pointer-events: auto;
+}
+
+/* 개별 메뉴 아이템 */
+.qm-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(20px) scale(0.8);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.qm-menu.open .qm-item {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* 메뉴 아이콘 원형 */
+.qm-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+
+.qm-item:hover .qm-icon {
+  transform: scale(1.1);
+}
+
+/* 라벨 (왼쪽에 뜨는 글씨) */
+.qm-label {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none; /* 라벨 위 드래그 방지 */
+}

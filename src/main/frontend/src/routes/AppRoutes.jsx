@@ -100,25 +100,7 @@ import AdminUserScreen from "../screens/admin/AdminUserScreen";
 import AdminLogScreen from "../screens/admin/AdminLogScreen";
 import AdminNoticeScreen from "../screens/admin/AdminNoticeScreen";
 import AdminStatsScreen from "../screens/admin/AdminStatsScreen";
-
-// Screens
-// import HomeDashboardScreen from "./screens/home/HomeDashboardS creen";
-// import DailyPlannerScreen from "./screens/plan/DailyPlannerScreen";
-// import WeeklyPlannerScreen from "./screens/plan/WeeklyPlannerScreen";
-// import MonthlyPlannerScreen from "./screens/plan/MonthlyPlannerScreen";
-// import YearlyOverviewScreen from "./screens/plan/YearlyOverviewScreen";
-
-// import TaskListScreen from "../screens/TaskListScreen";
-// import RoutineListScreen from "../screens/routine/RoutineListScreen";
-// import DailyDiaryScreen from "./screens/diary/DailyDiaryScreen";
-
 import FocusModeScreen from "../screens/focus/FocusModeScreen";
-
-// import StatDashboardScreen from "./screens/stat/StatDashboardScreen";
-// import SettingsScreen from "./screens/settings/SettingsScreen";
-// import AdminSettingsScreen from "./screens/admin/AdminSettingsScreen";
-
-// import DataManagementScreen from "./screens/data/DataManagementScreen";
 
 
 import CommunityFeedScreen from "../screens/community/CommunityFeedScreen";
