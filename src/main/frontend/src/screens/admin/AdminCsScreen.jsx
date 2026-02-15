@@ -1,167 +1,209 @@
 import React, { useMemo, useState } from "react";
-import { Button, Card, Input, Select, Space, Table, Tag, Typography } from "antd";
-import { LifeBuoy, Fingerprint, Send, RefreshCw } from "lucide-react";
+import { 
+  Button, Input, Space, Tag, Typography, 
+  Empty, Tooltip, Popover, List 
+} from "antd";
+import { 
+  LifeBuoy, Search, RefreshCw, Send, CheckCircle, 
+  Clock, AlertCircle, User, FileText 
+} from "lucide-react";
 
 const { Title, Text } = Typography;
+const { TextArea } = Input;
 
+// Mock Tickets
 const SEED_TICKETS = [
-  { id: "T-1001", status: "대기", type: "동기화", userId: "U-1001", title: "구글 캘린더 중복 생성", createdAt: "2026-01-01 11:02" },
-  { id: "T-1002", status: "진행", type: "결제", userId: "U-1010", title: "구독 결제했는데 기능이 잠김", createdAt: "2026-01-01 09:40" },
-  { id: "T-1003", status: "완료", type: "버그", userId: "U-1007", title: "플래너 저장 시 오류", createdAt: "2025-12-31 21:11" },
+  { 
+    id: "T-1001", status: "WAITING", type: "SYNC", userId: "user_01", 
+    title: "구글 캘린더 연동이 안돼요", 
+    preview: "설정에서 구글 연동 버튼을 눌렀는데...",
+    createdAt: "2026-02-14 11:02",
+    messages: [{ sender: "user", text: "연동 버튼 반응이 없어요.", time: "11:02" }]
+  },
+  { 
+    id: "T-1002", status: "IN_PROGRESS", type: "PAYMENT", userId: "user_vip", 
+    title: "결제 취소 요청합니다", 
+    preview: "실수로 1년 구독을 눌렀어요...",
+    createdAt: "2026-02-14 09:40",
+    messages: [
+      { sender: "user", text: "실수로 결제했습니다. 환불해주세요.", time: "09:40" },
+      { sender: "agent", text: "확인 중입니다.", time: "09:55" },
+    ]
+  },
 ];
 
-function statusTag(s) {
-  if (s === "대기") return <Tag color="processing">대기</Tag>;
-  if (s === "진행") return <Tag color="warning">진행</Tag>;
-  return <Tag color="success">완료</Tag>;
-}
+const STATUS_MAP = {
+  WAITING: { color: "red", label: "대기중", icon: AlertCircle },
+  IN_PROGRESS: { color: "blue", label: "처리중", icon: Clock },
+  RESOLVED: { color: "green", label: "완료됨", icon: CheckCircle },
+};
+
+// [NEW] 자주 쓰는 답변 템플릿 데이터
+const REPLY_TEMPLATES = [
+  { title: "기본 인사", content: "안녕하세요, TimeFlow 고객센터입니다. 문의해 주셔서 감사합니다. 무엇을 도와드릴까요?" },
+  { title: "환불 규정 안내", content: "결제일로부터 7일 이내 사용 이력이 없는 경우 전액 환불이 가능합니다. 확인 후 처리해 드리겠습니다." },
+  { title: "동기화 오류 가이드", content: "설정 > 데이터 관리 > 캐시 삭제 후 다시 시도해 보시기 바랍니다. 그래도 해결되지 않으면 로그아웃 후 재로그인 해주세요." },
+  { title: "상담 종료", content: "추가로 궁금한 점이 있으시면 언제든 문의해 주세요. 감사합니다. 좋은 하루 보내세요!" },
+];
 
 export default function AdminCsScreen() {
-  const [status, setStatus] = useState("ALL");
-  const [type, setType] = useState("ALL");
+  const [filterStatus, setFilterStatus] = useState("ALL");
   const [keyword, setKeyword] = useState("");
-  const [selected, setSelected] = useState(null);
-  const [reply, setReply] = useState("");
+  const [selectedId, setSelectedId] = useState(null);
+  const [replyText, setReplyText] = useState("");
+  const [templateVisible, setTemplateVisible] = useState(false); // 팝오버 제어
 
-  const data = useMemo(() => {
+  const filteredData = useMemo(() => {
     return SEED_TICKETS.filter((t) => {
-      const hitStatus = status === "ALL" ? true : t.status === status;
-      const hitType = type === "ALL" ? true : t.type === type;
-      const hitKeyword = !keyword.trim()
-        ? true
-        : (t.title.toLowerCase().includes(keyword.trim().toLowerCase()) ||
-          t.userId.toLowerCase().includes(keyword.trim().toLowerCase()));
-      return hitStatus && hitType && hitKeyword;
+      const matchStatus = filterStatus === "ALL" || t.status === filterStatus;
+      const matchKey = !keyword || t.title.includes(keyword) || t.userId.includes(keyword);
+      return matchStatus && matchKey;
     });
-  }, [status, type, keyword]);
+  }, [filterStatus, keyword]);
 
-  const columns = [
-    { title: "티켓", dataIndex: "id", key: "id", width: 110 },
-    { title: "상태", dataIndex: "status", key: "status", width: 90, render: (v) => statusTag(v) },
-    { title: "유형", dataIndex: "type", key: "type", width: 90 },
-    { title: "userId", dataIndex: "userId", key: "userId", width: 110 },
-    { title: "제목", dataIndex: "title", key: "title" },
-    { title: "생성", dataIndex: "createdAt", key: "createdAt", width: 150 },
-  ];
+  const selectedTicket = useMemo(() => 
+    SEED_TICKETS.find(t => t.id === selectedId), 
+  [selectedId]);
 
-  const issueDiagCode = () => {
-    const code = `DGN-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-    alert(`데모: 진단 코드 발급 = ${code}\n(실제: 서버 로그/세션과 매칭)`);
+  const handleSendReply = () => {
+    if(!replyText.trim()) return;
+    alert(`[전송 완료] ${replyText}`);
+    setReplyText("");
   };
 
-  const sendReply = () => {
-    if (!selected) return alert("데모: 티켓을 선택하세요.");
-    alert("데모: 답변 전송(추후 API)");
-    setReply("");
+  // [NEW] 템플릿 적용 함수
+  const applyTemplate = (content) => {
+    setReplyText((prev) => (prev ? prev + "\n" + content : content));
+    setTemplateVisible(false); // 닫기
   };
 
-  const reset = () => {
-    setStatus("ALL");
-    setType("ALL");
-    setKeyword("");
-  };
+  // [NEW] 템플릿 팝오버 콘텐츠
+  const templateContent = (
+    <List
+      size="small"
+      dataSource={REPLY_TEMPLATES}
+      renderItem={(item) => (
+        <List.Item 
+          onClick={() => applyTemplate(item.content)}
+          style={{ cursor: 'pointer', padding: '8px 4px' }}
+          className="cs-template-item" // hover effect용 클래스 (CSS 필요 시)
+        >
+          <div style={{width:'100%'}}>
+            <div style={{fontWeight: 600, fontSize: 13}}>{item.title}</div>
+            <div style={{fontSize: 12, color: '#666', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 240}}>
+              {item.content}
+            </div>
+          </div>
+        </List.Item>
+      )}
+      style={{ width: 260, maxHeight: 300, overflowY: 'auto' }}
+    />
+  );
 
   return (
     <div className="admin-page">
       <div className="admin-page__head">
         <div>
-          <Title level={3} style={{ margin: 0 }}>CS</Title>
-          <Text type="secondary">1:1 문의 티켓 + 진단 코드(데모)</Text>
+          <Title level={3} style={{ margin: 0 }}>CS 티켓 관리</Title>
+          <Text type="secondary">문의 접수 및 실시간 응대</Text>
+        </div>
+        <Button icon={<RefreshCw size={16} />}>새로고침</Button>
+      </div>
+
+      <div className="admin-cs-wrapper">
+        {/* Left List */}
+        <div className="admin-cs-list-card">
+          <div className="admin-cs-list-header">
+            <Space direction="vertical" style={{width: '100%'}} size={12}>
+              <Input prefix={<Search size={16} className="text-gray-400"/>} placeholder="검색..." value={keyword} onChange={e => setKeyword(e.target.value)} allowClear />
+              <div style={{display:'flex', gap: 4}}>
+                {['ALL', 'WAITING', 'IN_PROGRESS'].map(s => (
+                  <Button 
+                    key={s} size="small" 
+                    type={filterStatus === s ? 'primary' : 'default'} 
+                    onClick={() => setFilterStatus(s)}
+                  >
+                    {s === 'ALL' ? '전체' : STATUS_MAP[s]?.label || s}
+                  </Button>
+                ))}
+              </div>
+            </Space>
+          </div>
+          <div className="admin-cs-list-body">
+            {filteredData.map(ticket => {
+              const S = STATUS_MAP[ticket.status];
+              return (
+                <div key={ticket.id} className={`cs-ticket-item ${selectedId === ticket.id ? 'active' : ''}`} onClick={() => setSelectedId(ticket.id)}>
+                  <div className="cs-ticket-top">
+                    <Space size={6}><S.icon size={14} color={S.color} /><span style={{fontSize:12, fontWeight:700}}>{S.label}</span></Space>
+                    <Text type="secondary" style={{fontSize:11}}>#{ticket.id}</Text>
+                  </div>
+                  <div className="cs-ticket-title">{ticket.title}</div>
+                  <div className="cs-ticket-desc">{ticket.preview}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Right Detail */}
+        <div className="admin-cs-detail-card">
+          {selectedTicket ? (
+            <>
+              <div style={{padding: 20, borderBottom: '1px solid #f0f0f0'}}>
+                <Title level={4} style={{margin: '0 0 8px 0'}}>{selectedTicket.title}</Title>
+                <Space><Tag>{selectedTicket.type}</Tag><Text type="secondary">User: {selectedTicket.userId}</Text></Space>
+              </div>
+              <div style={{flex: 1, padding: 20, overflowY: 'auto', background: '#fafafa'}}>
+                {selectedTicket.messages.map((msg, idx) => (
+                  <div key={idx} style={{display:'flex', justifyContent: msg.sender==='agent'?'flex-end':'flex-start', marginBottom: 16}}>
+                    <div style={{
+                      padding: '12px 16px', borderRadius: 12,
+                      background: msg.sender==='agent'?'#6366f1':'#fff',
+                      color: msg.sender==='agent'?'#fff':'#333',
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                      maxWidth: '70%'
+                    }}>
+                      {msg.text}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div style={{padding: 20, borderTop: '1px solid #f0f0f0', background: '#fff'}}>
+                <TextArea 
+                  rows={4} value={replyText} onChange={e => setReplyText(e.target.value)} 
+                  placeholder="답변을 입력하세요..." 
+                  style={{marginBottom: 12}} 
+                />
+                <div style={{display:'flex', justifyContent:'space-between'}}>
+                  <Space>
+                    {/* [NEW] 템플릿 팝오버 연결 */}
+                    <Popover 
+                      content={templateContent} 
+                      title="답변 템플릿 선택" 
+                      trigger="click" 
+                      open={templateVisible} 
+                      onOpenChange={setTemplateVisible}
+                      placement="topLeft"
+                    >
+                      <Tooltip title="자주 쓰는 답변 불러오기">
+                        <Button size="small" icon={<FileText size={14}/>}>템플릿</Button>
+                      </Tooltip>
+                    </Popover>
+                    <Button size="small">파일 첨부</Button>
+                  </Space>
+                  <Button type="primary" icon={<Send size={14}/>} onClick={handleSendReply}>전송</Button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div style={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:'100%', color: '#94a3b8'}}>
+              <LifeBuoy size={64} style={{opacity:0.2}}/>
+              <div style={{marginTop:16}}>문의 내역을 선택해주세요</div>
+            </div>
+          )}
         </div>
       </div>
-
-      <div className="admin-two-col">
-        <Card
-          title={
-            <Space size={8}>
-              <LifeBuoy size={18} />
-              <span>필터</span>
-            </Space>
-          }
-        >
-          <Space direction="vertical" size={10} style={{ width: "100%" }}>
-            <div>
-              <Text type="secondary">상태</Text>
-              <Select
-                value={status}
-                onChange={setStatus}
-                style={{ width: "100%" }}
-                options={[
-                  { value: "ALL", label: "ALL" },
-                  { value: "대기", label: "대기" },
-                  { value: "진행", label: "진행" },
-                  { value: "완료", label: "완료" },
-                ]}
-              />
-            </div>
-
-            <div>
-              <Text type="secondary">유형</Text>
-              <Select
-                value={type}
-                onChange={setType}
-                style={{ width: "100%" }}
-                options={[
-                  { value: "ALL", label: "ALL" },
-                  { value: "동기화", label: "동기화" },
-                  { value: "결제", label: "결제" },
-                  { value: "버그", label: "버그" },
-                ]}
-              />
-            </div>
-
-            <div>
-              <Text type="secondary">키워드</Text>
-              <Input value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="제목/userId 검색" allowClear />
-            </div>
-
-            <Space wrap>
-              <Button icon={<RefreshCw size={16} />} onClick={reset}>초기화</Button>
-              <Button icon={<Fingerprint size={16} />} onClick={issueDiagCode}>진단 코드 발급</Button>
-            </Space>
-
-            <Text type="secondary">
-              실제 운영: 티켓에 첨부 로그/스크린샷, 답변 템플릿, SLA 타이머가 필요.
-            </Text>
-          </Space>
-        </Card>
-
-        <Card title="티켓 목록">
-          <Table
-            rowKey="id"
-            columns={columns}
-            dataSource={data}
-            pagination={{ pageSize: 6 }}
-            onRow={(record) => ({
-              onClick: () => setSelected(record),
-              style: { cursor: "pointer" },
-            })}
-          />
-        </Card>
-      </div>
-
-      <Card title="답변(데모)" style={{ marginTop: 12 }}>
-        {!selected ? (
-          <Text type="secondary">왼쪽에서 티켓을 선택하세요.</Text>
-        ) : (
-          <Space direction="vertical" size={10} style={{ width: "100%" }}>
-            <Text>
-              선택: <Tag>{selected.id}</Tag> userId=<Tag>{selected.userId}</Tag> ({selected.type})
-            </Text>
-
-            <Input.TextArea
-              rows={4}
-              value={reply}
-              onChange={(e) => setReply(e.target.value)}
-              placeholder="답변 내용을 입력"
-            />
-
-            <Button type="primary" icon={<Send size={16} />} onClick={sendReply}>
-              답변 전송(데모)
-            </Button>
-          </Space>
-        )}
-      </Card>
     </div>
   );
 }

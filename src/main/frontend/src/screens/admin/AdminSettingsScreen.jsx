@@ -1,25 +1,18 @@
+// FILE : src/screens/admin/AdminSettingsScreen.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import * as Tabs from "@radix-ui/react-tabs";
 import { Card, Select, Space, Typography, Tag } from "antd";
 import clsx from "clsx";
 import {
-  Users,
-  Shield,
-  Megaphone,
-  ScrollText,
-  BarChart3,
-  Settings,
-  LifeBuoy,
-  CreditCard,
-  MessageSquareWarning,
+  Users, Shield, Megaphone, ScrollText, BarChart3,
+  Settings, LifeBuoy, CreditCard, MessageSquareWarning,
 } from "lucide-react";
 
+// Sub Screens
 import AdminUserScreen from "./AdminUserScreen";
 import AdminNoticeScreen from "./AdminNoticeScreen";
 import AdminLogScreen from "./AdminLogScreen";
 import AdminStatsScreen from "./AdminStatsScreen";
-
-// NEW screens
 import AdminAccessScreen from "./AdminAccessScreen";
 import AdminPolicyScreen from "./AdminPolicyScreen";
 import AdminCsScreen from "./AdminCsScreen";
@@ -28,22 +21,16 @@ import AdminCommunityScreen from "./AdminCommunityScreen";
 
 import "../../styles/screens/admin-ui.css";
 
-
 const { Title, Text } = Typography;
 
 const ADMIN_ROLES = [
-  { value: "superAdmin", label: "superAdmin" },
-  { value: "ops", label: "ops" },
-  { value: "cs", label: "cs" },
-  { value: "moderator", label: "moderator" },
-  { value: "finance", label: "finance" },
+  { value: "superAdmin", label: "Super Admin" },
+  { value: "ops", label: "Operations" },
+  { value: "cs", label: "CS Manager" },
+  { value: "moderator", label: "Moderator" },
+  { value: "finance", label: "Finance" },
 ];
 
-/**
- * Demo RBAC
- * - 실제 서비스에서는 서버에서 role/permission 내려주고, FE는 “표시”만 통제.
- * - 서버는 반드시 재검증(권한 체크).
- */
 const ROLE_ALLOWED_TABS = {
   superAdmin: ["users", "access", "notices", "logs", "stats", "policies", "cs", "billing", "community"],
   ops: ["users", "access", "notices", "logs", "stats", "policies", "community"],
@@ -65,22 +52,15 @@ const TAB_DEFS = [
 ];
 
 export default function AdminSettingsScreen() {
-  const [role, setRole] = useState("superAdmin"); // demo
+  const [role, setRole] = useState("superAdmin");
   const [tab, setTab] = useState("users");
 
-  const allowedTabs = useMemo(() => {
-    return new Set(ROLE_ALLOWED_TABS[role] || []);
-  }, [role]);
-
-  const visibleTabs = useMemo(() => {
-    return TAB_DEFS.filter((t) => allowedTabs.has(t.key));
-  }, [allowedTabs]);
+  const allowedTabs = useMemo(() => new Set(ROLE_ALLOWED_TABS[role] || []), [role]);
+  const visibleTabs = useMemo(() => TAB_DEFS.filter((t) => allowedTabs.has(t.key)), [allowedTabs]);
 
   useEffect(() => {
-    // role 변경 시 현재 탭이 허용되지 않으면 첫 탭으로 이동
     if (!allowedTabs.has(tab)) {
-      const first = visibleTabs[0]?.key || "users";
-      setTab(first);
+      setTab(visibleTabs[0]?.key || "users");
     }
   }, [role, allowedTabs, tab, visibleTabs]);
 
@@ -88,43 +68,32 @@ export default function AdminSettingsScreen() {
     <div className="admin-page">
       <div className="admin-page__head">
         <div>
-          <Title level={3} style={{ margin: 0 }}>
-            관리자 설정(데모)
-          </Title>
-          <Text type="secondary">
-            실제 운영: 서버 권한 재검증 필수 · 여기서는 UI 구조/흐름 확인 목적
-          </Text>
+          <Title level={3} style={{ margin: 0 }}>관리자 설정 (Admin Console)</Title>
+          <Text type="secondary">시스템 전반을 모니터링하고 제어합니다.</Text>
         </div>
-
         <Space wrap align="center">
-          <Tag color="processing">ROLE</Tag>
+          <Tag color="processing">Current Role</Tag>
           <Select
             value={role}
             onChange={setRole}
-            style={{ width: 160 }}
+            style={{ width: 140 }}
             options={ADMIN_ROLES}
           />
         </Space>
       </div>
 
-      <Card>
+      <Card bodyStyle={{ padding: '16px' }}>
         <Tabs.Root value={tab} onValueChange={setTab}>
-          <Tabs.List className="admin-ui__tabs" aria-label="admin tabs">
+          <Tabs.List className="admin-ui__tabs">
             {visibleTabs.map((t) => (
-              <Tabs.Trigger
-                key={t.key}
-                value={t.key}
-                className={clsx("admin-ui__tab")}
-              >
+              <Tabs.Trigger key={t.key} value={t.key} className="admin-ui__tab">
                 <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
-                  {t.icon}
-                  {t.label}
+                  {t.icon} {t.label}
                 </span>
               </Tabs.Trigger>
             ))}
           </Tabs.List>
-
-          <div style={{ marginTop: 12 }}>
+          <div style={{ marginTop: 20 }}>
             {visibleTabs.map((t) => (
               <Tabs.Content key={t.key} value={t.key}>
                 {t.element}

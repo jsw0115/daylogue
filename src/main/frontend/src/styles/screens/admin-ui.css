@@ -1,291 +1,196 @@
-/* FILE: src/styles/screens/admin-ui.css */
-.admin-ui {
+/* 관리자 페이지 레이아웃 */
+.admin-page {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  background-color: #f8fafc; /* 배경색: 밝은 회색 */
   min-height: 100vh;
-}
-
-.admin-ui__sider {
-  background: #fff;
-  border-right: 1px solid rgba(0,0,0,0.06);
-}
-
-.admin-ui__brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 14px;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-}
-
-.admin-ui__brandIcon {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  background: rgba(0,0,0,0.06);
-}
-
-.admin-ui__brandTitle {
-  font-weight: 800;
-  line-height: 1.1;
-}
-
-.admin-ui__brandSub {
-  font-size: 12px;
-  color: rgba(0,0,0,0.55);
-}
-
-.admin-ui__menu {
-  border-right: none;
-}
-
-.admin-ui__header {
-  background: #fff;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 14px;
-}
-
-.admin-ui__headerLeft {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.admin-ui__headerSub {
-  display: block;
-  font-size: 12px;
-}
-
-.admin-ui__content {
-  padding: 14px;
 }
 
 .admin-page__head {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
+  align-items: flex-end;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
+/* 2단 레이아웃 (필터 + 목록) */
 .admin-two-col {
   display: grid;
-  grid-template-columns: 420px 1fr;
-  gap: 12px;
+  grid-template-columns: 320px 1fr;
+  gap: 16px;
+  align-items: start;
 }
 
-@media (max-width: 1100px) {
-  .admin-two-col {
-    grid-template-columns: 1fr;
-  }
+/* 탭 스타일 */
+.admin-ui__tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
 }
 
+.admin-ui__tab {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.admin-ui__tab:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.admin-ui__tab[data-state="active"] {
+  background-color: #eef2ff;
+  color: #6366f1;
+  font-weight: 700;
+}
+
+/* 카드 높이 맞춤 */
 .admin-card-fullHeight {
   height: 100%;
 }
 
-/* Radix Tabs */
-.admin-ui__tabs {
-  display: inline-flex;
-  gap: 6px;
-  padding: 4px;
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.04);
-}
-
-.admin-ui__tab {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  padding: 8px 10px;
-  border-radius: 10px;
-  font-weight: 700;
-}
-
-.admin-ui__tab[data-state="active"] {
-  background: rgba(0, 0, 0, 0.08);
-}
-
+/* 통계 페이지 프로그레스 바 */
 .admin-ui__progressRow {
-  display: grid;
-  grid-template-columns: 70px 1fr;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.admin-ui__progressLabel {
-  font-weight: 700;
-  color: rgba(0,0,0,0.75);
-}
-
-.admin-ui__miniCard {
-  background: rgba(0,0,0,0.02);
-  border-radius: 12px;
-}
-
-/* =========================
- * Admin UI (scoped)
- * - Ant Design Button polish
- * - Radix Tabs trigger polish
- * ========================= */
-
-/* 공통 톤(변수 없으면 fallback 사용) */
-.admin-page {
-  --adm-radius: 12px;
-  --adm-radius-lg: 14px;
-  --adm-bg-soft: rgba(0, 0, 0, 0.04);
-  --adm-border: rgba(0, 0, 0, 0.10);
-  --adm-text: rgba(0, 0, 0, 0.88);
-  --adm-sub: rgba(0, 0, 0, 0.55);
-
-  /* 브랜드 컬러(프로젝트 변수 있으면 교체 권장) */
-  --adm-primary: var(--tf-primary, #3b82f6);
-  --adm-primary-hover: var(--tf-primary-hover, #2563eb);
-  --adm-primary-weak: rgba(59, 130, 246, 0.12);
-}
-
-/* ====== AntD Button: 기본 버튼 룩 정리 ====== */
-.admin-page .ant-btn {
-  height: 36px;
-  padding: 0 12px;
-  border-radius: var(--adm-radius);
-  font-weight: 600;
-  letter-spacing: -0.2px;
-  border-color: var(--adm-border);
-  color: var(--adm-text);
-  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, border-color 120ms ease;
-}
-
-.admin-page .ant-btn .ant-btn-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-inline-end: 8px; /* 아이콘-텍스트 간격 */
-}
-
-.admin-page .ant-btn:active {
-  transform: translateY(1px);
-}
-
-/* 기본 버튼 */
-.admin-page .ant-btn-default {
-  background: #fff;
-}
-.admin-page .ant-btn-default:hover {
-  border-color: rgba(0, 0, 0, 0.18);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-}
-
-/* Primary 버튼 */
-.admin-page .ant-btn-primary {
-  background: var(--adm-primary);
-  border-color: var(--adm-primary);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
-}
-.admin-page .ant-btn-primary:hover {
-  background: var(--adm-primary-hover);
-  border-color: var(--adm-primary-hover);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16);
-}
-
-/* Ghost(필요하면) */
-.admin-page .ant-btn-background-ghost {
-  background: transparent;
-  border-color: var(--adm-border);
-}
-
-/* Danger 버튼(옵션) */
-.admin-page .ant-btn-dangerous {
-  border-color: rgba(239, 68, 68, 0.35);
-}
-.admin-page .ant-btn-dangerous:hover {
-  border-color: rgba(239, 68, 68, 0.55);
-  box-shadow: 0 8px 18px rgba(239, 68, 68, 0.12);
-}
-
-/* Disabled */
-.admin-page .ant-btn[disabled],
-.admin-page .ant-btn:disabled {
-  opacity: 0.55;
-  box-shadow: none !important;
-  transform: none !important;
-}
-
-/* 버튼 그룹 간격이 너무 좁을 때를 대비 */
-.admin-page .ant-space {
-  row-gap: 10px;
-}
-
-/* ====== Radix Tabs: 탭을 버튼처럼 ====== */
-.admin-page .admin-ui__tabs {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px;
-  border-radius: var(--adm-radius-lg);
-  background: var(--adm-bg-soft);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  overflow-x: auto;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.admin-ui__progressLabel {
+  width: 60px;
+  font-size: 13px;
+  color: #64748b;
+  text-align: right;
 }
 
-.admin-page .admin-ui__tab {
-  appearance: none;
-  border: 1px solid transparent;
-  background: transparent;
-  color: rgba(0, 0, 0, 0.70);
-  border-radius: var(--adm-radius);
-  padding: 8px 12px;
-  cursor: pointer;
-  user-select: none;
-  white-space: nowrap;
-  transition: background 120ms ease, border-color 120ms ease, box-shadow 120ms ease, color 120ms ease, transform 120ms ease;
+/* 미니 카드 (통계용) */
+.admin-ui__miniCard .ant-card-body {
+  padding: 12px;
 }
 
-.admin-page .admin-ui__tab:hover {
-  background: rgba(255, 255, 255, 0.75);
-  border-color: rgba(0, 0, 0, 0.08);
-  color: rgba(0, 0, 0, 0.82);
+/* 반응형 처리 */
+@media (max-width: 1024px) {
+  .admin-two-col {
+    grid-template-columns: 1fr; /* 모바일/태블릿에선 1단으로 */
+  }
 }
 
-.admin-page .admin-ui__tab[data-state="active"] {
-  background: #fff;
-  border-color: rgba(0, 0, 0, 0.12);
-  color: rgba(0, 0, 0, 0.92);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.10);
+/* --- 기존 스타일 유지 --- */
+.admin-page {
+  padding: 24px;
+  max-width: 1600px; /* CS화면은 넓을수록 좋음 */
+  margin: 0 auto;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.admin-page .admin-ui__tab:active {
-  transform: translateY(1px);
-}
-
-/* 탭 내부 아이콘 정렬 보정 */
-.admin-page .admin-ui__tab svg {
-  flex: 0 0 auto;
-}
-
-/* ====== (선택) 관리자 레이아웃(버튼과 같이 보기 좋게) ====== */
 .admin-page__head {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 12px;
+  align-items: flex-end;
+  margin-bottom: 16px;
+  flex-shrink: 0;
 }
 
+/* 기존 2단 레이아웃 (일반 설정용) */
 .admin-two-col {
   display: grid;
-  grid-template-columns: minmax(260px, 360px) 1fr;
-  gap: 12px;
+  grid-template-columns: 320px 1fr;
+  gap: 16px;
+  align-items: start;
 }
 
-@media (max-width: 980px) {
-  .admin-two-col {
-    grid-template-columns: 1fr;
+/* --- [NEW] CS 전용 레이아웃 (채팅형/메일형 구조) --- */
+.admin-cs-wrapper {
+  display: grid;
+  grid-template-columns: 380px 1fr; /* 리스트 영역 확보 */
+  gap: 16px;
+  height: calc(100vh - 140px); /* 화면 꽉 채우기 */
+  min-height: 600px;
+}
+
+/* 좌측 리스트 카드 */
+.admin-cs-list-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+}
+
+.admin-cs-list-header {
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.admin-cs-list-body {
+  flex: 1;
+  overflow-y: auto;
+  background: #fafafa;
+}
+
+/* 리스트 아이템 스타일 */
+.cs-ticket-item {
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #fff;
+}
+.cs-ticket-item:hover { background-color: #f8fafc; }
+.cs-ticket-item.active {
+  background-color: #eef2ff;
+  border-left: 4px solid #6366f1;
+}
+
+.cs-ticket-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.cs-ticket-title { font-weight: 600; color: #1e293b; margin-bottom: 4px; }
+.cs-ticket-desc { 
+  font-size: 13px; color: #64748b; 
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+}
+
+/* 우측 상세 카드 */
+.admin-cs-detail-card {
+  height: 100%;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 모바일 대응 */
+@media (max-width: 900px) {
+  .admin-cs-wrapper {
+    grid-template-columns: 1fr; /* 모바일은 1단으로 */
+    height: auto;
   }
+  .admin-cs-list-card { height: 500px; }
+  .admin-cs-detail-card { height: auto; min-height: 500px; }
 }

@@ -1,195 +1,105 @@
-import React, { useMemo, useState } from "react";
-import { Button, Card, Input, Select, Space, Switch, Table, Tag, Typography } from "antd";
-import { Shield, Timer, KeyRound, Network, Save } from "lucide-react";
+// FILE: src/main/frontend/src/screens/admin/AdminAccessScreen.jsx
+import React, { useState } from "react";
+import { Button, Card, Input, Select, Space, Switch, Table, Tag, Typography, Divider } from "antd";
+import { Shield, KeyRound, Network, Timer, Save } from "lucide-react";
 
 const { Title, Text } = Typography;
 
 const ROLE_MATRIX = [
-  { role: "superAdmin", can: ["ALL"] },
-  { role: "ops", can: ["users", "access", "notices", "logs", "stats", "policies", "community"] },
-  { role: "cs", can: ["users(read)", "logs(read)", "cs", "notices(read)"] },
-  { role: "moderator", can: ["community", "logs(read)", "users(limited)", "notices(read)"] },
-  { role: "finance", can: ["billing", "logs(read)", "users(read)"] },
+  { role: "superAdmin", desc: "시스템 전체 제어", can: "ALL" },
+  { role: "ops", desc: "운영/관리", can: "Users, Contents, Stats" },
+  { role: "cs", desc: "고객 응대", can: "Users(Read), Logs(Read)" },
+  { role: "finance", desc: "정산/결제", can: "Billing" },
 ];
 
 export default function AdminAccessScreen() {
-  const [require2fa, setRequire2fa] = useState(false);
-  const [sessionMinutes, setSessionMinutes] = useState(60);
-  const [allowlistEnabled, setAllowlistEnabled] = useState(false);
-  const [allowlist, setAllowlist] = useState("10.0.0.0/24\n203.0.113.10");
+  // Security Config States
+  const [use2FA, setUse2FA] = useState(true);
+  const [useAllowList, setUseAllowList] = useState(false);
+  const [allowIps, setAllowIps] = useState("10.0.0.1/24\n192.168.1.100");
+  const [sessionTime, setSessionTime] = useState(60);
 
+  // Temporary Permission State
   const [tempRole, setTempRole] = useState("ops");
-  const [tempPerm, setTempPerm] = useState("policies");
-  const [tempHours, setTempHours] = useState(1);
-
-  const columns = [
-    { title: "Role", dataIndex: "role", key: "role", width: 140, render: (v) => <Tag>{v}</Tag> },
-    {
-      title: "권한(요약)",
-      dataIndex: "can",
-      key: "can",
-      render: (v) => (Array.isArray(v) ? v.join(", ") : String(v)),
-    },
-  ];
-
-  const allowlistRows = useMemo(() => {
-    return String(allowlist || "")
-      .split("\n")
-      .map((x) => x.trim())
-      .filter(Boolean);
-  }, [allowlist]);
+  const [tempDuration, setTempDuration] = useState(1);
 
   return (
-    <div className="admin-page">
-      <div className="admin-page__head">
-        <div>
-          <Title level={3} style={{ margin: 0 }}>접근통제</Title>
-          <Text type="secondary">RBAC / 관리자 보안(2FA/세션/IP) / 임시 권한(데모)</Text>
+    <div className="admin-two-col">
+      {/* 1. RBAC Matrix */}
+      <Card title={<Space><Shield size={18}/><span>RBAC (Role Matrix)</span></Space>}>
+        <Table 
+          dataSource={ROLE_MATRIX} 
+          rowKey="role"
+          pagination={false}
+          size="small"
+          columns={[
+            { title: "Role", dataIndex: "role", render: v => <Tag color="blue">{v}</Tag> },
+            { title: "Description", dataIndex: "desc" },
+            { title: "Permissions", dataIndex: "can", render: v => <Text type="secondary">{v}</Text> },
+          ]}
+        />
+        <div style={{marginTop: 12, padding: 12, background: '#f9f9f9', borderRadius: 8}}>
+          <Text type="warning">ℹ️ 권한 정의는 서버 설정 파일(YAML/DB)을 따르며, 이곳에서는 조회만 가능합니다.</Text>
         </div>
-      </div>
+      </Card>
 
-      <div className="admin-two-col">
-        <Card
-          title={
-            <Space size={8}>
-              <Shield size={18} />
-              <span>RBAC(역할/권한) 매트릭스</span>
-            </Space>
-          }
-        >
-          <Table
-            rowKey="role"
-            columns={columns}
-            dataSource={ROLE_MATRIX}
-            pagination={false}
-            size="small"
-          />
-          <Text type="secondary" style={{ display: "block", marginTop: 10 }}>
-            실제 구현: 서버에서 permission set 내려주고, FE는 메뉴 표시만 제어. 서버는 반드시 재검증.
-          </Text>
-        </Card>
-
-        <Card
-          title={
-            <Space size={8}>
-              <KeyRound size={18} />
-              <span>관리자 로그인 보안</span>
-            </Space>
-          }
-        >
-          <Space direction="vertical" size={12} style={{ width: "100%" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-              <div>
-                <Text>2FA 강제(옵션)</Text>
-                <div><Text type="secondary">관리자 계정에 2FA를 요구</Text></div>
-              </div>
-              <Switch checked={require2fa} onChange={setRequire2fa} />
+      {/* 2. Security Config */}
+      <Space direction="vertical" style={{ width: '100%' }}>
+        <Card title={<Space><KeyRound size={18}/><span>관리자 보안 설정</span></Space>}>
+          <Space direction="vertical" style={{width:'100%'}} size={16}>
+            
+            <div style={{display:'flex', justifyContent:'space-between'}}>
+              <span>2FA 인증 강제 (Google OTP)</span>
+              <Switch checked={use2FA} onChange={setUse2FA} />
             </div>
+            
+            <Divider style={{margin:'4px 0'}} />
 
-            <div>
-              <Space size={8} align="center">
-                <Timer size={16} />
-                <Text>세션 만료(분)</Text>
-              </Space>
-              <Input
-                type="number"
-                value={sessionMinutes}
-                onChange={(e) => setSessionMinutes(Number(e.target.value || 0))}
-                style={{ marginTop: 6 }}
+            <div style={{display:'flex', justifyContent:'space-between'}}>
+              <span>세션 만료 시간 (분)</span>
+              <Input 
+                type="number" value={sessionTime} onChange={e=>setSessionTime(e.target.value)} 
+                style={{width: 100}} suffix="min" 
               />
             </div>
 
-            <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+            <Divider style={{margin:'4px 0'}} />
+
+            <div style={{display:'flex', justifyContent:'space-between'}}>
+              <span>IP Allowlist 활성화</span>
+              <Switch checked={useAllowList} onChange={setUseAllowList} />
+            </div>
+
+            {useAllowList && (
               <div>
-                <Space size={8} align="center">
-                  <Network size={16} />
-                  <Text>IP Allowlist(옵션)</Text>
-                </Space>
-                <div><Text type="secondary">허용된 IP 대역만 관리자 접근 가능</Text></div>
+                <Text type="secondary" style={{fontSize: 12}}>허용 IP 목록 (CIDR 가능)</Text>
+                <Input.TextArea 
+                  rows={4} 
+                  value={allowIps} 
+                  onChange={e => setAllowIps(e.target.value)} 
+                  style={{marginTop: 8}}
+                />
               </div>
-              <Switch checked={allowlistEnabled} onChange={setAllowlistEnabled} />
-            </div>
+            )}
 
-            <div>
-              <Text type="secondary">Allowlist 목록</Text>
-              <Input.TextArea
-                rows={5}
-                value={allowlist}
-                onChange={(e) => setAllowlist(e.target.value)}
-                placeholder="한 줄에 하나씩 (CIDR 가능)"
-                disabled={!allowlistEnabled}
-              />
-              {allowlistEnabled ? (
-                <Text type="secondary" style={{ display: "block", marginTop: 6 }}>
-                  적용 대상: {allowlistRows.length}개
-                </Text>
-              ) : null}
-            </div>
-
-            <Button type="primary" icon={<Save size={16} />} onClick={() => alert("데모: 보안 설정 저장(추후 API)")}>
-              저장
+            <Button type="primary" icon={<Save size={16}/>} block onClick={() => alert("보안 설정 저장됨")}>
+              설정 저장
             </Button>
           </Space>
         </Card>
 
-        <Card title="임시 권한 부여(데모)" className="admin-card-fullHeight">
-          <Space direction="vertical" size={10} style={{ width: "100%" }}>
-            <Text type="secondary">
-              장애 대응 시 특정 권한을 “기간 한정”으로 부여하는 흐름(UI만 반영).
-            </Text>
-
-            <div>
-              <Text type="secondary">대상 Role</Text>
-              <Select
-                value={tempRole}
-                onChange={setTempRole}
-                style={{ width: "100%" }}
-                options={[
-                  { value: "ops", label: "ops" },
-                  { value: "cs", label: "cs" },
-                  { value: "moderator", label: "moderator" },
-                  { value: "finance", label: "finance" },
-                ]}
-              />
-            </div>
-
-            <div>
-              <Text type="secondary">권한</Text>
-              <Select
-                value={tempPerm}
-                onChange={setTempPerm}
-                style={{ width: "100%" }}
-                options={[
-                  { value: "policies", label: "policies(운영정책)" },
-                  { value: "logs", label: "logs(로그)" },
-                  { value: "notices", label: "notices(공지)" },
-                  { value: "users", label: "users(사용자)" },
-                ]}
-              />
-            </div>
-
-            <div>
-              <Text type="secondary">기간(시간)</Text>
-              <Input
-                type="number"
-                value={tempHours}
-                onChange={(e) => setTempHours(Number(e.target.value || 0))}
-              />
-            </div>
-
-            <Button
-              type="primary"
-              onClick={() => alert(`데모: ${tempRole}에 ${tempPerm} 권한을 ${tempHours}시간 부여(추후 API)`)}
-            >
-              임시 권한 부여
-            </Button>
-
-            <Text type="secondary">
-              실제 구현: 발급/만료 이벤트는 Audit에 반드시 기록 + 만료 스케줄러 필요.
-            </Text>
+        {/* 3. Emergency Access */}
+        <Card title={<Space><Timer size={18}/><span>임시 권한 부여 (Emergency)</span></Space>}>
+          <Space direction="vertical" style={{width:'100%'}}>
+            <Text type="secondary">장애 대응 등을 위해 일시적으로 권한을 상향합니다.</Text>
+            <Space>
+              <Select value={tempRole} onChange={setTempRole} style={{width: 120}} options={[{value:'ops', label:'Ops'}, {value:'superAdmin', label:'SuperAdmin'}]} />
+              <Input type="number" value={tempDuration} onChange={e=>setTempDuration(e.target.value)} suffix="시간" style={{width: 100}} />
+              <Button danger>권한 부여</Button>
+            </Space>
           </Space>
         </Card>
-      </div>
+      </Space>
     </div>
   );
 }

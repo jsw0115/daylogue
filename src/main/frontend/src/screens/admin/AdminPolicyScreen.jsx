@@ -1,188 +1,87 @@
+// FILE: src/main/frontend/src/screens/admin/AdminPolicyScreen.jsx
 import React, { useState } from "react";
 import { Button, Card, Divider, InputNumber, Select, Space, Switch, Typography } from "antd";
-import { Settings, Save } from "lucide-react";
+import { Settings, Save, AlertTriangle } from "lucide-react";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 export default function AdminPolicyScreen() {
-  // PvA
-  const [postponePolicy, setPostponePolicy] = useState("keep_denominator"); // keep_denominator | move_planDate | exclude
-  const [cancelPolicy, setCancelPolicy] = useState("exclude"); // exclude | keep_denominator
-  const [carryoverPolicy, setCarryoverPolicy] = useState("keep_planDate"); // keep_planDate | move_planDate | mark_postponed
-  const [timeCapping, setTimeCapping] = useState("cap_100"); // cap_100 | allow_over
-  const [actualSource, setActualSource] = useState("timebar"); // timebar | timer | manual
-  const [actualMerge, setActualMerge] = useState("prefer_primary"); // prefer_primary | sum | max
-
-  // Sync
-  const [conflictPolicy, setConflictPolicy] = useState("manual"); // latest | manual | merge
-  const [massDeleteGuard, setMassDeleteGuard] = useState(true);
-  const [massDeleteThreshold, setMassDeleteThreshold] = useState(50);
-
-  // Content/templates
-  const [globalTemplatesEnabled, setGlobalTemplatesEnabled] = useState(true);
-
-  const save = () => {
-    alert("데모: 운영 정책 저장(추후 API)");
+  // Policy States
+  const [pvaMode, setPvaMode] = useState("strict"); // strict | loose
+  const [maxCapping, setMaxCapping] = useState(100);
+  const [allowCarryOver, setAllowCarryOver] = useState(true);
+  const [syncConflict, setSyncConflict] = useState("manual");
+  
+  const handleSave = () => {
+    alert("정책이 저장되었습니다. 서버 캐시가 갱신됩니다.");
   };
 
   return (
-    <div className="admin-page">
-      <div className="admin-page__head">
-        <div>
-          <Title level={3} style={{ margin: 0 }}>운영정책</Title>
-          <Text type="secondary">PvA/루틴/동기화/콘텐츠 전역 기본값(데모)</Text>
-        </div>
-
-        <Button type="primary" icon={<Save size={16} />} onClick={save}>
-          저장
-        </Button>
-      </div>
-
-      <Card
-        title={
-          <Space size={8}>
-            <Settings size={18} />
-            <span>PvA/달성률 정책</span>
-          </Space>
-        }
+    <div style={{ maxWidth: 800, margin: '0 auto' }}>
+      <Card 
+        title={<Space><Settings size={18}/><span>서비스 운영 정책</span></Space>}
+        extra={<Button type="primary" icon={<Save size={16}/>} onClick={handleSave}>적용</Button>}
       >
-        <Space direction="vertical" size={10} style={{ width: "100%" }}>
+        <Space direction="vertical" size={24} style={{ width: "100%" }}>
+          
+          {/* 1. PvA Logic */}
           <div>
-            <Text type="secondary">연기(Postpone) 처리</Text>
-            <Select
-              value={postponePolicy}
-              onChange={setPostponePolicy}
-              style={{ width: "100%" }}
-              options={[
-                { value: "keep_denominator", label: "분모 유지(기본)" },
-                { value: "move_planDate", label: "planDate 이동(계획 조정)" },
-                { value: "exclude", label: "분모에서 제외" },
-              ]}
-            />
+            <h4 style={{marginBottom: 12, fontWeight: 700}}>📊 PvA (Plan vs Actual) 산정 기준</h4>
+            <Space direction="vertical" style={{width:'100%'}}>
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                <div>
+                  <div style={{fontWeight:600}}>달성률 캡핑 (Max Rate)</div>
+                  <Text type="secondary" style={{fontSize:12}}>100%를 초과하는 달성률을 표기할지 여부</Text>
+                </div>
+                <Select value={maxCapping} onChange={setMaxCapping} style={{width: 140}} options={[{value:100, label:'100% 제한'}, {value:999, label:'제한 없음'}]} />
+              </div>
+              
+              <Divider style={{margin:'12px 0'}}/>
+
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                <div>
+                  <div style={{fontWeight:600}}>미달성 일정 이월 (Carry Over)</div>
+                  <Text type="secondary" style={{fontSize:12}}>자정이 지나면 미완료 일정을 다음날로 자동 이동</Text>
+                </div>
+                <Switch checked={allowCarryOver} onChange={setAllowCarryOver} />
+              </div>
+            </Space>
           </div>
 
+          {/* 2. Sync Logic */}
           <div>
-            <Text type="secondary">취소(Cancel) 처리</Text>
-            <Select
-              value={cancelPolicy}
-              onChange={setCancelPolicy}
-              style={{ width: "100%" }}
-              options={[
-                { value: "exclude", label: "분모에서 제외(기본)" },
-                { value: "keep_denominator", label: "분모 유지" },
-              ]}
-            />
-          </div>
-
-          <div>
-            <Text type="secondary">자동 이월(Carryover) 처리</Text>
-            <Select
-              value={carryoverPolicy}
-              onChange={setCarryoverPolicy}
-              style={{ width: "100%" }}
-              options={[
-                { value: "keep_planDate", label: "표시만 이동(planDate 유지)" },
-                { value: "move_planDate", label: "계획도 이동(planDate 이동)" },
-                { value: "mark_postponed", label: "연기 상태로 변경 + planDate 유지" },
-              ]}
-            />
-          </div>
-
-          <Divider style={{ margin: "10px 0" }} />
-
-          <div>
-            <Text type="secondary">시간 PvA 캡핑 정책</Text>
-            <Select
-              value={timeCapping}
-              onChange={setTimeCapping}
-              style={{ width: "100%" }}
-              options={[
-                { value: "cap_100", label: "캡핑(최대 100%)" },
-                { value: "allow_over", label: "초과 허용(120%, 180%...)" },
-              ]}
-            />
-          </div>
-
-          <div>
-            <Text type="secondary">Actual 시간 소스(우선)</Text>
-            <Select
-              value={actualSource}
-              onChange={setActualSource}
-              style={{ width: "100%" }}
-              options={[
-                { value: "timebar", label: "타임바(블록)" },
-                { value: "timer", label: "타이머(포커스)" },
-                { value: "manual", label: "수기 입력" },
-              ]}
-            />
-          </div>
-
-          <div>
-            <Text type="secondary">중복 발생 시 병합 규칙</Text>
-            <Select
-              value={actualMerge}
-              onChange={setActualMerge}
-              style={{ width: "100%" }}
-              options={[
-                { value: "prefer_primary", label: "우선 소스만 인정" },
-                { value: "sum", label: "합산" },
-                { value: "max", label: "최대값" },
-              ]}
-            />
-          </div>
-
-          <Text type="secondary">
-            주의: 실제 Actual 수집 방식(타임바/타이머/수기)이 확정되지 않으면 여기 값은 운영 중 조정될 수 있음.
-          </Text>
-        </Space>
-      </Card>
-
-      <Card title="동기화(양방향 Sync) 운영 정책" style={{ marginTop: 12 }}>
-        <Space direction="vertical" size={10} style={{ width: "100%" }}>
-          <div>
-            <Text type="secondary">충돌 해결 기본 정책</Text>
-            <Select
-              value={conflictPolicy}
-              onChange={setConflictPolicy}
-              style={{ width: "100%" }}
-              options={[
-                { value: "latest", label: "최신 우선" },
-                { value: "manual", label: "사용자 선택(권장)" },
-                { value: "merge", label: "필드 병합" },
-              ]}
-            />
-          </div>
-
-          <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-            <div>
-              <Text>대량 삭제/중복 폭증 안전장치</Text>
-              <div><Text type="secondary">감지 시 동기화 일시정지/확인</Text></div>
+            <h4 style={{marginBottom: 12, fontWeight: 700}}>🔄 데이터 동기화 충돌 정책</h4>
+            <div style={{background:'#fffbe6', padding: 12, borderRadius: 8, marginBottom: 12, border: '1px solid #ffe58f'}}>
+              <Space><AlertTriangle size={16} color="#d48806"/><Text type="warning">정책 변경 시 클라이언트 재동기화가 발생할 수 있습니다.</Text></Space>
             </div>
-            <Switch checked={massDeleteGuard} onChange={setMassDeleteGuard} />
-          </div>
-
-          <div>
-            <Text type="secondary">대량 삭제 임계값(건)</Text>
-            <InputNumber
-              min={1}
-              value={massDeleteThreshold}
-              onChange={(v) => setMassDeleteThreshold(Number(v || 0))}
-              style={{ width: "100%" }}
-              disabled={!massDeleteGuard}
-            />
-          </div>
-        </Space>
-      </Card>
-
-      <Card title="공용 템플릿/기본 데이터" style={{ marginTop: 12 }}>
-        <Space direction="vertical" size={10} style={{ width: "100%" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-            <div>
-              <Text>공용 템플릿 기능 활성화</Text>
-              <div><Text type="secondary">플래너/일정/업무보고 템플릿 전역 제공</Text></div>
+            
+            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+              <div>
+                <div style={{fontWeight:600}}>충돌 해결 우선순위</div>
+                <Text type="secondary" style={{fontSize:12}}>서버와 클라이언트 데이터가 다를 경우 기준</Text>
+              </div>
+              <Select 
+                value={syncConflict} onChange={setSyncConflict} style={{width: 200}}
+                options={[
+                  {value:'server', label:'서버 데이터 우선'},
+                  {value:'client', label:'클라이언트(최신) 우선'},
+                  {value:'manual', label:'사용자에게 묻기'}
+                ]} 
+              />
             </div>
-            <Switch checked={globalTemplatesEnabled} onChange={setGlobalTemplatesEnabled} />
           </div>
+
+          {/* 3. Global Thresholds */}
+          <div>
+            <h4 style={{marginBottom: 12, fontWeight: 700}}>🛑 어뷰징 방지 임계값</h4>
+            <div style={{display:'flex', alignItems:'center', gap: 16}}>
+              <Text>도배 방지 (초당 요청):</Text>
+              <InputNumber defaultValue={5} />
+              <Text>일일 최대 게시글:</Text>
+              <InputNumber defaultValue={20} />
+            </div>
+          </div>
+
         </Space>
       </Card>
     </div>
