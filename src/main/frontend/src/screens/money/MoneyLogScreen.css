@@ -1,0 +1,107 @@
+/* FILE: src/screens/money/MoneyLogScreen.css */
+.money-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  /* 상단 요약 카드 */
+  .money-card {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 140px;
+  }
+  .money-card.highlight {
+    background: linear-gradient(135deg, var(--tf-primary) 0%, #4f46e5 100%);
+    color: white;
+    border: none;
+  }
+  .money-card.highlight .money-card__label,
+  .money-card.highlight .money-card__value {
+    color: white;
+  }
+  .money-card.highlight .money-card__icon {
+    background: rgba(255,255,255,0.2);
+    color: white;
+  }
+  
+  .money-card__icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: var(--tf-bg);
+    display: flex; alignItems: center; justifyContent: center;
+    margin-bottom: 16px;
+    color: var(--tf-text);
+  }
+  .money-card__icon.income { color: #10b981; background: #ecfdf5; }
+  
+  .money-card__label { font-size: 14px; color: var(--tf-text-muted); margin-bottom: 4px; }
+  .money-card__value { font-size: 28px; font-weight: 800; color: var(--tf-text); letter-spacing: -0.5px; }
+  .money-card__value .unit { font-size: 16px; font-weight: 500; opacity: 0.8; margin-left: 4px; }
+  
+  /* 입력 폼 */
+  .money-input-card {
+    grid-column: span 2;
+    padding: 24px;
+  }
+  .money-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  
+  /* 리스트 */
+  .money-list-card {
+    grid-column: span 2;
+    padding: 24px;
+  }
+  .money-list {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .money-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border: 1px solid var(--tf-border);
+    border-radius: 12px;
+    background: var(--tf-bg);
+    transition: transform 0.2s;
+  }
+  .money-item:hover { transform: translateX(4px); background: #f1f5f9; }
+  
+  .money-item__left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .money-category-icon {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    background: #e0e7ff;
+    color: #4f46e5;
+    display: flex; alignItems: center; justifyContent: center;
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .money-category-icon.study { background: #ecfdf5; color: #10b981; }
+  
+  .money-item__title { font-weight: 700; color: var(--tf-text); font-size: 15px; }
+  .money-item__date { font-size: 13px; color: var(--tf-text-muted); margin-top: 2px; }
+  
+  .money-item__amount { font-weight: 800; font-size: 16px; }
+  .money-item__amount.expense { color: #ef4444; }
+  .money-item__amount.income { color: #10b981; }
+  
+  /* 모바일 대응 */
+  @media (max-width: 600px) {
+    .money-grid { display: flex; flex-direction: column; }
+  }

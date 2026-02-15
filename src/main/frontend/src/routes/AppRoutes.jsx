@@ -71,6 +71,7 @@ import DiaryCalendarScreen from "../screens/diary/DiaryCalendarScreen";
 import MemoInboxScreen from "../screens/memo/MemoInboxScreen";
 import MemoEditScreen from "../screens/memo/MemoEditScreen";
 import MemoToTaskScreen from "../screens/memo/MemoToTaskScreen";
+import MoneyLogScreen from "../screens/money/MoneyLogScreen";
 
 // Stat
 import StatDashboardScreen from "../screens/stat/StatDashboardScreen";
@@ -163,6 +164,7 @@ export default function AppRoutes() {
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<HomeDashboardScreen />} />
         <Route path="/inbox" element={<NotificationInboxScreen />} />
+        <Route path="/money" element={<MoneyLogScreen />} />
 
         <Route path="/planner/daily" element={<DailyPlannerScreen />} />
         <Route path="/planner/weekly" element={<WeeklyPlannerScreen />} />

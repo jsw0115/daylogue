@@ -28,9 +28,9 @@ function PageContainer({
       {hasHeader && (
         <header className="screen-header">
           <div className="screen-header__left">
-            {screenId && (
+            {/* {screenId && (
               <div className="screen-header__id">{screenId}</div>
-            )}
+            )} */}
             {title && (
               <h1 className="screen-header__title">{title}</h1>
             )}

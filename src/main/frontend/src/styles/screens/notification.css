@@ -1,0 +1,185 @@
+/* FILE: src/styles/screens/notification.css */
+/* Layout */
+.notification-screen {
+    max-width: 800px;
+    margin: 0 auto;
+    padding-bottom: 40px;
+  }
+  
+  /* Header */
+  .noti-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 0 4px;
+  }
+  
+  .noti-count {
+    font-size: 14px;
+    color: var(--tf-text-muted);
+    font-weight: 600;
+  }
+  
+  .noti-count .highlight {
+    color: var(--tf-primary);
+    margin-left: 4px;
+  }
+  
+  .text-btn {
+    background: none;
+    border: none;
+    color: var(--tf-text-muted);
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .text-btn:hover {
+    color: var(--tf-text);
+    text-decoration: underline;
+  }
+  
+  /* List */
+  .noti-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  /* Item Card */
+  .noti-item {
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+    background: var(--tf-surface);
+    border: 1px solid var(--tf-border);
+    border-radius: var(--tf-radius);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .noti-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--tf-shadow);
+  }
+  
+  /* Unread State (강조) */
+  .noti-item.unread {
+    background: #fff; 
+    border-left: 4px solid var(--tf-primary);
+  }
+  .noti-item.read {
+    background: var(--tf-bg);
+    opacity: 0.8;
+  }
+  
+  /* Icon Styles */
+  .noti-item__left {
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  
+  .noti-icon {
+    padding: 10px;
+    border-radius: 12px;
+    background: var(--tf-bg);
+  }
+  .noti-icon.event { color: #f59e0b; background: #fffbeb; } /* Amber */
+  .noti-icon.friend { color: #3b82f6; background: #eff6ff; } /* Blue */
+  .noti-icon.system { color: #6366f1; background: #eef2ff; } /* Indigo */
+  
+  /* Content */
+  .noti-item__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .noti-item__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  
+  .noti-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--tf-text);
+    line-height: 1.4;
+  }
+  
+  .noti-time {
+    font-size: 12px;
+    color: var(--tf-text-muted);
+    white-space: nowrap;
+    margin-left: 8px;
+  }
+  
+  .noti-message {
+    font-size: 14px;
+    color: var(--tf-text-muted);
+    line-height: 1.5;
+  }
+  
+  /* Action Buttons */
+  .noti-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  
+  .btn-action {
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  
+  .btn-action.primary {
+    background: var(--tf-primary);
+    color: white;
+  }
+  .btn-action.primary:hover {
+    background: var(--tf-primary-hover);
+  }
+  
+  .btn-action.ghost {
+    background: transparent;
+    border-color: var(--tf-border);
+    color: var(--tf-text-muted);
+  }
+  .btn-action.ghost:hover {
+    background: var(--tf-bg);
+    color: var(--tf-text);
+  }
+  
+  .btn-action.link {
+    background: transparent;
+    color: var(--tf-primary);
+    padding: 0;
+    font-weight: 700;
+  }
+  .btn-action.link:hover {
+    text-decoration: underline;
+  }
+  
+  /* Empty State */
+  .noti-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 0;
+    color: var(--tf-text-muted);
+    gap: 16px;
+  }

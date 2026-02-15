@@ -505,3 +505,88 @@
     width: 100%;
   }
 }
+
+/* --- [추가] 프로필 설정 전용 스타일 (이미지 깨짐 방지) --- */
+
+.settings-profile-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 40px;
+  padding: 20px;
+  background-color: var(--color-surface-soft, #f9fafb); /* 연한 배경 */
+  border-radius: 16px;
+  border: 1px dashed var(--color-border, #e5e7eb);
+}
+
+/* 아바타 원형 래퍼 (크기 고정) */
+.settings-avatar-wrapper {
+  position: relative;
+  width: 120px; /* 가로 고정 */
+  height: 120px; /* 세로 고정 */
+  border-radius: 50%; /* 원형 */
+  background-color: #fff;
+  border: 4px solid #fff;
+  box-shadow: 0 0 0 1px var(--color-border, #e5e7eb);
+  overflow: hidden; /* 이미지가 튀어나가지 않게 자름 */
+  cursor: pointer;
+  transition: transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-avatar-wrapper:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 0 2px var(--color-primary, #4f46e5);
+}
+
+/* 이미지 스타일 (비율 유지하며 꽉 채우기) */
+.settings-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 핵심: 찌그러짐 방지 */
+  display: block;
+}
+
+/* 이미지가 없을 때 아이콘 */
+.settings-avatar-placeholder {
+  color: var(--color-muted, #9ca3af);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: #f3f4f6;
+}
+
+/* 마우스 올렸을 때 어두운 오버레이 */
+.settings-avatar-overlay {
+  position: absolute;
+  inset: 0; /* top, left, right, bottom: 0 */
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  opacity: 0; /* 평소엔 숨김 */
+  transition: opacity 0.2s;
+}
+
+.settings-avatar-wrapper:hover .settings-avatar-overlay {
+  opacity: 1; /* 호버 시 보임 */
+}
+
+.settings-avatar-text {
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.settings-avatar-help {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--color-muted, #6b7280);
+}

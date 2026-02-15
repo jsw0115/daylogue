@@ -1,3 +1,4 @@
+// FILE: src/screens/memo/MemoEditScreen.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { memoApi } from "../../services/localMockApi"; // 가상의 상세 조회 API 필요

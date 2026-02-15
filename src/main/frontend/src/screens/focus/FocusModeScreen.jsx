@@ -1,3 +1,4 @@
+// FILE: src/screens/focus/FocusModeScreen.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Button, Card, Progress, Typography, Space, Tooltip, Badge, Modal, Input, Radio, Divider } from "antd";
 import { Play, Pause, RotateCcw, Coffee, Zap, Maximize2, Volume2, ListTodo } from "lucide-react";

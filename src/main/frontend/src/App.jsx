@@ -6,16 +6,19 @@ import { ThemeProvider } from "./shared/context/ThemeContext";
 import { AppModeProvider } from "./shared/context/AppModeContext";
 import { ModeProvider } from "./context/ModeContext";
 import "antd/dist/reset.css";
+import { ChatProvider } from "./shared/context/ChatContext";
 
 function App() {
 
   return (
     <ThemeProvider>
-      <AppModeProvider>
-        <ModeProvider>
-          <AppRoutes />
-        </ModeProvider>
-      </AppModeProvider>
+      <ChatProvider>
+        <AppModeProvider>
+          <ModeProvider>
+            <AppRoutes />
+          </ModeProvider>
+        </AppModeProvider>
+      </ChatProvider>
     </ThemeProvider>
   );
 }
