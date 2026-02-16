@@ -1,11 +1,11 @@
 // FILE: src/main/frontend/src/layout/MainSidebar.jsx
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { 
-  LayoutDashboard, Calendar, CheckSquare, Repeat, 
-  Inbox, Wallet, BarChart2, Users, Settings, 
+import {
+  LayoutDashboard, Calendar, CheckSquare, Repeat,
+  Inbox, Wallet, BarChart2, Users, Settings,
   ChevronLeft, ChevronRight, Activity, ToggleLeft, ToggleRight,
-  FileText, Goal, Shield, Database 
+  FileText, Goal, Shield, Database
 } from "lucide-react";
 import "./MainSidebar.css"; // CSS 파일 분리
 
@@ -31,7 +31,7 @@ export default function MainSidebar({
   // 로컬 상태로 접기/펴기 관리 (상위 props가 없으면 스스로 관리)
   const [collapsedLocal, setCollapsedLocal] = useState(false);
   const collapsed = isCollapsed !== undefined ? isCollapsed : collapsedLocal;
-  
+
   const toggleCollapse = () => {
     if (onToggleCollapse) onToggleCollapse();
     else setCollapsedLocal(!collapsedLocal);
@@ -66,8 +66,8 @@ export default function MainSidebar({
             <span className="divider">/</span>
             <span className={userMode === 'P' ? 'active' : ''}>P-Flow</span>
           </div>
-          {userMode === 'J' 
-            ? <ToggleLeft size={24} color="var(--tf-primary)" /> 
+          {userMode === 'J'
+            ? <ToggleLeft size={24} color="var(--tf-primary)" />
             : <ToggleRight size={24} color="#10b981" />
           }
         </div>
@@ -75,14 +75,14 @@ export default function MainSidebar({
 
       {/* 3. Navigation Menu */}
       <div className="lnb__scroll-area">
-        
+
         {/* DAYLOGUE (Core) */}
         <div className="lnb__section">
           {!collapsed && <div className="lnb__title">DAYLOGUE</div>}
           <Item to="/home" icon={LayoutDashboard}>홈 대시보드</Item>
-          <Item to="/inbox" icon={Inbox}>인박스 (Quick)</Item> 
+          <Item to="/inbox" icon={Inbox}>인박스 (Quick)</Item>
           <Item to="/diary/daily" icon={FileText}>데일리 다이어리</Item>
-          <Item to="/money" icon={Wallet}>머니로그</Item> 
+          <Item to="/money" icon={Wallet}>머니로그</Item>
         </div>
 
         {/* PLAN (Time) */}
@@ -99,7 +99,7 @@ export default function MainSidebar({
           {!collapsed && <div className="lnb__title">ACTION</div>}
           <Item to="/action/task" icon={CheckSquare}>할 일</Item>
           <Item to="/action/routine/list" icon={Repeat}>루틴</Item>
-          <Item to="/focus" icon={Activity}>포커스 타이머</Item> 
+          <Item to="/focus" icon={Activity}>포커스 타이머</Item>
         </div>
 
         {/* INSIGHT (Stats) */}
@@ -119,7 +119,8 @@ export default function MainSidebar({
 
         {/* COMMUNITY (Social) */}
         <div className="lnb__section">
-          {!collapsed && <div className="lnb__title">COMMUNITY</div>}
+          {!collapsed && <div className="lnb__title">CONNECT</div>}
+          <Item to="/share/address-book" icon={Users}>주소록</Item>
           <Item to="/community" icon={Users}>커뮤니티</Item>
         </div>
 

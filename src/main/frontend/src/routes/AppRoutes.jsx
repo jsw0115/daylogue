@@ -15,7 +15,7 @@ import DailyDiaryScreen from "../screens/diary/DailyDiaryScreen";
 import DataManagementScreen from "../screens/data/DataManagementScreen";
 import RoutineListScreen from "../screens/routine/RoutineListScreen";
 
-import AuthStartScreen  from "../screens/auth/AuthStartScreen";
+import AuthStartScreen from "../screens/auth/AuthStartScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
 import RegisterScreen from "../screens/auth/RegisterScreen";
 import ResetPasswordScreen from "../screens/auth/ResetPasswordScreen";
@@ -83,6 +83,8 @@ import StatFocusReportScreen from "../screens/stat/StatFocusReportScreen";
 import FriendListScreen from "../screens/share/FriendListScreen";
 import CalendarGroupScreen from "../screens/share/CalendarGroupScreen";
 import ShareVisibilityScreen from "../screens/share/ShareVisibilityScreen";
+import AddressBookScreen from "../screens/address/AddressBookScreen";
+import PublicProfileScreen from "../screens/address/PublicProfileScreen";
 
 // Settings (드롭다운에서 진입할 “통합 설정”)
 import SettingsScreen from "../screens/settings/SettingsScreen";
@@ -135,7 +137,7 @@ export default function AppRoutes() {
   return (
     <Routes>
       {/* Auth: AppShell 없이 단독 */}
-      <Route path="/" element={<AuthStartScreen  />} />
+      <Route path="/" element={<AuthStartScreen />} />
       <Route path="/start" element={<AuthStartScreen />} />
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/register" element={<RegisterScreen />} />
@@ -183,12 +185,12 @@ export default function AppRoutes() {
         <Route path="/routines/new" element={<RoutineEditScreen />} />
         <Route path="/routines/:routineId/edit" element={<RoutineEditScreen />} />
         <Route path="/routines/history" element={<RoutineHistoryScreen />} />
-        
+
         {/* Task */}
         <Route path={ROUTES.TASKS} element={<TaskListScreen />} />
         <Route path="/tasks/:taskId" element={<TaskDetailScreen />} />
         <Route path="/action/task" element={<TaskListScreen />} />
-        
+
 
         {/* Memo */}
         <Route path="/memos" element={<MemoInboxScreen />} />
@@ -207,6 +209,8 @@ export default function AppRoutes() {
         <Route path="/share/friends" element={<FriendListScreen />} />
         <Route path="/share/groups" element={<CalendarGroupScreen />} />
         <Route path="/share/visibility" element={<ShareVisibilityScreen />} />
+        <Route path="/share/address-book" element={<AddressBookScreen />} />
+        <Route path="/share/profile" element={<PublicProfileScreen />} />
 
         {/* Settings: 드롭다운에서 /settings 로 진입 */}
         <Route path="/settings" element={<SettingsScreen />} />
@@ -227,12 +231,12 @@ export default function AppRoutes() {
         <Route path="/admin/logs" element={<AdminLogScreen />} />
         <Route path="/admin/notices" element={<AdminNoticeScreen />} />
         <Route path="/admin/stats" element={<AdminStatsScreen />} />
-        
+
         {/* COMMUNITY */}
         <Route path="/community" element={<CommunityFeedScreen />} />
         <Route path="/community/new" element={<CommunityEditorScreen mode="create" />} />
         <Route path="/community/:groupId" element={<CommunityDetailScreen />} />
-        <Route path="/community/:groupId/edit" element={<CommunityEditorScreen mode="edit"/>} />
+        <Route path="/community/:groupId/edit" element={<CommunityEditorScreen mode="edit" />} />
         <Route path="/community/:groupId/join" element={<CommunityJoinRequestScreen />} />
         <Route path="/community/:groupId/owner/requests" element={<CommunityOwnerRequestsScreen />} />
         <Route path="/community/:groupId/members" element={<CommunityMembersScreen />} />
@@ -254,7 +258,7 @@ export default function AppRoutes() {
         {/* INSIGHT */}
         <Route path="/insight/stat" element={<StatDashboardScreen />} />
         <Route path="/stat/compare" element={<CompareStatsScreen />} />
-        
+
       </Route>
 
       <Route path="*" element={<NotFound />} />

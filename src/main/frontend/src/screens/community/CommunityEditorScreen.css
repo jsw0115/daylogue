@@ -1,0 +1,132 @@
+/* FILE: src/screens/community/CommunityEditorScreen.css */
+
+/* --- Layout & Spacing --- */
+.comm-editor-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding-bottom: 60px;
+  }
+  
+  .comm-section-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--tf-text-muted);
+    margin-bottom: 8px;
+    display: block;
+  }
+  
+  .comm-input-group {
+    margin-bottom: 24px;
+  }
+  
+  /* --- Category Chips --- */
+  .comm-category-list {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  
+  .comm-category-chip {
+    padding: 8px 16px;
+    border-radius: 99px;
+    border: 1px solid var(--tf-border);
+    background: white;
+    color: var(--tf-text-muted);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .comm-category-chip:hover {
+    background: var(--tf-bg);
+    color: var(--tf-text);
+  }
+  
+  .comm-category-chip.active {
+    background: var(--tf-primary-soft);
+    border-color: var(--tf-primary);
+    color: var(--tf-primary);
+  }
+  
+  /* --- Toggle Switch Row --- */
+  .comm-toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border: 1px solid var(--tf-border);
+    border-radius: 12px;
+    background: white;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+  
+  .comm-toggle-row:hover {
+    border-color: #cbd5e1;
+  }
+  
+  .comm-toggle-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .comm-toggle-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--tf-text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .comm-toggle-desc {
+    font-size: 12px;
+    color: var(--tf-text-muted);
+  }
+  
+  /* Toggle Switch Component */
+  .tf-switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background-color: #cbd5e1;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border: none;
+    padding: 2px;
+  }
+  
+  .tf-switch.checked {
+    background-color: var(--tf-primary);
+  }
+  
+  .tf-switch-thumb {
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+    display: block;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  
+  .tf-switch.checked .tf-switch-thumb {
+    transform: translateX(20px);
+  }
+  
+  /* --- Help Box --- */
+  .comm-help-box {
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 13px;
+    color: var(--tf-text-muted);
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
