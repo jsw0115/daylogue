@@ -82,6 +82,20 @@
     font-size: 13px; color: #64748b;
   }
   
+  .ab-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding-bottom: 40px;
+  }
+
+  .ab-list-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px;
+    font-size: 13px; color: #64748b;
+  }
+  
   /* User Grid */
   .ab-user-grid {
     display: grid;
@@ -129,6 +143,26 @@
   
   .ab-user-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: auto; }
   
+  .ab-user-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    position: relative; /* Empty state positioning */
+    min-height: 200px;
+  }
+  
+  /* Empty State */
+  .ab-empty-state {
+    grid-column: 1 / -1; /* 전체 너비 사용 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: #94a3b8;
+    gap: 16px;
+  }
+
   /* Status Dots */
   .ab-status-dot { width: 12px; height: 12px; border-radius: 50%; display: block; }
   .ab-status-dot.online { background: #22c55e; }
@@ -227,3 +261,121 @@
   
   .ab-modal-footer { margin-top: 24px; }
   .full-width { width: 100%; }
+
+  /* Chips Style Override */
+  .tf-chip.unassigned {
+    background: #f1f5f9;
+    color: #94a3b8;
+    border: 1px dashed #cbd5e1;
+  }
+
+  /* Invite View Styles (New) */
+  .ab-desc-text {
+    font-size: 13px; color: #64748b; margin-bottom: 12px;
+  }
+
+  .ab-invite-view {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    padding: 10px 0;
+  }
+  .ab-invite-icon {
+    width: 64px; height: 64px; background: #fffbeb; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+  }
+  .ab-invite-msg {
+    font-size: 15px; color: #1e293b; margin-bottom: 8px; line-height: 1.4;
+  }
+  .ab-invite-sub {
+    font-size: 13px; color: #64748b; margin-bottom: 24px;
+  }
+  .ab-invite-actions {
+    display: flex; gap: 8px; width: 100%;
+  }
+  .ab-invite-actions .tf-btn { flex: 1; }
+  /* ... (기존 스타일 유지) ... */
+
+/* Group Manage Modal List */
+.ab-group-manage-list {
+  margin-top: 10px;
+  flex: 1;
+  overflow-y: auto;
+  border-top: 1px solid var(--tf-border);
+  padding-top: 10px;
+}
+
+.ab-group-manage-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid var(--tf-border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.ab-group-manage-item:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.ab-group-name-text {
+  font-weight: 500;
+  color: var(--tf-text);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Edit Mode Styles */
+.ab-group-edit-mode {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+.tf-input.small {
+  padding: 6px 10px;
+  font-size: 13px;
+  height: 32px;
+}
+
+/* Action Buttons */
+.ab-group-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ab-icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.ab-icon-btn:hover { background-color: #e2e8f0; color: #475569; }
+.ab-icon-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* Specific Colors */
+.ab-icon-btn.edit:hover { color: var(--tf-primary); background-color: var(--tf-primary-soft); }
+.ab-icon-btn.del:hover { color: #ef4444; background-color: #fef2f2; }
+.ab-icon-btn.save { color: #22c55e; }
+.ab-icon-btn.save:hover { background-color: #ecfdf5; }
+.ab-icon-btn.cancel:hover { background-color: #f1f5f9; color: #64748b; }
+
+/* Modal Flex Layout Fix */
+.ab-modal-body.flex-col {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}

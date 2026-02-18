@@ -228,7 +228,7 @@ app:
 
 springdoc:
   packages-to-scan: com.timepalette.daylogue
-  version: V.0.0.1  # 버전 기록용
+#  version: V.0.0.1  # 버전 기록용
   # Swagger UI 기본 경로
   cache:
     disabled: true              # OpenAPI 문서의 캐싱 비활성화 (기본값: false)

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  *      필터/정렬/카테고리/공개범위 드롭다운을 서버 쿼리로 반영
  *      반복 일정(Series) + 반복 발생분(Occurrence) + 예외(Exception) 머지 결과를 반환
  * 저장/수정/삭제는 EventsApiController에서 진행
+ * @category Planner
  * @since 2025.12.26
  */
 @Tag(name = "Planner", description = "플래너 정보를 가져오고 저장하는 API")
