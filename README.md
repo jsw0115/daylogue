@@ -1,137 +1,187 @@
-# Timebar Diary (TimeFlow) 🎨⏳
+# Daylogue - 일상을 기록하고 관리하는 다이어리 서비스
 
-**Timebar Diary**는 시간을 "색(Timebar)"으로 시각화하여 관리하는 **올인원 생산성 플랫폼** 프로토타입입니다.
-단순한 일정 관리를 넘어, **플래너, 다이어리, 할 일(To-Do), 루틴, 포커스(Pomodoro), 통계**를 하나의 흐름(Flow)으로 통합하여 제공합니다.
+<p align="center">
+  <img src="https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge" alt="version">
+  <img src="https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge" alt="build">
+  <img src="https://img.shields.io/github/license/daylogue/daylogue?style=for-the-badge" alt="license">
+</p>
 
----
-
-## 📚 목차
-
-1. [프로젝트 소개](#-프로젝트-소개)
-2. [주요 기능](#-주요-기능)
-3. [시작하기](#-시작하기)
-4. [기술 스택](#-기술-스택)
-5. [프로젝트 구조 및 라우팅](#-프로젝트-구조-및-라우팅)
-6. [개발 규칙](#-개발-규칙)
+**Daylogue**는 사용자의 일정, 할 일, 메모 등을 체계적으로 기록하고 관리할 수 있는 웹 기반 다이어리 서비스입니다.
 
 ---
 
-## 📖 프로젝트 소개
-
-TimeFlow는 사용자의 하루를 색상 띠(Timebar)로 표현합니다. 계획된 일정과 실제 수행한 기록을 시각적으로 비교하고, 루틴과 할 일을 체계적으로 관리하여 생산성을 극대화하는 것을 목표로 합니다.
-
-### 핵심 가치
-- **Visual Time Management**: 직관적인 타임바 인터페이스
-- **All-in-One Workflow**: 플래너에서 회고(Diary)까지 끊김 없는 경험
-- **Data-Driven Insight**: 활동 로그 기반의 상세 통계 제공
-
----
-
-## ✨ 주요 기능
-
-### 1. 📅 Smart Planner (플래너)
-- **다양한 뷰 모드**: 일간(Daily), 주간(Weekly), 월간(Monthly), 연간(Yearly) 뷰 지원
-- **드래그 앤 드롭**: 직관적인 일정 시간 변경 및 이동
-- **스마트 입력**: 일정 생성 시 입력 칩(Chip)과 자동완성을 통한 빠른 태그 및 공유 설정
-- **반복 일정**: 복잡한 반복 규칙(매주, 매월 등)을 지원하며 캘린더에 자동 표시
-
-### 2. 📝 Daily Log & Diary (기록)
-- **데일리 다이어리**: 하루의 감정과 주요 사건 기록
-- **타임바 연동**: 일정 수행 여부를 체크하고 실제 소요 시간 기록
-
-### 3. ✅ Action Hub (실행)
-- **Tasks (할 일)**: GTD 방식의 할 일 관리, 인박스 및 프로젝트별 분류
-- **Routines (루틴)**: 매일 반복되는 습관 관리, 알림 및 아이콘 커스텀
-- **Focus (집중)**: 포모도로 타이머 및 집중 시간 추적
-
-### 4. 📊 Insight (통계)
-- **생활 패턴 분석**: 카테고리별 시간 사용량 분석
-- **계획 vs 실행**: 계획 대비 달성률 시각화 리포트
-
-### 5. ⚙️ Management (관리)
-- **커스텀 설정**: 테마, 알림, 카테고리 색상 설정
-- **데이터 관리**: 데이터 백업 및 복원
+## 목차 (Table of Contents)
+- [주요 기능 (Features)](#주요-기능-features)
+- [시스템 아키텍처 (System-Architecture)](#시스템-아키텍처-system-architecture)
+- [기술 스택 (Tech Stack)](#기술-스택-tech-stack)
+- [시작하기 (Getting Started)](#시작하기-getting-started)
+- [환경 변수 설정 (Environment Variables)](#환경-변수-설정-environment-variables)
+- [프로젝트 구조 (Project Structure)](#프로젝트-구조-project-structure)
+- [API 명세 (API Reference)](#api-명세-api-reference)
+- [기여하기 (Contributing)](#기여하기-contributing)
+- [문제 해결 / FAQ (Troubleshooting)](#문제-해결--faq-troubleshooting)
+- [라이선스 (License)](#라이선스-license)
+- [연락처 (Contact)](#연락처-contact)
 
 ---
 
-## 🚀 시작하기 (Getting Started)
+## 주요 기능 (Features)
 
-이 프로젝트는 **React** (Create React App) 환경에서 개발되었습니다.
+* **일정 관리:** 캘린더를 통해 월별, 주별, 일별 일정을 등록하고 관리합니다.
+* **할 일 목록:** 우선순위에 따라 할 일을 관리하고 진행 상태를 추적합니다.
+* **카테고리 설정:** 사용자가 직접 카테고리를 생성하여 일정을 분류할 수 있습니다.
+* **테마 커스터마이징:** 라이트/다크 모드 등 다양한 테마를 적용할 수 있습니다.
 
-### 설치 및 실행
-
-1. **의존성 설치**
-   ```bash
-   npm install
-   ```
-
-2. **개발 서버 실행**
-   ```bash
-   npm start
-   ```
-   - 브라우저에서 http://localhost:3000으로 접속됩니다.
-
-### 빌드 및 기타
-
-| 명령어 | 설명 |
-|---|---|
-| `npm run build` | 프로덕션 배포를 위한 정적 파일을 `build` 폴더에 생성합니다. |
-| `npm test` | 테스트 러너를 실행합니다. |
+> **Note:** 주요 화면의 스크린샷이나 시연 GIF는 `/docs/images` 폴더를 참조하십시오.
+>
+>
 
 ---
 
-## 🛠 기술 스택 (Tech Stack)
+## 시스템 아키텍처 (System Architecture)
 
-| 분류 | 기술 | 비고 |
-|---|---|---|
-| **Core** | React 18 | Hooks 중심의 함수형 컴포넌트 |
-| **Routing** | React Router v6 | SPA 라우팅 처리 |
-| **Styling** | CSS Modules / Custom CSS | className 기반 스타일링 |
-| **Build** | Webpack (CRA) | Create React App 기본 설정 |
+```mermaid
+graph TD
+    subgraph User
+        A[Client: Web Browser / Mobile App]
+    end
 
----
+    subgraph Server
+        B[Backend: Spring Boot]
+        D[Database: MySQL]
+    end
 
-## 📂 프로젝트 구조 및 라우팅
-
-애플리케이션은 크게 인증이 필요한 **App (Main)** 영역과 인증 전 **Auth** 영역으로 구분됩니다.
-
-### 🔐 Auth (Standalone)
-레이아웃(LNB, Header) 없이 단독 화면으로 구성됩니다.
-- `/login`, `/register`: 로그인 및 회원가입
-- `/onboarding`: 신규 사용자 온보딩
-- `/reset-password`, `/find-id`: 계정 찾기
-
-### 🏠 App (Main Layout)
-사이드바(LNB)와 헤더가 포함된 메인 레이아웃이 적용됩니다.
-
-| 영역 | 경로 | 설명 |
-|---|---|---|
-| **Dashboard** | `/home` | 메인 대시보드 (오늘의 요약) |
-| | `/inbox` | 알림 및 미처리 항목 인박스 |
-| **Planner** | `/planner/*` | 일간/주간/월간/연간 플래너 |
-| **Action** | `/tasks` | 할 일 목록 관리 |
-| | `/routine` | 루틴 목록 및 체크 |
-| | `/focus` | 집중 모드 (타이머) |
-| | `/memos` | 빠른 메모 작성 |
-| **Insight** | `/diary/daily` | 데일리 다이어리 |
-| | `/insight/stat` | 통계 대시보드 |
-| **System** | `/settings` | 사용자 환경 설정 |
-| | `/admin` | 관리자 페이지 |
+    A -- REST API Request --> B
+    B -- CRUD --> D
+```
 
 ---
 
-## 📡 백엔드 연동 규칙 (API Convention)
+## 기술 스택 (Tech Stack)
 
-- **Base URL**: `/api`
-- **Authentication**: JWT 기반 (`Authorization: Bearer <token>`)
-- **Date/Time Format**:
-  - Request/Response: **ISO 8601** (`YYYY-MM-DDTHH:mm:ssZ`)
-  - Server Storage: **UTC**
-- **Recurring Events**: 반복 일정은 `occurrenceStart` 필드로 개별 인스턴스를 식별합니다.
+### Backend
+- ![Java](https://img.shields.io/badge/Java%2017-ED8B00?style=flat-square&logo=openjdk&logoColor=white)
+- ![Spring Boot](https://img.shields.io/badge/Spring%20Boot%203.x-6DB33F?style=flat-square&logo=springboot&logoColor=white)
+- ![Spring Security](https://img.shields.io/badge/Spring%20Security-6DB33F?style=flat-square&logo=springsecurity&logoColor=white)
+- ![JPA/Hibernate](https://img.shields.io/badge/JPA%2FHibernate-59666C?style=flat-square)
+
+### Frontend
+- ![React](https://img.shields.io/badge/React%2018-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+- ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+- ![Recoil](https://img.shields.io/badge/Recoil-3578E5?style=flat-square)
+
+### Database
+- ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white)
+
+### Frontend (별도 Repository에서 관리)
+- ![React](https://img.shields.io/badge/React%2018-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+- ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
 
 ---
 
-## 📝 라이선스
+## 시작하기 (Getting Started)
 
-Copyright © 2026 Timebar Diary Project. All rights reserved.
-(현재 내부 프로토타입 개발 단계입니다.)
+### 1. Prerequisites
+* Java 17+
+* MySQL 8.0+
+
+### 2. Installation & Run
+
+```bash
+# 1. Repository 클론
+git clone https://github.com/daylogue/daylogue.git
+cd daylogue
+
+# 2. Backend 실행
+cd backend
+./gradlew build
+java -jar build/libs/daylogue-0.0.1-SNAPSHOT.jar
+
+# 3. Frontend 실행
+cd ../frontend
+npm install
+npm start
+
+# 주요 의존성 설치
+npm install axios react-router-dom http-proxy-middleware @stomp/stompjs sockjs-client
+npm install antd @ant-design/icons @fullcalendar/react @fullcalendar/daygrid @fullcalendar/timegrid @fullcalendar/interaction
+npm install moment date-fns date-fns-tz react-grid-layout react-resizable
+npm install recharts lucide-react clsx tailwind-merge react-error-boundary styled-components react-tooltip sweetalert
+
+# UI 프레임워크 및 스타일링 설정 (Tailwind & Shadcn)
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+npx shadcn@latest init
+npx shadcn@latest add checkbox select button input card dialog toast form message
+
+# 개발 도구 설치
+npm install --save-dev eslint @eslint/js globals eslint-plugin-react prettier vite-plugin-dts @types/node
+
+```
+
+---
+
+## 환경 변수 설정 (Environment Variables)
+
+프로젝트를 실행하기 전에 `application.yml` 파일에서 데이터베이스 설정을 수정해야 합니다.
+
+- **Backend (`/src/main/resources/application.yml`):**
+  ```yaml
+  spring:
+    datasource:
+      url: jdbc:mysql://localhost:3306/daylogue_db
+      username: your_db_username
+      password: your_db_password
+  ```
+
+---
+
+## 프로젝트 구조 (Project Structure)
+
+```
+.. 다시 수정 예정 
+```
+
+---
+
+## API 명세 (API Reference)
+
+API 명세는 Swagger를 통해 제공됩니다. 백엔드 서버 실행 후 아래 주소로 접속하여 확인할 수 있습니다.
+
+- **Swagger UI:** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+
+---
+
+## 기여하기 (Contributing)
+
+이 프로젝트에 기여하고 싶으시다면, 언제든지 환영합니다!
+
+1.  이슈를 생성하여 개선점을 제안해주세요.
+2.  Repository를 Fork하여 자신만의 브랜치를 생성합니다. (`git checkout -b feature/AmazingFeature`)
+3.  변경 사항을 커밋합니다. (`git commit -m 'Add some AmazingFeature'`)
+4.  브랜치에 Push합니다. (`git push origin feature/AmazingFeature`)
+5.  Pull Request를 생성해주세요.
+
+---
+
+## 문제 해결 / FAQ (Troubleshooting)
+
+- **Q: Backend 실행 시 `Connection refused` 오류가 발생합니다.**
+  - **A:** `application.yml`의 데이터베이스 접속 정보(URL, username, password)가 올바른지, 로컬 MySQL 서버가 정상적으로 실행 중인지 확인해주세요.
+
+- **Q: API 호출 시 403 Forbidden 오류가 발생합니다.**
+  - **A:** JWT 토큰이 요청 헤더에 올바르게 포함되었는지 확인해주세요. 로그인이 필요한 API는 인증된 토큰이 필요합니다.
+
+---
+
+## 라이선스 (License)
+
+이 프로젝트는 MIT 라이선스를 따릅니다. 자세한 내용은 `LICENSE` 파일을 참고하십시오.
+
+---
+
+## 연락처 (Contact)
+
+- **Project Maintainer:** [정성원]
+- **Email:** [jsw0115@github.com]
+- **GitHub:** [https://github.com/daylogue]
