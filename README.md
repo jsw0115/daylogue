@@ -117,6 +117,9 @@ npx shadcn@latest add checkbox select button input card dialog toast form messag
 # 개발 도구 설치
 npm install --save-dev eslint @eslint/js globals eslint-plugin-react prettier vite-plugin-dts @types/node
 
+# Github Pages 배포 가능 라이브러리
+npm install gh-pages --save-dev
+
 ```
 
 ---
