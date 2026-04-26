@@ -116,4 +116,6 @@ public interface AuthService {
     public User getLoginUserByEmail(String loginId);
 
     public UserAuthDataResponseModel getUserData(String userId);
+
+    public User getUserInfo(String userId);
 }

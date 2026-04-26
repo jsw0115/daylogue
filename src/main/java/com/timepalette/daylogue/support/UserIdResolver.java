@@ -3,12 +3,19 @@ package com.timepalette.daylogue.support;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
+import com.timepalette.daylogue.model.entity.auth.User;
+import com.timepalette.daylogue.service.auth.AuthService;
+
 /**
  *  사용자 정보를 Authentication 에서 가져오는 메서드
  */
 public final class UserIdResolver {
 
-	private UserIdResolver() {}
+	public static AuthService authService;
+
+	public UserIdResolver(AuthService authService) {
+		this.authService = authService;
+	}
 
 	public static String getUserIdByAuth(Authentication auth) {
 
@@ -35,5 +42,40 @@ public final class UserIdResolver {
 		} catch (Exception ignored) {}
 
 		throw SettingsValidator.unauthorized();
+	}
+
+    /**
+     * 사용자 유효성 검사
+     * @param userId 확인할 사용자 ID
+     */
+    public static boolean validateUser(String userId) {
+        
+        if (userId != null && userId.trim().isEmpty()) {
+            
+            User user = UserIdResolver.getUserInfo(userId);
+            if (user != null) {
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+	/**
+	 * 
+	 * 
+	 */
+	public static User getUserInfo(String userId) {
+
+		User result = new User();
+		if (userId == null || userId.trim().isEmpty()) {
+
+			return result;
+		} else {
+
+			result = authService.getUserInfo(userId);
+			return result;
+		}
 	}
 }

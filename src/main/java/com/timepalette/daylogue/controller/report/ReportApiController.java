@@ -78,7 +78,7 @@ public class ReportApiController extends BaseApiController {
     @RequestMapping(value = "/{reportId}", method = RequestMethod.POST)
     public ResponseEntity<ResponseResultModel> saveReport(Authentication auth, @PathVariable Long reportId, @RequestBody ReportRequestModel req) {
 
-        logger.info("POST saveReport, reportId : " + reportId);
+        logger.debug("POST saveReport, reportId : " + reportId);
         ResponseResultModel result = new ResponseResultModel();
 
         return ResponseEntity.ok(result);
@@ -92,7 +92,7 @@ public class ReportApiController extends BaseApiController {
     @RequestMapping(value = "/draft", method = RequestMethod.POST)
     public ResponseEntity<ResponseResultModel> saveDraft(Authentication auth, @RequestBody ReportDataRequestModel req) {
 
-        logger.info("POST saveDraft");
+        logger.debug("POST saveDraft");
         ResponseResultModel result = new ResponseResultModel();
 
         return ResponseEntity.ok(result);
@@ -106,7 +106,7 @@ public class ReportApiController extends BaseApiController {
     @RequestMapping(value = "/time-blocks", method = RequestMethod.GET)
     public ResponseEntity<ResponseResultModel> getTimeBlocks(Authentication auth, @RequestBody ReportDataRequestModel req) {
 
-        logger.info("GET getTimeBlocks");
+        logger.debug("GET getTimeBlocks");
         ResponseResultModel result = new ResponseResultModel();
 
         return ResponseEntity.ok(result);
@@ -120,7 +120,7 @@ public class ReportApiController extends BaseApiController {
     @RequestMapping(value = "/{reportId}/sub-reports", method = RequestMethod.GET)
     public ResponseEntity<ResponseResultModel> getSubReports(Authentication auth, @PathVariable Long reportId, @RequestBody ReportDataRequestModel req) {
 
-        logger.info("GET getSubReports, reportId : " + reportId);
+        logger.debug("GET getSubReports, reportId : " + reportId);
         ResponseResultModel result = new ResponseResultModel();
 
         return ResponseEntity.ok(result);

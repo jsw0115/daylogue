@@ -4,12 +4,14 @@ import {
   Space, Radio, Tooltip, Empty, message, Segmented, Dropdown,
 } from "antd";
 import {
-  Plus, Search, Play, CheckCircle2, Circle, Zap, Battery, MoreHorizontal,
+  Plus, Search, Play, CheckCircle2, Circle, Zap, Battery, MoreHorizontal, Copy,
   LayoutList, LayoutGrid, Clock, Sparkles, CalendarDays, Edit, Trash2, Calendar, RotateCw
 } from "lucide-react";
 import dayjs from "dayjs";
 import "./../../styles/screens/taskList.css";
-import { taskApi, categoryApi } from "../../services/localMockApi";
+import { categoryApi } from "../../services/localMockApi";
+import { taskService } from "../../services/taskService";
+import api from "../../api";
 
 const { Title, Text } = Typography;
 
@@ -55,13 +57,29 @@ export default function TaskListScreen() {
   const [repeatInterval, setRepeatInterval] = useState(1);
   const [repeatEndType, setRepeatEndType] = useState("none"); // none | until
   const [repeatEndUntil, setRepeatEndUntil] = useState(dayjs().format("YYYY-MM-DD"));
+  const [friends, setFriends] = useState([]);
+  const [selectedFriends, setSelectedFriends] = useState([]);
+  const [editingTaskId, setEditingTaskId] = useState(null);
+  const [draggedId, setDraggedId] = useState(null);
 
   useEffect(() => {
-    taskApi.listTasks().then(setTasks);
+    taskService.listTasks().then(setTasks);
     categoryApi.listCategories().then(cats => {
       setCategories(cats);
       if (cats.length > 0) setNewCategoryId(cats[0].id);
     });
+
+    // 주소록(친구 목록) 불러오기
+    api.get("/api/share/friends")
+      .then(res => setFriends(res.data?.data || []))
+      .catch(err => {
+        console.error("친구 목록 불러오기 실패:", err);
+        // 백엔드 미연결 시 UI 테스트용 임시 데이터
+        setFriends([
+          { id: "u1", name: "김철수" },
+          { id: "u2", name: "이영희" }
+        ]);
+      });
   }, []);
 
   // --- Logic ---
@@ -79,8 +97,12 @@ export default function TaskListScreen() {
 
   // --- Handlers ---
   const toggleDone = async (id) => {
-    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
-    await taskApi.toggleTaskDone(id);
+    // setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
+    // await taskApi.toggleTaskDone(id);
+    const task = tasks.find((t) => t.id === id);
+    const nextDone = !task?.done;
+    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done: nextDone } : t)));
+    await taskService.toggleTaskDone(id, nextDone);
   };
 
   const handleSmartInput = (e) => {
@@ -113,19 +135,25 @@ export default function TaskListScreen() {
     if (added) setNewCategoryId(added.id);
   };
 
-  const addTask = async () => {
+  const openAddModal = () => {
+    resetForm();
+    setIsModalOpen(true);
+  };
+
+  const saveTask = async () => {
     // 1. 유효성 검사 (제목이 비어있으면 경고)
     if (!newTitle.trim()) {
         messageApi.warning("할 일 제목을 입력해주세요!");
         return;
     }
 
-    // 2. API로 새 할 일 저장
-    const newTaskData = {
+    // 2. API로 보낼 데이터 준비
+    const taskData = {
       title: newTitle,
       categoryId: newCategoryId,
       durationMin: tab === "detail" ? newMin : 30, // 간단모드는 기본 30분
       energy: tab === "detail" ? newEnergy : "medium",
+      sharedUserIds: tab === "detail" ? selectedFriends : [],
       repeatRule: tab === "detail" && repeatEnabled ? { 
         freq: repeatFreq, 
         interval: repeatInterval,
@@ -134,18 +162,26 @@ export default function TaskListScreen() {
         endUntil: repeatEndType === "until" ? repeatEndUntil : null
       } : null
     };
-    const newTask = await taskApi.createTask(newTaskData);
-
-    // 3. 상태 업데이트
-    setTasks([newTask, ...tasks]);
     
+    if (editingTaskId) {
+      // 할 일 수정 로직
+      await taskService.updateTask({ id: editingTaskId, ...taskData });
+      setTasks(prev => prev.map(t => t.id === editingTaskId ? { ...t, ...taskData } : t));
+      messageApi.success("할 일이 수정되었습니다.");
+    } else {
+      // 새 할 일 생성 로직
+      const newTask = await taskService.createTask(taskData);
+      if (newTask) setTasks([newTask, ...tasks]);
+      messageApi.success("할 일이 계획되었습니다.");
+    }
+
     // 4. 모달 닫기 및 초기화
     setIsModalOpen(false);
     resetForm();
-    messageApi.success("할 일이 계획되었습니다.");
   };
 
   const resetForm = () => {
+    setEditingTaskId(null);
     setTab("quick");
     setNewTitle("");
     setNewMin(30);
@@ -156,14 +192,84 @@ export default function TaskListScreen() {
     setRepeatInterval(1);
     setRepeatEndType("none");
     setRepeatEndUntil(dayjs().format("YYYY-MM-DD"));
+    setSelectedFriends([]);
   };
 
-  const getDropdownItems = (taskId) => [
+  const openEditModal = (task) => {
+    setEditingTaskId(task.id);
+    setNewTitle(task.title);
+    setNewCategoryId(task.categoryId || "");
+    setNewMin(task.durationMin || 30);
+    setNewEnergy(task.energy || "medium");
+    setSelectedFriends(task.sharedUserIds || []);
+    
+    if (task.repeatRule) {
+      setRepeatEnabled(true);
+      setRepeatFreq(task.repeatRule.freq || "daily");
+      setRepeatInterval(task.repeatRule.interval || 1);
+      setRepeatWeekdays(task.repeatRule.weekdays || ["mon"]);
+      setRepeatEndType(task.repeatRule.endType || "none");
+      setRepeatEndUntil(task.repeatRule.endUntil || dayjs().format("YYYY-MM-DD"));
+      setTab("detail");
+    } else {
+      setRepeatEnabled(false);
+      setTab("quick");
+    }
+    setIsModalOpen(true);
+  };
+
+  const handleDuplicate = async (taskId) => {
+    const duplicated = await taskService.duplicateTask(taskId);
+    if (duplicated) {
+      setTasks(prev => [duplicated, ...prev]);
+      messageApi.success('할 일이 복제되었습니다.');
+    }
+  };
+
+  // --- Drag & Drop Handlers ---
+  const handleDragStart = (e, id) => {
+    setDraggedId(id);
+    e.dataTransfer.effectAllowed = "move";
+    e.currentTarget.style.opacity = '0.5'; // 드래그 중인 아이템 반투명 처리
+  };
+
+  const handleDragEnd = (e) => {
+    e.currentTarget.style.opacity = '1';
+    setDraggedId(null);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleDrop = async (e, targetId) => {
+    e.preventDefault();
+    if (!draggedId || draggedId === targetId) return;
+
+    const oldIdx = tasks.findIndex((t) => t.id === draggedId);
+    const newIdx = tasks.findIndex((t) => t.id === targetId);
+
+    const newTasks = [...tasks];
+    const [removed] = newTasks.splice(oldIdx, 1);
+    newTasks.splice(newIdx, 0, removed);
+
+    setTasks(newTasks);
+    await taskService.reorderTasks(newTasks.map(t => t.id)); // 백엔드에 순서 변경 요청
+  };
+
+  const getDropdownItems = (task) => [
     {
       key: 'edit',
       label: '수정',
       icon: <Edit size={14} />,
-      onClick: () => messageApi.info(`할 일 ${taskId} 수정 (미구현)`),
+      onClick: () => openEditModal(task),
+    },
+    {
+      key: 'duplicate',
+      label: '복제',
+      icon: <Copy size={14} />,
+      onClick: () => handleDuplicate(task.id),
     },
     {
       key: 'reschedule',
@@ -180,8 +286,8 @@ export default function TaskListScreen() {
       icon: <Trash2 size={14} />,
       danger: true,
       onClick: async () => {
-        setTasks(prev => prev.filter(t => t.id !== taskId));
-        await taskApi.deleteTask(taskId);
+        setTasks(prev => prev.filter(t => t.id !== task.id));
+        await taskService.deleteTask(task.id);
         messageApi.info('삭제되었습니다.');
       },
     },
@@ -201,7 +307,7 @@ export default function TaskListScreen() {
             <Title level={3} style={{ margin: 0 }}>오늘의 할 일</Title>
             <Text type="secondary">계획된 시간과 실행을 관리하세요.</Text>
           </div>
-          <Button type="primary" shape="round" icon={<Plus size={16} />} onClick={() => setIsModalOpen(true)}>
+          <Button type="primary" shape="round" icon={<Plus size={16} />} onClick={openAddModal}>
             할 일 추가
           </Button>
         </div>
@@ -266,7 +372,15 @@ export default function TaskListScreen() {
             {filteredTasks.map((t) => {
               const cat = categories.find(c => c.id === t.categoryId);
               return (
-                <div key={t.id} className={`task-item ${t.done ? 'is-done' : ''}`}>
+                <div 
+                  key={t.id} 
+                  className={`task-item ${t.done ? 'is-done' : ''}`}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, t.id)}
+                  onDragEnd={handleDragEnd}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, t.id)}
+                >
                 <div className="task-check" onClick={() => toggleDone(t.id)}>
                   {t.done ? <CheckCircle2 size={24} color="#3b82f6" fill="#eff6ff"/> : <Circle size={24} color="#d1d5db" />}
                 </div>
@@ -290,7 +404,7 @@ export default function TaskListScreen() {
                       <Button type="text" shape="circle" icon={<Play size={18} fill="currentColor" />} className="btn-play" />
                     </Tooltip>
                   )}
-                  <Dropdown menu={{ items: getDropdownItems(t.id) }} trigger={['click']}>
+                  <Dropdown menu={{ items: getDropdownItems(t) }} trigger={['click']}>
                     <Button type="text" shape="circle" icon={<MoreHorizontal size={16} />} />
                   </Dropdown>
                 </div>
@@ -305,14 +419,14 @@ export default function TaskListScreen() {
       <Modal
         title={
           <div style={{display:'flex', alignItems:'center', gap: 8}}>
-            <CalendarDays size={18}/> 새 할 일 계획
+            <CalendarDays size={18}/> {editingTaskId ? "할 일 수정" : "새 할 일 계획"}
           </div>
         }
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={[
           <Button key="cancel" onClick={() => setIsModalOpen(false)}>취소</Button>,
-          <Button key="save" type="primary" onClick={addTask}>계획 추가</Button>,
+          <Button key="save" type="primary" onClick={saveTask}>{editingTaskId ? "수정 완료" : "계획 추가"}</Button>,
         ]}
         width={480}
         centered
@@ -334,7 +448,7 @@ export default function TaskListScreen() {
                 placeholder="예) 보고서 작성 30분" 
                 value={newTitle} 
                 onChange={handleSmartInput} 
-                onPressEnter={addTask} // 엔터키로 바로 추가 가능
+                onPressEnter={saveTask} // 엔터키로 바로 추가/수정 가능
                 autoFocus
               />
               <Tooltip title="AI가 할 일을 더 작게 쪼개줍니다.">
@@ -397,8 +511,19 @@ export default function TaskListScreen() {
               />
             </div>
           </div>
-          
-          <Divider style={{ margin: '12px 0' }} />
+              
+          <div className="form-group" style={{ marginTop: 12 }}>
+            <Text strong>함께할 멤버</Text>
+            <Select
+              mode="multiple"
+              allowClear
+              style={{ width: '100%', marginTop: 4 }}
+              placeholder="주소록에서 친구 선택..."
+              value={selectedFriends}
+              onChange={setSelectedFriends}
+              options={friends.map(f => ({ label: f.name, value: f.id }))}
+            />
+          </div>
           
           <div className="form-group">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

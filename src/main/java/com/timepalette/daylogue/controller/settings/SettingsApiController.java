@@ -40,7 +40,7 @@ public class SettingsApiController extends BaseApiController {
     @RequestMapping(value = "/general", method = RequestMethod.GET)
     public ResponseEntity<ResponseResultModel> getGeneral (Authentication auth) {
         ResponseResultModel result = new ResponseResultModel();
-        logger.info("SettingsApiController, getGeneral");
+        logger.debug("SettingsApiController, getGeneral");
 
 
 
@@ -58,7 +58,7 @@ public class SettingsApiController extends BaseApiController {
                                                             @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch) {
         ResponseResultModel result = new ResponseResultModel();
 
-        logger.info("SettingsApiController, patchGeneral");
+        logger.debug("SettingsApiController, patchGeneral");
         return ResponseEntity.ok(result);
     }
 
@@ -71,7 +71,7 @@ public class SettingsApiController extends BaseApiController {
     public ResponseEntity<ResponseResultModel> getNotifications(Authentication auth) {
 
         ResponseResultModel result = new ResponseResultModel();
-        logger.info("SettingsApiController, getNotifications");
+        logger.debug("SettingsApiController, getNotifications");
         return ResponseEntity.ok(result);
     }
 
@@ -87,7 +87,7 @@ public class SettingsApiController extends BaseApiController {
                                                                   @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch) {
 
         ResponseResultModel result = new ResponseResultModel();
-        logger.info("SettingsApiController, patchNotifications");
+        logger.debug("SettingsApiController, patchNotifications");
         return ResponseEntity.ok(result);
     }
 
@@ -100,7 +100,7 @@ public class SettingsApiController extends BaseApiController {
     public ResponseEntity<ResponseResultModel> getTheme(Authentication auth) {
 
         ResponseResultModel result = new ResponseResultModel();
-        logger.info("SettingsApiController, getTheme");
+        logger.debug("SettingsApiController, getTheme");
         return ResponseEntity.ok(result);
     }
 
@@ -116,7 +116,7 @@ public class SettingsApiController extends BaseApiController {
                                                           @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch) {
 
         ResponseResultModel result = new ResponseResultModel();
-        logger.info("SettingsApiController, patchTheme");
+        logger.debug("SettingsApiController, patchTheme");
         return ResponseEntity.ok(result);
     }
 
@@ -129,7 +129,7 @@ public class SettingsApiController extends BaseApiController {
     public ResponseEntity<ResponseResultModel> getCategories(Authentication auth) {
 
         ResponseResultModel result = new ResponseResultModel();
-        logger.info("SettingsApiController, getCategories");
+        logger.debug("SettingsApiController, getCategories");
         return ResponseEntity.ok(result);
     }
 
@@ -147,7 +147,7 @@ public class SettingsApiController extends BaseApiController {
                                                           @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch) {
 
         ResponseResultModel result = new ResponseResultModel();
-        logger.info("SettingsApiController, patchCategories");
+        logger.debug("SettingsApiController, patchCategories");
         return ResponseEntity.ok(result);
     }
 
@@ -160,7 +160,7 @@ public class SettingsApiController extends BaseApiController {
     public ResponseEntity<ResponseResultModel> getSharingDefaults(Authentication auth) {
 
         ResponseResultModel result = new ResponseResultModel();
-        logger.info("SettingsApiController, getSharingDefaults");
+        logger.debug("SettingsApiController, getSharingDefaults");
         return ResponseEntity.ok(result);
     }
 
@@ -176,7 +176,7 @@ public class SettingsApiController extends BaseApiController {
                                                                @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch) {
 
         ResponseResultModel result = new ResponseResultModel();
-        logger.info("SettingsApiController, patchSharingDefaults");
+        logger.debug("SettingsApiController, patchSharingDefaults");
         return ResponseEntity.ok(result);
     }
 }

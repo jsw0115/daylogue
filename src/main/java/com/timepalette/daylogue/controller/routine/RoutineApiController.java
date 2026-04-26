@@ -51,7 +51,7 @@ public class RoutineApiController extends BaseApiController {
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public ResponseEntity<ResponseResultModel> routines (Authentication auth, @RequestBody RoutineRequestModel request) {
 
-		logger.info("RoutineApiController, routines");
+		logger.debug("RoutineApiController, routines");
 		ResponseResultModel result = new ResponseResultModel();
 		// 1) userId = authFacade.currentUserId()
 		// 2) Service에 정보 가져옴
@@ -66,7 +66,7 @@ public class RoutineApiController extends BaseApiController {
 	 * */
 	@RequestMapping(value = "/create-quick", method = RequestMethod.POST)
 	public ResponseEntity<ResponseResultModel> createQuick(Authentication auth, @RequestBody RoutineCreateQuickRequestModel request) {
-		logger.info("RoutineApiController, createQuick");
+		logger.debug("RoutineApiController, createQuick");
 		ResponseResultModel result = new ResponseResultModel();
 		// 1) userId 조회
 		// 2) 정규화: 서버 표준 요일 리스트, 하나를 분(minute) 리스트로 통일, goalType=check면 goalValue=1 강제
@@ -83,7 +83,7 @@ public class RoutineApiController extends BaseApiController {
 	 * */
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public ResponseEntity<ResponseResultModel>  create(Authentication auth, @RequestBody RoutineCreateQuickRequestModel request) {
-		logger.info("RoutineApiController, create");
+		logger.debug("RoutineApiController, create");
 		ResponseResultModel result = new ResponseResultModel();
 		// 1) userId 조회
 		// 2) 정규화: 서버 표준 요일 리스트, 하나를 분(minute) 리스트로 통일, goalType=check면 goalValue=1 강제
@@ -101,7 +101,7 @@ public class RoutineApiController extends BaseApiController {
 	 * */
 	@RequestMapping(value = "/{routineId}", method = RequestMethod.PATCH)
 	public ResponseEntity<ResponseResultModel>  modify(Authentication auth, @PathVariable String routineId, @RequestBody RoutineCreateOrModifyRequestModel request) {
-		logger.info("RoutineApiController, modify");
+		logger.debug("RoutineApiController, modify");
 		ResponseResultModel result = new ResponseResultModel();
 		// 1) userId 조회
 		// 2) updated = routineCommandService.patch(userId, routineId, patch)
@@ -117,7 +117,7 @@ public class RoutineApiController extends BaseApiController {
 	 * */
 	@RequestMapping(value = "/{routineId}", method = RequestMethod.DELETE)
 	public ResponseEntity<ResponseResultModel>  delete(Authentication auth, @PathVariable String routineId) {
-		logger.info("RoutineApiController, delete");
+		logger.debug("RoutineApiController, delete");
 		ResponseResultModel result = new ResponseResultModel();
 		// 1) userId 조회
 		// 2) routineCommandService.delete(userId, routineId)
@@ -133,7 +133,7 @@ public class RoutineApiController extends BaseApiController {
 	 */
 	@RequestMapping(value = "/history", method = RequestMethod.GET)
 	public ResponseEntity<ResponseResultModel> history(Authentication auth, @RequestBody RoutineHistoryRequestModel request) {
-		logger.info("RoutineApiController, history");
+		logger.debug("RoutineApiController, history");
 		ResponseResultModel result = new ResponseResultModel();
 		// 1) userId 조회
 		// 2) validate days in {7,14,30} (스펙: 허용값 위반 시 400)
@@ -152,7 +152,7 @@ public class RoutineApiController extends BaseApiController {
 	 */
 	@RequestMapping(value = "/history/toggle", method = RequestMethod.GET)
 	public ResponseEntity<ResponseResultModel> toggleHistory(Authentication auth, @PathVariable String routineId, @Valid  @RequestBody ToggleRoutineHistoryRequestModel request) {
-		logger.info("RoutineApiController, toggleHistory");
+		logger.debug("RoutineApiController, toggleHistory");
 		ResponseResultModel result = new ResponseResultModel();
 		// 1) userId 조회
 		// 2) cur = routineHistoryCommandService.findCell(userId, routineId, req.date)
@@ -170,7 +170,7 @@ public class RoutineApiController extends BaseApiController {
 	 */
 	@RequestMapping(value = "/{routineId}/history", method = RequestMethod.DELETE)
 	public ResponseEntity<ResponseResultModel> deleteHistoryCell(Authentication auth, @PathVariable String routineId, @RequestBody RoutineHistoryRequestModel request) {
-		logger.info("RoutineApiController, deleteHistoryCell");
+		logger.debug("RoutineApiController, deleteHistoryCell");
 		ResponseResultModel result = new ResponseResultModel();
 		// 1) userId 조회
 		// 2)routineHistoryCommandService.deleteCell(userId, routineId, date)

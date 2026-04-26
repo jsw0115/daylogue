@@ -142,3 +142,48 @@
   flex-direction: column;
   gap: 15px;
 }
+
+/* Task Member Selection */
+.task-member-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.task-member-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.task-member-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  border-radius: 16px;
+  font-size: var(--font-small);
+  font-weight: 500;
+}
+
+.task-member-badge__remove {
+  cursor: pointer;
+  opacity: 0.7;
+  font-size: 14px;
+}
+
+.task-member-badge__remove:hover {
+  opacity: 1;
+}
+
+/* Shared Repeat UI (Planner, Task, Routine 공통) */
+.repeat-ui-container {
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 15px;
+  margin-top: 10px;
+}

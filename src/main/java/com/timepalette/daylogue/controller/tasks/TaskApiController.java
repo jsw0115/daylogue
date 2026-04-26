@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.timepalette.daylogue.controller.BaseApiController;
 import com.timepalette.daylogue.model.dto.common.ResponseResultModel;
 import com.timepalette.daylogue.model.dto.task.TaskDataRequestModel;
+import com.timepalette.daylogue.model.dto.task.TaskReorderRequestModel;
 import com.timepalette.daylogue.model.dto.task.TaskRequestModel;
 import com.timepalette.daylogue.service.task.TaskService;
+import com.timepalette.daylogue.support.UserIdResolver;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -63,6 +65,11 @@ public class TaskApiController extends BaseApiController {
 
         ResponseResultModel result = new ResponseResultModel();
 
+        String userId = UserIdResolver.getUserIdByAuth(auth);
+
+        req.setUserId(userId);
+        result = taskService.getTasks(req);
+
         return ResponseEntity.ok(result);
     }
 
@@ -71,10 +78,16 @@ public class TaskApiController extends BaseApiController {
      * @return
       */
     @RequestMapping(value = "/{taskId}", method = RequestMethod.GET)
-    public ResponseEntity<ResponseResultModel> getDetails(Authentication auth, @PathVariable Long taskId, @RequestBody TaskRequestModel req) {
+    public ResponseEntity<ResponseResultModel> getDetails(Authentication auth, @PathVariable String taskId, @RequestBody TaskRequestModel req) {
 
-        logger.info("GET getDetails, taskId : " + taskId);
+        logger.debug("GET getDetails, taskId : " + taskId);
         ResponseResultModel result = new ResponseResultModel();
+
+        String userId = UserIdResolver.getUserIdByAuth(auth);
+
+        req.setUserId(userId);
+        req.setTaskId(taskId);
+        result = taskService.getTaskDetail(req);
 
         return ResponseEntity.ok(result);
     }
@@ -86,8 +99,13 @@ public class TaskApiController extends BaseApiController {
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public ResponseEntity<ResponseResultModel> saveTasks(Authentication auth, @RequestBody TaskDataRequestModel req) {
 
-        logger.info("POST saveTasks, taskId : ");
+        logger.debug("POST saveTasks, taskId : ");
         ResponseResultModel result = new ResponseResultModel();
+
+        String userId = UserIdResolver.getUserIdByAuth(auth);
+
+        req.setUserId(userId);
+        result = taskService.saveTaskData(req);
 
         return ResponseEntity.ok(result);
     }
@@ -97,10 +115,16 @@ public class TaskApiController extends BaseApiController {
      * @return
       */
     @RequestMapping(value = "/{taskId}", method = RequestMethod.PUT)
-    public ResponseEntity<ResponseResultModel> modifyTasks(Authentication auth, @PathVariable Long taskId, @RequestBody TaskDataRequestModel req) {
+    public ResponseEntity<ResponseResultModel> modifyTasks(Authentication auth, @PathVariable String taskId, @RequestBody TaskDataRequestModel req) {
 
-        logger.info("PUT saveTasks, taskId : " + taskId);
+        logger.debug("PUT saveTasks, taskId : " + taskId);
         ResponseResultModel result = new ResponseResultModel();
+
+        String userId = UserIdResolver.getUserIdByAuth(auth);
+
+        req.setUserId(userId);
+        req.setTaskId(taskId);
+        result = taskService.modifyTaskData(req);
 
         return ResponseEntity.ok(result);
     }
@@ -110,10 +134,72 @@ public class TaskApiController extends BaseApiController {
      * @return
       */
     @RequestMapping(value = "/{taskId}", method = RequestMethod.DELETE)
-    public ResponseEntity<ResponseResultModel> deleteTasks(Authentication auth, @PathVariable Long taskId, @RequestBody TaskDataRequestModel req) {
+    public ResponseEntity<ResponseResultModel> deleteTasks(Authentication auth, @PathVariable String taskId, @RequestBody TaskDataRequestModel req) {
 
-        logger.info("DELETE saveTasks, taskId : " + taskId);
+        logger.debug("DELETE saveTasks, taskId : " + taskId);
         ResponseResultModel result = new ResponseResultModel();
+
+        String userId = UserIdResolver.getUserIdByAuth(auth);
+
+        req.setUserId(userId);
+        req.setTaskId(taskId);
+        result = taskService.deleteTaskData(req);
+
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * 할 일 완료 상태 토글 (상태 변경 전용 API)
+     * @return
+     */
+    @RequestMapping(value = "/{taskId}/status", method = RequestMethod.PATCH)
+    public ResponseEntity<ResponseResultModel> toggleTaskStatus(Authentication auth, @PathVariable String taskId, @RequestBody TaskDataRequestModel req) {
+
+        logger.debug("PATCH toggleTaskStatus, taskId : " + taskId);
+        ResponseResultModel result = new ResponseResultModel();
+
+        String userId = UserIdResolver.getUserIdByAuth(auth);
+
+        req.setUserId(userId);
+        req.setTaskId(taskId);
+        result = taskService.toggleTaskStatus(req);
+
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * 할 일 순서 변경 (Drag & Drop 등)
+     * @return
+     */
+    @RequestMapping(value = "/reorder", method = RequestMethod.PUT)
+    public ResponseEntity<ResponseResultModel> reorderTasks(Authentication auth, @RequestBody TaskReorderRequestModel req) {
+
+        logger.debug("PUT reorderTasks");
+        ResponseResultModel result = new ResponseResultModel();
+
+        String userId = UserIdResolver.getUserIdByAuth(auth);
+
+        req.setUserId(userId);
+        result = taskService.reorderTasks(req);
+
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * 할 일 복제
+     * @return
+     */
+    @RequestMapping(value = "/{taskId}/duplicate", method = RequestMethod.POST)
+    public ResponseEntity<ResponseResultModel> duplicateTask(Authentication auth, @PathVariable String taskId, @RequestBody TaskRequestModel req) {
+
+        logger.debug("POST duplicateTask, taskId : " + taskId);
+        ResponseResultModel result = new ResponseResultModel();
+
+        String userId = UserIdResolver.getUserIdByAuth(auth);
+
+        req.setUserId(userId);
+        req.setTaskId(taskId);
+        result = taskService.duplicateTask(req);
 
         return ResponseEntity.ok(result);
     }

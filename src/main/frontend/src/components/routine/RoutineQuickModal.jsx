@@ -2,11 +2,8 @@
 // 예시 파일명: src/components/routine/RoutineQuickModal.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import RepeatSelector from "../../styles/screens/RepeatSelector";
 
-const TYPE_OPTIONS = [
-  { value: "daily", label: "매일" },
-  { value: "weekly", label: "주간" },
-];
 
 function useInitialSnapshot(open, initial) {
   const ref = useRef(null);
@@ -23,7 +20,7 @@ export default function RoutineQuickModal({
   open,
   onClose,
   onSave, // (payload) => void  // 기존 코드에서 저장 핸들러 이름이 다르면, 여기만 맞춰줘
-  initialValue, // { name, type, time } (선택)
+  initialValue, // { name, repeatConfig, time } (선택)
   title = "새 루틴 추가",
 }) {
   const isBrowser = typeof document !== "undefined";
@@ -31,7 +28,7 @@ export default function RoutineQuickModal({
   const initial = useMemo(() => {
     return {
       name: initialValue?.name ?? "",
-      type: initialValue?.type ?? "daily",
+      repeatConfig: initialValue?.repeatConfig ?? { isRepeat: true, repeatType: "DAILY", repeatDays: [] },
       time: initialValue?.time ?? "07:00",
     };
   }, [initialValue]);
@@ -39,7 +36,7 @@ export default function RoutineQuickModal({
   const initialRef = useInitialSnapshot(open, initial);
 
   const [name, setName] = useState(initial.name);
-  const [type, setType] = useState(initial.type);
+  const [repeatConfig, setRepeatConfig] = useState(initial.repeatConfig);
   const [time, setTime] = useState(initial.time);
 
   const nameRef = useRef(null);
@@ -48,7 +45,7 @@ export default function RoutineQuickModal({
   useEffect(() => {
     if (!open) return;
     setName(initial.name);
-    setType(initial.type);
+    setRepeatConfig(initial.repeatConfig);
     setTime(initial.time);
 
     // 다음 틱에 포커스
@@ -62,10 +59,10 @@ export default function RoutineQuickModal({
     const snap = initialRef.current || initial;
     return (
       (snap.name ?? "") !== name ||
-      (snap.type ?? "daily") !== type ||
+      JSON.stringify(snap.repeatConfig) !== JSON.stringify(repeatConfig) ||
       (snap.time ?? "07:00") !== time
     );
-  }, [name, type, time, initial, initialRef]);
+  }, [name, repeatConfig, time, initial, initialRef]);
 
   const canSave = trimmedName.length > 0 && dirty;
 
@@ -86,7 +83,7 @@ export default function RoutineQuickModal({
 
     const payload = {
       name: trimmedName,
-      type,
+      repeatConfig,
       time,
     };
 
@@ -259,21 +256,6 @@ export default function RoutineQuickModal({
 
                 <div className="rqm-row2">
                   <div>
-                    <label className="rqm-fieldLabel">유형</label>
-                    <select
-                      className="rqm-control"
-                      value={type}
-                      onChange={(e) => setType(e.target.value)}
-                    >
-                      {TYPE_OPTIONS.map((o) => (
-                        <option key={o.value} value={o.value}>
-                          {o.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
                     <label className="rqm-fieldLabel">대표 시간</label>
                     <input
                       className="rqm-control"
@@ -282,6 +264,10 @@ export default function RoutineQuickModal({
                       onChange={(e) => setTime(e.target.value)}
                     />
                   </div>
+                </div>
+
+                <div style={{ marginTop: "12px" }}>
+                  <RepeatSelector repeatConfig={repeatConfig} onChange={setRepeatConfig} />
                 </div>
 
                 <div className="rqm-hint">

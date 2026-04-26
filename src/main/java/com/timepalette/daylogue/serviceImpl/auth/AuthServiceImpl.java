@@ -819,4 +819,16 @@ public class AuthServiceImpl implements AuthService {
             return false;
         }
     }
+
+    /**
+     *
+     */
+    @Override
+    public User getUserInfo(String userId) {
+
+        User user = new User();
+        user = userRepo.findById(userId).orElseThrow(null);
+
+        return user;
+    }
 }

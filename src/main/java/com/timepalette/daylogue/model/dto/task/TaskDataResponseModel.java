@@ -7,11 +7,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class TaskDataRequestModel {
+public class TaskDataResponseModel {
     
     private String userId;
     private String taskId;
-
     /**
      * 간단/상세 등록 여부 
      * 등록일자
@@ -24,6 +23,8 @@ public class TaskDataRequestModel {
      * 반복 설정
      */
     private boolean isSipmleRegist = true;
+    private String regDate;
+    private String updateDate;
     private String title;
     private int category;   // ENUM 관리
     private int minutes;

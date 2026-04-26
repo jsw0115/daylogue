@@ -226,7 +226,7 @@ public class AuthApiController extends BaseApiController {
             String userId = UserIdResolver.getUserIdByAuth(auth);
 
             // 사용자 아이디를 토대로 사용자 이메일 및 정보들을 가져옴.
-            UserAuthDataResponseModel data =  authService.getUserData(userId);
+            UserAuthDataResponseModel data = authService.getUserData(userId);
 
             result.setData(data);
             result.setSuccess(true);
