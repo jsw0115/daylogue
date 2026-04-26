@@ -1,12 +1,12 @@
-# Daylogue - 일상을 기록하고 관리하는 다이어리 서비스
+# Daylogue - 성장을 위한 커리어 매니지먼트 플랫폼
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge" alt="version">
+  <img src="https://img.shields.io/badge/version-2.0.0-blue?style=for-the-badge" alt="version">
   <img src="https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge" alt="build">
   <img src="https://img.shields.io/github/license/daylogue/daylogue?style=for-the-badge" alt="license">
 </p>
 
-**Daylogue**는 사용자의 일정, 할 일, 메모 등을 체계적으로 기록하고 관리할 수 있는 웹 기반 다이어리 서비스입니다.
+**Daylogue**는 직장인의 일상 업무 기록을 바탕으로 성과를 관리하고, 커리어 자산을 체계적으로 구축하여 성장을 지원하는 올인원 커리어 매니지먼트 플랫폼입니다.
 
 ---
 
@@ -27,10 +27,25 @@
 
 ## 주요 기능 (Features)
 
-* **일정 관리:** 캘린더를 통해 월별, 주별, 일별 일정을 등록하고 관리합니다.
-* **할 일 목록:** 우선순위에 따라 할 일을 관리하고 진행 상태를 추적합니다.
-* **카테고리 설정:** 사용자가 직접 카테고리를 생성하여 일정을 분류할 수 있습니다.
-* **테마 커스터마이징:** 라이트/다크 모드 등 다양한 테마를 적용할 수 있습니다.
+### 1. 일상 기록 및 에비던스 관리 (Daily Operations)
+*   **데일리 업무 로그 (Quick Log):** 바텀 시트 기반의 빠른 UI로 당일 업무 내용, 소요 시간, 달성도를 기록하고 MBO/OKR 태그와 연결합니다.
+*   **에비던스 볼트 (Evidence Vault):** 업무 산출물(URL, 파일 등)을 안전하게 보관합니다.
+*   **워라밸 & 번아웃 방지 타이머:** 주간 누적 근로 시간을 시각화하고 휴가/야근을 관리합니다.
+
+### 2. 목표 및 성과 얼라인먼트 (Goal & Performance)
+*   **트리 구조 MBO / OKR 설정:** 상위 목표(Objective)와 하위 핵심 결과(Key Result)를 계층적으로 설정하고 관리합니다.
+*   **실시간 성과 대시보드:** 데일리 로그와 연동된 MBO 달성률을 실시간으로 시각화합니다.
+*   **주간/월간 스마트 회고:** AI가 일일 기록을 주간/월간 성과 문장으로 자동 요약 및 정제합니다.
+*   **연봉 협상 패키지 뷰:** MBO 달성률과 핵심 증빙 자료를 한 페이지의 리포트로 컴파일합니다.
+
+### 3. 커리어 자산화 (Career Asset)
+*   **블록 조립형 이력서 생성:** 정제된 성과 텍스트를 '경력 기술 블록'으로 변환하여 드래그 앤 드롭으로 이력서를 구성합니다.
+*   **자동 스택 & 키워드 추출기:** 업무 기록을 텍스트 마이닝하여 핵심 역량과 기술 스택을 자동 추출합니다.
+*   **퍼블릭 포트폴리오 배포:** 완성된 이력서를 PDF로 내보내거나 외부 공유용 Web URL로 생성합니다.
+
+### 4. 데이터 기반 인사이트 (AI Insights)
+*   **스킬 갭(Skill Gap) 매핑:** 현재 역량과 목표 직무의 요구 스택을 비교하여 성장 가이드를 제시합니다.
+*   **시장 가치 시뮬레이터:** 연차, 직무, 보유 스택 기반으로 예상 연봉 밴드를 시각화합니다.
 
 > **Note:** 주요 화면의 스크린샷이나 시연 GIF는 `/docs/images` 폴더를 참조하십시오.
 >
@@ -43,16 +58,24 @@
 ```mermaid
 graph TD
     subgraph User
-        A[Client: Web Browser / Mobile App]
+        A[Client: React Web App]
     end
 
-    subgraph Server
+    subgraph "Backend"
         B[Backend: Spring Boot]
         D[Database: MySQL]
     end
 
+    subgraph "Cloud Services"
+        S3[AWS S3 Storage]
+        AI[AI Service (Python/LLM)]
+    end
+
     A -- REST API Request --> B
     B -- CRUD --> D
+    B -- API Call --> AI
+    B -- Generate Presigned URL --> A
+    A -- Direct File Upload --> S3
 ```
 
 ---

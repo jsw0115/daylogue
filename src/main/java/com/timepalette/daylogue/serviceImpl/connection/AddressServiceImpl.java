@@ -2,8 +2,12 @@ package com.timepalette.daylogue.serviceImpl.connection;
 
 import com.timepalette.daylogue.model.dto.common.ResponseResultModel;
 import com.timepalette.daylogue.model.dto.connections.*;
+import com.timepalette.daylogue.model.dto.settings.category.CategoryDto;
 import com.timepalette.daylogue.service.connection.AddressService;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class AddressServiceImpl implements AddressService {
@@ -16,7 +20,13 @@ public class AddressServiceImpl implements AddressService {
 	 */
 	@Override
 	public ResponseResultModel searchAddress(AddressSearchRequestModel param) {
-		return null;
+
+		ResponseResultModel result = new ResponseResultModel();
+		AddressSearchDataModel data = new AddressSearchDataModel();
+
+		result.data = data;
+
+		return result;
 	}
 
 	/**
@@ -27,7 +37,13 @@ public class AddressServiceImpl implements AddressService {
 	 */
 	@Override
 	public ResponseResultModel getAddressDetail(AddressDetailRequestModel param) {
-		return null;
+
+		ResponseResultModel result = new ResponseResultModel();
+		AddressDetailDataModel data = new AddressDetailDataModel();
+
+		result.data = data;
+
+		return result;
 	}
 
 	/**
@@ -38,7 +54,13 @@ public class AddressServiceImpl implements AddressService {
 	 */
 	@Override
 	public ResponseResultModel addContact(AddressAddOrUpdateRequestModel param) {
-		return null;
+
+		ResponseResultModel result = new ResponseResultModel();
+		AddressDetailDataModel data = new AddressDetailDataModel();
+
+		result.data = data;
+
+		return result;
 	}
 
 	/**
@@ -49,7 +71,12 @@ public class AddressServiceImpl implements AddressService {
 	 */
 	@Override
 	public ResponseResultModel checkSystemUser(String email) {
-		return null;
+
+		ResponseResultModel result = new ResponseResultModel();
+
+		result.data = true;
+
+		return result;
 	}
 
 	/**
@@ -60,7 +87,12 @@ public class AddressServiceImpl implements AddressService {
 	 */
 	@Override
 	public ResponseResultModel inviteUser(AddressAddOrUpdateRequestModel param) {
-		return null;
+
+		ResponseResultModel result = new ResponseResultModel();
+
+		result.data = true;
+
+		return result;
 	}
 
 	/**
@@ -71,7 +103,13 @@ public class AddressServiceImpl implements AddressService {
 	 */
 	@Override
 	public ResponseResultModel updateContact(AddressAddOrUpdateRequestModel param) {
-		return null;
+
+		ResponseResultModel result = new ResponseResultModel();
+		AddressDetailDataModel data = new AddressDetailDataModel();
+
+		result.data = data;
+
+		return result;
 	}
 
 	/**
@@ -82,7 +120,11 @@ public class AddressServiceImpl implements AddressService {
 	 */
 	@Override
 	public ResponseResultModel deleteContact(AddressAddOrUpdateRequestModel param) {
-		return null;
+
+		ResponseResultModel result = new ResponseResultModel();
+
+		result.data = true;
+		return result;
 	}
 
 	/**
@@ -93,7 +135,12 @@ public class AddressServiceImpl implements AddressService {
 	 */
 	@Override
 	public ResponseResultModel getContactHistory(AddressHistoryRequestModel param) {
-		return null;
+
+		ResponseResultModel result = new ResponseResultModel();
+		List<AddressHistoryDataModel> data = new ArrayList<>();
+
+		result.data = data;
+		return result;
 	}
 
 	/**
@@ -136,7 +183,12 @@ public class AddressServiceImpl implements AddressService {
 	 */
 	@Override
 	public ResponseResultModel getGroupList(AddressSearchRequestModel param) {
-		return null;
+
+		ResponseResultModel result = new ResponseResultModel();
+		List<AddressGroupDataModel> data = new ArrayList<>();
+
+		result.data = data;
+		return result;
 	}
 
 	/**
@@ -147,7 +199,12 @@ public class AddressServiceImpl implements AddressService {
 	 */
 	@Override
 	public ResponseResultModel addGroup(AddressGroupAddOrUpdateRequestModel request) {
-		return null;
+
+		ResponseResultModel result = new ResponseResultModel();
+		AddressGroupDataModel data = new AddressGroupDataModel();
+
+		result.data = data;
+		return result;
 	}
 
 	/**
@@ -158,7 +215,12 @@ public class AddressServiceImpl implements AddressService {
 	 */
 	@Override
 	public ResponseResultModel updateGroup(AddressGroupAddOrUpdateRequestModel request) {
-		return null;
+
+		ResponseResultModel result = new ResponseResultModel();
+		AddressGroupDataModel data = new AddressGroupDataModel();
+
+		result.data = data;
+		return result;
 	}
 
 	/**
@@ -169,7 +231,12 @@ public class AddressServiceImpl implements AddressService {
 	 */
 	@Override
 	public ResponseResultModel updateGroupOrder(AddressGroupUpdateOrderRequestModel request) {
-		return null;
+
+		ResponseResultModel result = new ResponseResultModel();
+		AddressGroupDataModel data = new AddressGroupDataModel();
+
+		result.data = data;
+		return result;
 	}
 
 	/**
@@ -180,6 +247,10 @@ public class AddressServiceImpl implements AddressService {
 	 */
 	@Override
 	public ResponseResultModel deleteGroup(AddressGroupAddOrUpdateRequestModel request) {
-		return null;
+
+		ResponseResultModel result = new ResponseResultModel();
+
+		result.data = true;
+		return result;
 	}
 }

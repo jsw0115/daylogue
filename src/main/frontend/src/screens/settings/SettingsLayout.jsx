@@ -2,9 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
-  User, Settings, Palette, Bell, Shield,
-  Users, Briefcase, Folder, ChevronRight,
-  Crown, LogOut, Monitor, Camera
+  User, Settings, Palette, Bell, Shield, Users, Briefcase,
+  Folder, ChevronRight, Crown, LogOut, Monitor, Target // Target 아이콘 추가
 } from "lucide-react";
 
 import "../../styles/screens/settings.css";
@@ -136,6 +135,12 @@ export const SettingsSidebar = ({ activePath }) => {
             title="공유 사용자 (주소록)"
             desc={`일정 공유 대상 관리 (${shareUsers.length}명)`}
             to="/settings/share-users"
+          />
+          <MenuLink
+            icon={Target}
+            title="MBO 관리"
+            desc="분기/반기별 목표 설정 및 진행률 추적"
+            to="/settings/mbo"
           />
         </div>
       </section>

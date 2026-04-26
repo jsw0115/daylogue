@@ -351,31 +351,31 @@ function seedDb() {
 
   const categories = [
     {
-      id: uid("cat"),
+      id: "cat_work",
       type: "업무",
       name: "업무",
       color: "#3b82f6",
-      icon: "💼",
+      icon: "briefcase",
       children: [
-        { id: uid("sub"), name: "프로젝트", color: "#60a5fa", icon: "📌" },
-        { id: uid("sub"), name: "회의", color: "#93c5fd", icon: "🗣️" },
-        { id: uid("sub"), name: "표준", color: "#bfdbfe", icon: "📘" },
+        { id: "sub_proj", name: "프로젝트", color: "#60a5fa", icon: "pin" },
+        { id: "sub_meet", name: "회의", color: "#93c5fd", icon: "users" },
+        { id: "sub_doc", name: "표준", color: "#bfdbfe", icon: "book" },
       ],
     },
     {
-      id: uid("cat"),
+      id: "cat_study",
       type: "공부",
       name: "공부",
       color: "#22c55e",
-      icon: "📚",
+      icon: "library",
       children: [],
     },
     {
-      id: uid("cat"),
-      type: "휴식",
-      name: "휴식",
+      id: "cat_life",
+      type: "일상",
+      name: "일상",
       color: "#f59e0b",
-      icon: "☕",
+      icon: "coffee",
       children: [],
     },
   ];
@@ -426,7 +426,7 @@ function seedDb() {
       memo: "기능 개선 작업",
       actualMinutes: 180,
       planMinutes: 150,
-      links: ["https://example.com/pr/123"],
+      evidence: [{ type: 'LINK', url: 'https://example.com/pr/123', title: '기능 개선 PR #123' }],
     },
     {
       id: uid("tb"),
@@ -439,7 +439,7 @@ function seedDb() {
       memo: "주간 회의 / 액션아이템 정리",
       actualMinutes: 60,
       planMinutes: 60,
-      links: [],
+      evidence: [],
     },
     {
       id: uid("tb"),
@@ -452,7 +452,7 @@ function seedDb() {
       memo: "표준 문서 정리",
       actualMinutes: 90,
       planMinutes: 120,
-      links: ["https://example.com/doc/standard"],
+      evidence: [{ type: 'FILE', url: 's3://daylogue-bucket/docs/standard.pdf', title: '표준 가이드 문서.pdf' }],
     },
     {
       id: uid("tb"),
@@ -465,7 +465,7 @@ function seedDb() {
       memo: "운영 이슈 대응",
       actualMinutes: 140,
       planMinutes: 120,
-      links: [],
+      evidence: [],
     },
     // 미분류(필터 옵션 테스트)
     {
@@ -479,7 +479,7 @@ function seedDb() {
       memo: "미분류 작업(태깅 필요)",
       actualMinutes: 45,
       planMinutes: 0,
-      links: [],
+      evidence: [],
     },
     // 업무 외(업무 외 포함 토글 테스트)
     {
@@ -493,8 +493,14 @@ function seedDb() {
       memo: "커피/휴식",
       actualMinutes: 30,
       planMinutes: 0,
-      links: [],
+      evidence: [],
     },
+  ];
+
+  const tasks = [
+    { id: 1, title: "SQLD 1일 1문제 풀기", done: true, durationMin: 30, energy: "low", categoryId: "cat_study" },
+    { id: 2, title: "프로젝트 이슈 리포트 작성", done: false, durationMin: 60, energy: "high", categoryId: "cat_work" },
+    { id: 3, title: "주간 회의 아젠다 정리", done: false, durationMin: 30, energy: "medium", categoryId: "cat_work" }
   ];
 
 
@@ -508,6 +514,7 @@ function seedDb() {
     aiReports: {},
     workMeta,
     timeBlocks,
+    tasks,
   };
 }
 
@@ -919,7 +926,7 @@ export const categoryApi = {
     const idx = db.categories.findIndex((c) => c.id === catId);
     if (idx < 0) throw new Error("CategoryNotFound");
     const children = db.categories[idx].children || [];
-    children.push({ id: uid("sub"), name: sub.name, color: sub.color || "#93c5fd", icon: sub.icon || "📌" });
+    children.push({ id: uid("sub"), name: sub.name, color: sub.color || "#93c5fd", icon: sub.icon || "pin" });
     db.categories[idx] = { ...db.categories[idx], children };
     saveDb(db);
     return db.categories[idx];
@@ -994,6 +1001,18 @@ export const workApi = {
     return db.workMeta || { projects: [], workTypes: [] };
   },
 
+  async getTodayTimeBlocks({ date }) {
+    await delay(150);
+    const db = loadDb();
+    const targetDate = new Date(date).toISOString().slice(0, 10);
+    const blocks = (db.timeBlocks || []).filter(b => {
+        const blockDate = new Date(b.date).toISOString().slice(0, 10);
+        // 오늘 날짜의 '업무' 카테고리 블록만 필터링
+        return blockDate === targetDate && b.categoryMain === '업무';
+    });
+    return blocks;
+  },
+
   async getReport(key) {
     await delay();
     const db = loadDb();
@@ -1062,18 +1081,54 @@ export const workApi = {
     const evidenceLinks = collectEvidenceFromBlocks(res._blocks || []);
 
     const scopeTitle = scope === "DAY" ? "일간" : scope === "WEEK" ? "주간" : scope === "MONTH" ? "월간" : "연간";
+    const toHours = (min) => Math.round((min / 60) * 10) / 10;
+
+    // Scope에 따라 추천 내용을 다르게 생성하는 로직 (Mock)
+    let achievements = `## ${scopeTitle} 주요 성과\n`;
+    let issues = `## 이슈 및 개선점\n`;
+
+    if (scope === 'WEEK') {
+        const dailySummaries = {};
+        (res._blocks || []).forEach(block => {
+            const dateKey = new Date(block.date).toISOString().slice(0, 10);
+            if (!dailySummaries[dateKey]) {
+                dailySummaries[dateKey] = [];
+            }
+            dailySummaries[dateKey].push(`- ${block.memo} (${toHours(block.actualMinutes)}h)`);
+        });
+
+        achievements += Object.entries(dailySummaries).sort((a, b) => a[0].localeCompare(b[0])).map(([date, tasks]) => {
+            return `### ${date}\n${tasks.join('\n')}`;
+        }).join('\n\n') || "이번 주에 기록된 업무가 없습니다.";
+        
+        issues += "- (예시) 이번 주 업무를 진행하며 발견한 문제점이나 다음 주에 개선하고 싶은 점을 작성해보세요.";
+
+    } else if (scope === 'MONTH' || scope === 'QUARTER' || scope === 'YEAR') {
+        achievements += (res.byProject || [])
+          .map((x) => `- ${x.name} 관련 업무를 총 ${x.actualHours}시간 수행했습니다.`)
+          .join("\n") || "기록된 업무가 없습니다.";
+        issues += `- (예시) ${scopeTitle} 목표 달성률을 리뷰하고, 미진했던 부분의 원인을 분석합니다.`;
+    } else { // DAY
+      achievements += (res._blocks || [])
+        .map((b) => `- ${b.memo} (${toHours(b.actualMinutes)}h)`)
+        .join("\n") || "오늘 기록된 업무가 없습니다.";
+      issues += "## 특이사항\n- ";
+    }
     return {
       title: `${scopeTitle} 업무 리포트`,
-      summary: summaryLines,
-      achievements:
-        "## Top 업무(공수 기준)\n" +
-        (res.byProject || [])
-          .slice(0, 5)
-          .map((x) => `- ${x.name}: ${x.actualHours}h`)
-          .join("\n") +
-        "\n\n## 성과(Deliverables)\n- (예) PR/배포/문서 링크를 근거로 남기기",
-      issues:
-        "## 이슈/리스크\n- (예) 지연 요인/의존 이슈\n\n## 대응/지원 요청\n- (예) 필요한 지원/결정 사항",
+      // summary: summaryLines,
+      // achievements:
+      //   "## Top 업무(공수 기준)\n" +
+      //   (res.byProject || [])
+      //     .slice(0, 5)
+      //     .map((x) => `- ${x.name}: ${x.actualHours}h`)
+      //     .join("\n") +
+      //   "\n\n## 성과(Deliverables)\n- (예) PR/배포/문서 링크를 근거로 남기기",
+      // issues:
+      //   "## 이슈/리스크\n- (예) 지연 요인/의존 이슈\n\n## 대응/지원 요청\n- (예) 필요한 지원/결정 사항",
+      summary: `- 핵심: ${topProject} 중심으로 ${topType} 비중이 높았습니다.\n- 공수: Actual ${actualTotal}h / Plan ${planTotal}h (달성 ${rate}%)`,
+      achievements,
+      issues,
       nextPlan:
         "## 다음 계획\n- (예) 미완료 항목 마무리\n- (예) 우선순위 3개 선정\n\n## 리소스/가정\n- ",
       pvaNote:
@@ -1088,9 +1143,9 @@ export const workApi = {
 function collectEvidenceFromBlocks(blocks) {
   const list = [];
   (blocks || []).forEach((b) => {
-    (b.links || []).forEach((u) => {
-      if (!u) return;
-      list.push({ id: `ev_${u}`, label: b.memo ? `${b.memo}` : u, url: u });
+    (b.evidence || []).forEach((ev) => {
+      if (!ev?.url) return;
+      list.push({ id: `ev_${ev.url}`, label: ev.title || b.memo || ev.url, url: ev.url });
     });
   });
   // 중복 제거
@@ -1225,5 +1280,49 @@ export const memoApi = {
       convertedCount: 2,
       message: "2개의 메모를 [할 일]로 변환하고, 1개를 [일정]에 등록했습니다."
     };
+  }
+};
+
+/** Task API */
+export const taskApi = {
+  async listTasks({ categoryName } = {}) {
+    await delay(50);
+    const db = loadDb();
+    let list = db.tasks || [];
+    if (categoryName) {
+      const cat = (db.categories || []).find(c => c.name === categoryName);
+      if (cat) {
+        list = list.filter(t => t.categoryId === cat.id);
+      } else {
+        list = [];
+      }
+    }
+    return list.sort((a, b) => b.id - a.id); // 최신순 정렬
+  },
+  async createTask(payload) {
+    await delay(50);
+    const db = loadDb();
+    const newTask = { id: Date.now(), done: false, ...payload };
+    db.tasks = [newTask, ...(db.tasks || [])];
+    saveDb(db);
+    return newTask;
+  },
+  async toggleTaskDone(id) {
+    await delay(30);
+    const db = loadDb();
+    const idx = (db.tasks || []).findIndex(t => t.id === id);
+    if (idx >= 0) {
+      db.tasks[idx].done = !db.tasks[idx].done;
+      saveDb(db);
+      return db.tasks[idx];
+    }
+    return null;
+  },
+  async deleteTask(id) {
+    await delay(30);
+    const db = loadDb();
+    db.tasks = (db.tasks || []).filter(t => t.id !== id);
+    saveDb(db);
+    return true;
   }
 };

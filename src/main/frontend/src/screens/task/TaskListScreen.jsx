@@ -1,22 +1,18 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
-  Button, Card, Input, Tag, Typography, Divider, Progress, Select, Modal,
-  Space, Radio, Tooltip, Empty, message, Segmented, Dropdown
+  Button, Card, Input, Tag, Typography, Divider, Progress, Select, Modal, Switch,
+  Space, Radio, Tooltip, Empty, message, Segmented, Dropdown,
 } from "antd";
 import {
   Plus, Search, Play, CheckCircle2, Circle, Zap, Battery, MoreHorizontal,
-  LayoutList, LayoutGrid, Clock, Sparkles, CalendarDays, Edit, Trash2, Calendar, Hash
+  LayoutList, LayoutGrid, Clock, Sparkles, CalendarDays, Edit, Trash2, Calendar, RotateCw
 } from "lucide-react";
 import dayjs from "dayjs";
 import "./../../styles/screens/taskList.css";
+import { taskApi, categoryApi } from "../../services/localMockApi";
 
 const { Title, Text } = Typography;
 
-// --- Mock Data ---
-const DEFAULT_TASKS = [
-  { id: 1, title: "SQLD 1일 1문제 풀기", done: true, durationMin: 30, energy: "low", tags: ["공부"] },
-  { id: 2, title: "프로젝트 이슈 리포트 작성", done: false, durationMin: 60, energy: "high", tags: ["업무"] },
-];
 
 const ENERGY_OPTIONS = [
   { value: "high", label: "높음", icon: <Zap size={14} color="#f59e0b" /> },
@@ -24,22 +20,49 @@ const ENERGY_OPTIONS = [
   { value: "low", label: "낮음", icon: <Battery size={14} color="#10b981" /> },
 ];
 
+const WEEKDAYS = [
+  { val: "mon", label: "월" },
+  { val: "tue", label: "화" },
+  { val: "wed", label: "수" },
+  { val: "thu", label: "목" },
+  { val: "fri", label: "금" },
+  { val: "sat", label: "토" },
+  { val: "sun", label: "일" },
+];
+
 export default function TaskListScreen() {
   // Ant Design Message Hook (안정적인 알림 표시를 위해 필수)
   const [messageApi, contextHolder] = message.useMessage();
 
   // --- States ---
-  const [tasks, setTasks] = useState(DEFAULT_TASKS);
+  const [tasks, setTasks] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [viewMode, setViewMode] = useState("list"); 
   const [filter, setFilter] = useState("today");
   const [q, setQ] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Modal Input States
+  const [tab, setTab] = useState("quick"); // quick | detail
   const [newTitle, setNewTitle] = useState("");
+  const [newCategoryId, setNewCategoryId] = useState("");
+  const [newCategoryName, setNewCategoryName] = useState(""); // 인라인 카테고리 추가용
   const [newMin, setNewMin] = useState(30);
   const [newEnergy, setNewEnergy] = useState("medium");
-  const [newTags, setNewTags] = useState([]);
+  const [repeatEnabled, setRepeatEnabled] = useState(false);
+  const [repeatFreq, setRepeatFreq] = useState("daily");
+  const [repeatWeekdays, setRepeatWeekdays] = useState(["mon"]);
+  const [repeatInterval, setRepeatInterval] = useState(1);
+  const [repeatEndType, setRepeatEndType] = useState("none"); // none | until
+  const [repeatEndUntil, setRepeatEndUntil] = useState(dayjs().format("YYYY-MM-DD"));
+
+  useEffect(() => {
+    taskApi.listTasks().then(setTasks);
+    categoryApi.listCategories().then(cats => {
+      setCategories(cats);
+      if (cats.length > 0) setNewCategoryId(cats[0].id);
+    });
+  }, []);
 
   // --- Logic ---
   const timeBudget = useMemo(() => {
@@ -55,8 +78,9 @@ export default function TaskListScreen() {
   }, [tasks, q]);
 
   // --- Handlers ---
-  const toggleDone = (id) => {
+  const toggleDone = async (id) => {
     setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
+    await taskApi.toggleTaskDone(id);
   };
 
   const handleSmartInput = (e) => {
@@ -78,22 +102,39 @@ export default function TaskListScreen() {
     });
   };
 
-  const addTask = () => {
+  const handleAddCategory = async (e) => {
+    e.preventDefault();
+    if (!newCategoryName.trim()) return;
+    await categoryApi.saveCategory({ name: newCategoryName, type: "CUSTOM", color: "#64748b", icon: "briefcase" });
+    setNewCategoryName("");
+    const updatedCats = await categoryApi.listCategories();
+    setCategories(updatedCats);
+    const added = updatedCats.find(c => c.name === newCategoryName);
+    if (added) setNewCategoryId(added.id);
+  };
+
+  const addTask = async () => {
     // 1. 유효성 검사 (제목이 비어있으면 경고)
     if (!newTitle.trim()) {
         messageApi.warning("할 일 제목을 입력해주세요!");
         return;
     }
 
-    // 2. 새 할 일 객체 생성
-    const newTask = {
-      id: Date.now(),
+    // 2. API로 새 할 일 저장
+    const newTaskData = {
       title: newTitle,
-      done: false,
-      durationMin: newMin,
-      energy: newEnergy,
-      tags: newTags, 
+      categoryId: newCategoryId,
+      durationMin: tab === "detail" ? newMin : 30, // 간단모드는 기본 30분
+      energy: tab === "detail" ? newEnergy : "medium",
+      repeatRule: tab === "detail" && repeatEnabled ? { 
+        freq: repeatFreq, 
+        interval: repeatInterval,
+        weekdays: repeatFreq === "weekly" ? repeatWeekdays : [],
+        endType: repeatEndType,
+        endUntil: repeatEndType === "until" ? repeatEndUntil : null
+      } : null
     };
+    const newTask = await taskApi.createTask(newTaskData);
 
     // 3. 상태 업데이트
     setTasks([newTask, ...tasks]);
@@ -105,10 +146,16 @@ export default function TaskListScreen() {
   };
 
   const resetForm = () => {
+    setTab("quick");
     setNewTitle("");
     setNewMin(30);
     setNewEnergy("medium");
-    setNewTags([]);
+    setRepeatEnabled(false);
+    setRepeatFreq("daily");
+    setRepeatWeekdays(["mon"]);
+    setRepeatInterval(1);
+    setRepeatEndType("none");
+    setRepeatEndUntil(dayjs().format("YYYY-MM-DD"));
   };
 
   const getDropdownItems = (taskId) => [
@@ -132,8 +179,9 @@ export default function TaskListScreen() {
       label: '삭제',
       icon: <Trash2 size={14} />,
       danger: true,
-      onClick: () => {
+      onClick: async () => {
         setTasks(prev => prev.filter(t => t.id !== taskId));
+        await taskApi.deleteTask(taskId);
         messageApi.info('삭제되었습니다.');
       },
     },
@@ -215,8 +263,10 @@ export default function TaskListScreen() {
           <Empty description="등록된 할 일이 없습니다." style={{ marginTop: 40 }} />
         ) : (
           <div className="task-list-scroll">
-            {filteredTasks.map((t) => (
-              <div key={t.id} className={`task-item ${t.done ? 'is-done' : ''}`}>
+            {filteredTasks.map((t) => {
+              const cat = categories.find(c => c.id === t.categoryId);
+              return (
+                <div key={t.id} className={`task-item ${t.done ? 'is-done' : ''}`}>
                 <div className="task-check" onClick={() => toggleDone(t.id)}>
                   {t.done ? <CheckCircle2 size={24} color="#3b82f6" fill="#eff6ff"/> : <Circle size={24} color="#d1d5db" />}
                 </div>
@@ -226,10 +276,11 @@ export default function TaskListScreen() {
                     <span className="task-title-text">{t.title}</span>
                     {t.energy === 'high' && <Tooltip title="높은 에너지 필요"><Zap size={14} color="#f59e0b" fill="#f59e0b"/></Tooltip>}
                     {t.energy === 'low' && <Tooltip title="낮은 에너지 가능"><Battery size={14} color="#10b981"/></Tooltip>}
+                    {t.repeatRule && <Tooltip title="반복 할 일"><RotateCw size={14} color="#64748b" style={{marginLeft: 4}}/></Tooltip>}
                   </div>
                   <div className="task-meta-row">
                     <span className="task-duration"><Clock size={12}/> {t.durationMin}분</span>
-                    {t.tags.map(tag => <Tag key={tag} bordered={false} size="small">#{tag}</Tag>)}
+                    {cat && <Tag color={cat.color} bordered={false} size="small">{cat.name}</Tag>}
                   </div>
                 </div>
 
@@ -244,7 +295,8 @@ export default function TaskListScreen() {
                   </Dropdown>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -265,7 +317,16 @@ export default function TaskListScreen() {
         width={480}
         centered
       >
+        <Segmented
+          block
+          options={[{ label: '간단 등록', value: 'quick' }, { label: '상세 등록', value: 'detail' }]}
+          value={tab}
+          onChange={setTab}
+          style={{ marginBottom: 16 }}
+        />
+
         <div className="add-task-form">
+          {/* 공통 필드 */}
           <div className="form-group">
             <Text strong>할 일 제목 <span style={{color:'#ff4d4f'}}>*</span></Text>
             <div style={{display:'flex', gap: 8}}>
@@ -282,10 +343,41 @@ export default function TaskListScreen() {
                 </Button>
               </Tooltip>
             </div>
-            {newTitle.includes("30분") && <Text type="success" style={{fontSize: 12}}>✨ '30분'이 감지되어 시간이 자동 설정되었습니다.</Text>}
+            {newTitle.includes("30분") && (
+              <Text type="success" style={{fontSize: 12, display: 'flex', alignItems: 'center', gap: 4}}><Sparkles size={12} /> '30분'이 감지되어 시간이 자동 설정되었습니다.</Text>
+            )}
           </div>
 
-          <div className="form-row">
+          <div className="form-group">
+            <Text strong>카테고리</Text>
+            <Select
+              style={{ width: '100%' }}
+              placeholder="카테고리 선택"
+              value={newCategoryId}
+              onChange={setNewCategoryId}
+              options={categories.map(c => ({ label: c.name, value: c.id }))}
+              dropdownRender={(menu) => (
+                <>
+                  {menu}
+                  <Divider style={{ margin: '8px 0' }} />
+                  <Space style={{ padding: '0 8px 4px' }}>
+                    <Input
+                      placeholder="새 카테고리 입력"
+                      value={newCategoryName}
+                      onChange={(e) => setNewCategoryName(e.target.value)}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    />
+                    <Button type="text" icon={<Plus size={14} />} onClick={handleAddCategory}>추가</Button>
+                  </Space>
+                </>
+              )}
+            />
+          </div>
+
+          {/* 상세 모드 전용 필드 */}
+          {tab === "detail" && (
+            <>
+            <div className="form-row">
             <div className="form-group" style={{flex: 1}}>
               <Text strong>예상 소요 (분)</Text>
               <Input 
@@ -306,19 +398,59 @@ export default function TaskListScreen() {
             </div>
           </div>
           
+          <Divider style={{ margin: '12px 0' }} />
+          
           <div className="form-group">
-            <Text strong>태그</Text>
-            {/* Tag Selection UI */}
-            <Select
-              mode="tags"
-              style={{ width: '100%' }}
-              placeholder="태그 입력 (예: 업무, 공부) 후 엔터"
-              value={newTags}
-              onChange={setNewTags}
-              tokenSeparators={[',', ' ']}
-              suffixIcon={<Hash size={14} />}
-            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text strong>반복 설정</Text>
+              <Switch checked={repeatEnabled} onChange={setRepeatEnabled} size="small" />
+            </div>
+            {repeatEnabled && (
+              <div className="task-repeat-box">
+                <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
+                  <div style={{ flex: 1 }}>
+                    <Text type="secondary" style={{fontSize: 12}}>주기</Text>
+                    <Select value={repeatFreq} onChange={setRepeatFreq} style={{ width: '100%' }}
+                      options={[{ value: 'daily', label: '매일' }, { value: 'weekly', label: '매주' }, { value: 'monthly', label: '매월' }, { value: 'yearly', label: '매년' }]}
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <Text type="secondary" style={{fontSize: 12}}>간격</Text>
+                    <Input type="number" min={1} value={repeatInterval} onChange={e => setRepeatInterval(Number(e.target.value))} style={{ width: '100%' }} addonAfter="마다" />
+                  </div>
+                </div>
+                {repeatFreq === 'weekly' && (
+                  <div style={{ marginBottom: 12 }}>
+                    <Text type="secondary" style={{fontSize: 12, display: 'block', marginBottom: 4}}>요일 선택</Text>
+                    <div className="task-weekdays">
+                     {WEEKDAYS.map(w => (
+                       <button key={w.val} type="button" className={`task-wk-btn ${repeatWeekdays.includes(w.val) ? 'active' : ''}`}
+                         onClick={() => setRepeatWeekdays(prev => prev.includes(w.val) ? prev.filter(x => x !== w.val) : [...prev, w.val])}>
+                         {w.label}
+                       </button>
+                     ))}
+                    </div>
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <div style={{ flex: 1 }}>
+                    <Text type="secondary" style={{fontSize: 12}}>종료 조건</Text>
+                    <Select value={repeatEndType} onChange={setRepeatEndType} style={{ width: '100%' }}
+                      options={[{ value: 'none', label: '계속 반복' }, { value: 'until', label: '특정 날짜까지' }]}
+                    />
+                  </div>
+                  {repeatEndType === 'until' && (
+                    <div style={{ flex: 1 }}>
+                      <Text type="secondary" style={{fontSize: 12}}>종료 날짜</Text>
+                      <Input type="date" value={repeatEndUntil} onChange={e => setRepeatEndUntil(e.target.value)} style={{ width: '100%' }} />
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
+        </>
+      )}
         </div>
       </Modal>
     </div>

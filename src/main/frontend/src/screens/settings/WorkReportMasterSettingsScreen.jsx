@@ -64,10 +64,7 @@ export default function WorkReportMasterSettingsScreen() {
     { value: "DONE", label: "완료" },
     { value: "HOLD", label: "보류" }
   ];
-
-  // 상태 관리 (선택된 값)
   const [status, setStatus] = useState("PLANNED");
-
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -140,10 +137,10 @@ export default function WorkReportMasterSettingsScreen() {
                   ]}
                 />*/}
                 {/* 3. shadcn/ui Select 컴포넌트 구조 */}
-                <Select onValueChange={setStatus} defaultValue={status}>                    
+                <Select onValueChange={setNewProjectStatus} value={newProjectStatus}>
                   {/* 트리거: 클릭했을 때 보이는 버튼 영역 */}
                   <SelectTrigger className="w-full bg-background border-primary">
-                    <SelectValue placeholder="플랜의 기본 모드를 선택하세요" />
+                    <SelectValue placeholder="프로젝트 상태" />
                   </SelectTrigger>
 
                   {/* 컨텐츠: 클릭 시 열리는 드롭다운 목록 */}
@@ -154,10 +151,12 @@ export default function WorkReportMasterSettingsScreen() {
                       </SelectItem>
                     ))}
                   </SelectContent>
-
                 </Select>
               </div>
-              <Button onClick={() => { addProject(newProjectName, newProjectStatus); setNewProjectName(""); }}>추가</Button>
+              <Button
+                onClick={() => {
+                  if (newProjectName.trim()) { addProject(newProjectName, newProjectStatus); setNewProjectName(""); setNewProjectStatus("CURRENT"); }
+                }}>추가</Button>
             </div>
 
             <div className="flex gap-2 mb-4 text-xs text-muted">
@@ -177,12 +176,11 @@ export default function WorkReportMasterSettingsScreen() {
                     />
                   </div>
                   {/* 3. shadcn/ui Select 컴포넌트 구조 */}
-                  <Select onValueChange={setStatus} defaultValue={status}>                    
+                  <Select onValueChange={(newStatus) => updateProject(p.id, { status: newStatus })} value={p.status}>
                     {/* 트리거: 클릭했을 때 보이는 버튼 영역 */}
-                    <SelectTrigger className="w-full bg-background border-primary">
-                      <SelectValue placeholder="플랜의 기본 모드를 선택하세요" />
+                    <SelectTrigger className="w-[120px] bg-background border-primary">
+                      <SelectValue placeholder="상태" />
                     </SelectTrigger>
-
                     {/* 컨텐츠: 클릭 시 열리는 드롭다운 목록 */}
                     <SelectContent>
                       {statusOptions.map((option) => (
@@ -191,7 +189,6 @@ export default function WorkReportMasterSettingsScreen() {
                         </SelectItem>
                       ))}
                     </SelectContent>
-
                   </Select>
                   <Button size="sm" variant="ghost" onClick={() => deleteProject(p.id)}>삭제</Button>
                 </div>
